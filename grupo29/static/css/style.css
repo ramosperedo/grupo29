@@ -1,0 +1,14 @@
+.imglogo {
+    max-width: 50%;
+}
+
+#content-main {
+    width: 100%;
+}
+
+.form-row {
+    padding: 4px 0;
+    float: left;
+    width: 100%;
+    border-bottom: none;
+}
