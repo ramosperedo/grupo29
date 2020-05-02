@@ -1,0 +1,4 @@
+Notas de recordatorio
+
+_Cuando se actualiza el model.py, hay que realizar un makemigrations y migrate
+ para actualizar la BBDD
