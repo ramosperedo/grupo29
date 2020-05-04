@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'app',
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,6 +68,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'app.User' #change the built-in user model to ours
 
 WSGI_APPLICATION = 'Bookflix.wsgi.application'
 
