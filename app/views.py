@@ -13,7 +13,7 @@ def welcome(request):
             return render(request, "users/home.html")
     return redirect('/login')
 
-
+    
 def register(request):
     form = UserCreationForm()
     if request.method == "POST":

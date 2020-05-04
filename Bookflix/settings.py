@@ -55,7 +55,7 @@ ROOT_URLCONF = 'Bookflix.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['C:/Users/Luis Neyra/Documents/grupo29/app/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
