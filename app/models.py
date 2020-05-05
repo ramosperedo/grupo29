@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
 # Create your models here.
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False):
+    def create_user(self, email, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False, is_premium=False):
         if not email:
             raise ValueError("Users must have an email address")
         if not password:
@@ -20,6 +20,7 @@ class UserManager(BaseUserManager):
         user_obj.admin = is_admin
         user_obj.active = is_active
         user_obj.superuser = is_superuser
+        user_obj.premium = is_premium
         user_obj.save(using=self._db)
         return user_obj
     
@@ -37,7 +38,8 @@ class UserManager(BaseUserManager):
                 password=password,
                 is_staff=True,
                 is_admin=True,
-                is_superuser=True
+                is_superuser=True,
+                is_premium=True
         )
         return user
 
@@ -115,20 +117,14 @@ class Libro(models.Model):
     descripcion = models.CharField(max_length=250)
     foto = models.CharField(max_length=100, null=True)
 
-class Suscriptor(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
-    apellido = models.CharField(max_length=50)
-    clave = models.CharField(max_length=256)
-    email = models.CharField(max_length=100, unique=True)
-    idTarjeta = models.ForeignKey(Tarjeta,on_delete=models.CASCADE)
-    premium = models.IntegerField()
+    def __str__(self):
+        return self.nombre
 
 class Perfil(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=50)
     foto = models.CharField(max_length=50)
-    idSuscriptor = models.ForeignKey(Suscriptor,on_delete=models.CASCADE)
+    idSuscriptor = models.ForeignKey(User,on_delete=models.CASCADE)
 
 class Configuracion(models.Model):
     id = models.AutoField(primary_key=True)
