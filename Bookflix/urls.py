@@ -21,19 +21,19 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.views.generic import TemplateView
 
-from app.views import login_page, register_page
+from app.views import login, register
 
 from django.urls import path
 from app import views
 
 urlpatterns = [
 
-    path('', views.login_page), # no va login. va home_page
-    path('login/', views.login_page),
-    path('register/', views.register_page),
-    #path('register/', views.register),
-    #path('login/', views.login),
-    #path('logout/', views.logout),
+    path('', views.welcome), # no va login. va home_page
+    #path('login/', views.login_page),
+    #path('register/', views.register_page),
+    path('register/', views.register),
+    path('login/', views.login),
+    path('logout/', views.logout),
 
     path('admin/', admin.site.urls),
 ]

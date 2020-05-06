@@ -8,9 +8,9 @@ from django.contrib.auth.models import (
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False, is_premium=False):
         if not email:
-            raise ValueError("Users must have an email address")
+            raise ValueError("campo email obligatorio")
         if not password:
-            raise ValueError("Users must have a password")
+            raise ValueError("campo contraseña obligatorio")
 
         user_obj = self.model(
             email = self.normalize_email(email)
@@ -40,6 +40,12 @@ class UserManager(BaseUserManager):
                 is_admin=True,
                 is_superuser=True,
                 is_premium=True
+        )
+        return user
+    def create_suscriptor(self, email, password=None):
+        user = self.create_user(
+                email,
+                password=password
         )
         return user
 
