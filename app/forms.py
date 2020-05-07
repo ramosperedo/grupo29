@@ -1,10 +1,18 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.forms import ModelForm
+from .models import Libro
+
+class LibroForm(ModelForm):
+    class Meta:
+        model = Libro
+        fields = '__all__'
+
+
 
 
 User = get_user_model( )
-
 
 class UserAdminCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
