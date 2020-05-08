@@ -64,7 +64,7 @@ def register(request):
         numero = form.cleaned_data.get("numero")
         clave = form.cleaned_data.get("clave")
         fechaVencimiento = form.cleaned_data.get("fechaVencimiento")
-        form.revisandoDatosTarjeta(dni,numero,clave,fechaVencimiento)
+        """form.revisandoDatosTarjeta(dni,numero,clave,fechaVencimiento)"""
 
         new_tarj = TarjetaManager.create_tarjeta(dni,numero,clave,fechaVencimiento,tipo)
         new_user  = User.objects.create_suscriptor(nombre, apellido, email, password,new_tarj.id)

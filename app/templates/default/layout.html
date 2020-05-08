@@ -1,8 +1,15 @@
 {% include "default/header.html" %}
 <div class="container">
 {% if user.is_authenticated %}
-    {% block content %}
-    {% endblock %}
+{% block share %}
+    {% if user.is_superuser == 1 %}
+        {% block admin %}
+        {% endblock %}
+    {% else %}
+        {% block suscriptor %}
+        {% endblock %}
+    {% endif %}
+{% endblock %}
 {% else %}
     {% block public %}
         <a>Tiene que loguearse para ver el contenido</a>
