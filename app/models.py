@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
 # Create your models here.
 
 class UserManager(BaseUserManager):
-    def create_user(self, nombre, apellido, email, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False, is_premium=False, idTarjeta=None):
+    def create_user(self, email, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False, is_premium=False):
         if not email:
             raise ValueError("campo email obligatorio")
         if not password:
@@ -15,15 +15,12 @@ class UserManager(BaseUserManager):
         user_obj = self.model(
             email = self.normalize_email(email)
         )
-        user_obj.nombre = nombre
-        user_obj.apellido = apellido
         user_obj.set_password(password) # change user password
         user_obj.staff = is_staff
         user_obj.admin = is_admin
         user_obj.active = is_active
         user_obj.superuser = is_superuser
         user_obj.premium = is_premium
-        user_obj.idTarjeta = idTarjeta
         user_obj.save(using=self._db)
         return user_obj
     
@@ -45,49 +42,24 @@ class UserManager(BaseUserManager):
                 is_premium=True
         )
         return user
-    def create_suscriptor(self, nombre, apellido, email, password=None,idTarjeta=None):
+    def create_suscriptor(self, email, password=None):
         user = self.create_user(
-                nombre,
-                apellido,
                 email,
-                password=password,
-                idTarjeta=idTarjeta
+                password=password
         )
         return user
-
-class TipoTarjetaManager(models.Manager):
-    def create_tipo_tarjeta(nombre):
-        tipo_tarjeta_obj = TipoTarjeta()
-        tipo_tarjeta_obj.nombre = nombre
-        tipo_tarjeta_obj.save()
-        return tipo_tarjeta_obj
 
 class TipoTarjeta(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=20)
 
-    TipoTarjeta = TipoTarjetaManager()
-
-class TarjetaManager(models.Manager):
-    def create_tarjeta(dni,numero,clave,fechaVencimiento,tipo):
-        tarjeta_obj = Tarjeta()
-        tarjeta_obj.dni = dni
-        tarjeta_obj.numero = numero
-        tarjeta_obj.clave =clave
-        tarjeta_obj.fechaVencimiento = fechaVencimiento
-        tarjeta_obj.tipo = tipo
-        tarjeta_obj.save()
-        return tarjeta_obj
-
 class Tarjeta(models.Model):
     id = models.AutoField(primary_key=True)
-    dni = models.IntegerField(default=0)
-    numero = models.IntegerField(default=0)
-    clave = models.IntegerField(default=0)
-    fechaVencimiento = models.IntegerField(default=0)
-    tipo = models.IntegerField(default=0)
-
-    Tarjeta = TarjetaManager()
+    nombreTitular = models.CharField(max_length=50)
+    numero = models.IntegerField()
+    clave = models.IntegerField()
+    fechaVencimiento = models.IntegerField()
+    idTipoTarjeta = models.ForeignKey(TipoTarjeta,on_delete=models.CASCADE)
 
 class User(AbstractBaseUser):
     nombre = models.CharField(max_length=50)
@@ -97,7 +69,7 @@ class User(AbstractBaseUser):
     staff = models.BooleanField(default=False) #staff user non superuser
     admin = models.BooleanField(default=False) #superuser
     superuser = models.BooleanField(default=False)
-    idTarjeta = models.IntegerField(default=0)
+    idTarjeta = models.ForeignKey(Tarjeta,on_delete=models.CASCADE, null=True)
     premium = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email' #username

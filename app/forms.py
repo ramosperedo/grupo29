@@ -1,11 +1,18 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.forms import ModelForm
+from .models import Libro
+
+class LibroForm(ModelForm):
+    class Meta:
+        model = Libro
+        fields = '__all__'
+
 
 
 
 User = get_user_model( )
-
 
 class UserAdminCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -55,17 +62,10 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 class RegisterForm(forms.Form):
-    nombre = forms.CharField()
-    apellido = forms.CharField()
+    #username = forms.CharField()
     email    = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
-    dni = forms.IntegerField()
-    numero = forms.IntegerField()
-    clave = forms.IntegerField()
-    fechaVencimiento = forms.IntegerField()
-    CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
-    tipo = forms.ChoiceField(choices=CHOICES)
 
     #nosotros no modelamos username
     """def clean_username(self):
@@ -79,7 +79,7 @@ class RegisterForm(forms.Form):
         email = self.cleaned_data.get('email')
         qs = User.objects.filter(email=email)
         if qs.exists():
-            raise forms.ValidationError("email en uso") #ValidationError(_('Invalid date - renewal in past'))
+            raise forms.ValidationError("email is taken")
         return email
 
     def clean(self):
@@ -87,22 +87,5 @@ class RegisterForm(forms.Form):
         password = self.cleaned_data.get('password')
         password2 = self.cleaned_data.get('password2')
         if password2 != password:
-            raise forms.ValidationError("las contraseñas no coinciden.")
+            raise forms.ValidationError("Passwords must match.")
         return data
-    
-    def revisandoDatosTarjeta(self,dni,numero,clave,fechaVencimiento):
-        dni = self.cleaned_data.get('dni')
-        numero = self.cleaned_data.get('numero')
-        clave = self.cleaned_data.get('clave')
-        fechaVencimiento = self.cleaned_data.get('fechaVencimiento')
-        if len(str(dni)) != 8 :
-            raise forms.ValidationError("dni invalido")
-        if len(str(numero)) != 13 :
-            raise forms.ValidationError("tarjeta invalida")
-        if len(str(clave)) != 3 : 
-            raise forms.ValidationError("clave invalida")
-        if len(str(fechaVencimiento)) != 4 :
-            raise forms.ValidationError("fecha de vencimiento invalido")
-
-
-    
