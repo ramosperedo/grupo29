@@ -62,10 +62,17 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 class RegisterForm(forms.Form):
-    #username = forms.CharField()
+    nombre = forms.CharField()
+    apellido = forms.CharField()
     email    = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    dni = forms.IntegerField()
+    numero = forms.IntegerField()
+    clave = forms.IntegerField()
+    fechaVencimiento = forms.IntegerField()
+    CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
+    tipo = forms.ChoiceField(choices=CHOICES)
 
     #nosotros no modelamos username
     """def clean_username(self):
@@ -89,3 +96,17 @@ class RegisterForm(forms.Form):
         if password2 != password:
             raise forms.ValidationError("Passwords must match.")
         return data
+
+    def revisandoDatosTarjeta(self,dni,numero,clave,fechaVencimiento):
+        dni = self.cleaned_data.get('dni')
+        numero = self.cleaned_data.get('numero')
+        clave = self.cleaned_data.get('clave')
+        fechaVencimiento = self.cleaned_data.get('fechaVencimiento')
+        if len(str(dni)) != 8 :
+            raise forms.ValidationError("dni invalido")
+        if len(str(numero)) != 13 :
+            raise forms.ValidationError("tarjeta invalida")
+        if len(str(clave)) != 3 : 
+            raise forms.ValidationError("clave invalida")
+        if len(str(fechaVencimiento)) != 4 :
+            raise forms.ValidationError("fecha de vencimiento invalido")

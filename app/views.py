@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils.http import is_safe_url
 from .forms import RegisterForm, LoginForm, LibroForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
+from app.models import TarjetaManager
 
 def createBook(request):
     # Creamos un formulario vacío
@@ -51,18 +53,25 @@ def register(request):
     }
     if form.is_valid():
         print(form.cleaned_data)
-        #username  = form.cleaned_data.get("username")
+        nombre = form.cleaned_data.get("nombre")
+        apellido  = form.cleaned_data.get("apellido")
         email  = form.cleaned_data.get("email")
         password  = form.cleaned_data.get("password")
-        new_user  = User.objects.create_suscriptor(email, password) #quite el parametro "username"
+
+        tipo = form.cleaned_data.get("tipo")
+
+        dni = form.cleaned_data.get("dni")
+        numero = form.cleaned_data.get("numero")
+        clave = form.cleaned_data.get("clave")
+        fechaVencimiento = form.cleaned_data.get("fechaVencimiento")
+        form.revisandoDatosTarjeta(dni,numero,clave,fechaVencimiento)
+
+        new_tarj = TarjetaManager.create_tarjeta(dni,numero,clave,fechaVencimiento,tipo)
+        new_user  = User.objects.create_suscriptor(nombre, apellido, email, password,new_tarj.id)
         print(new_user)
         if new_user is not None:
             do_login(request, new_user)
             return redirect('/')
-            #if new_user.is_superuser == 1:
-            #    return render(request, "users/welcome.html")
-            #else:
-            #    return render(request, "users/home.html")
 
     return render(request, "users/register.html", context)
 
