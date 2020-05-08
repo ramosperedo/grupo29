@@ -1,6 +1,13 @@
 {% include "default/header.html" %}
 <div class="container">
-{% block content %}
-{% endblock %}
+{% if user.is_authenticated %}
+    {% block content %}
+    {% endblock %}
+{% else %}
+    {% block public %}
+        <a>Tiene que loguearse para ver el contenido</a>
+        <a href="login/">click aqui para ingresar</a>
+    {% endblock %}
+{% endif %}
 </div>
 {% include "default/footer.html" %}
