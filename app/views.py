@@ -2,7 +2,8 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, LoginForm, LibroForm
+from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm
+from .models import Libro
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from app.models import TarjetaManager
@@ -10,7 +11,6 @@ from app.models import TarjetaManager
 def createBook(request):
     # Creamos un formulario vacío
     form = LibroForm()
-
     # Comprobamos si se ha enviado el formulario
     if request.method == "POST":
         # Añadimos los datos recibidos al formulario
@@ -24,10 +24,88 @@ def createBook(request):
             instancia.save()
             # Después de guardar redireccionamos a la lista
             return redirect('/')
-
     # Si llegamos al final renderizamos el formulario
     return render(request, "admin/createBook.html", {'form': form})
 
+def editBook(request, libro_id):
+    # Recuperamos la instancia de la persona
+    instancia = Libro.objects.get(id=libro_id)
+    # Creamos el formulario con los datos de la instancia
+    form = LibroForm(instance=instancia)
+    # Comprobamos si se ha enviado el formulario
+    if request.method == "POST":
+        # Actualizamos el formulario con los datos recibidos
+        form = LibroForm(request.POST, instance=instancia)
+        # Si el formulario es válido...
+        if form.is_valid():
+            # Guardamos el formulario pero sin confirmarlo,
+            # así conseguiremos una instancia para manejarla
+            instancia = form.save(commit=False)
+            # Podemos guardarla cuando queramos
+            instancia.save()
+    # Si llegamos al final renderizamos el formulario
+    return render(request, "admin/editBook.html", {'form': form})
+
+def deleteBook(request, libro_id):
+    # Recuperamos la instancia de la persona y la borramos
+    instancia = Libro.objects.get(id=libro_id)
+    instancia.delete()
+    # Después redireccionamos de nuevo a la lista
+    return redirect('shared/listOfBooks.html')
+
+def listBooks(request):
+    libros = Libro.objects.all()
+    return render(request, "shared/listOfBooks.html", {'libros': libros})
+
+def createAutor(request):
+    form = AutorForm()
+    if request.method == "POST":
+        form = AutorForm(request.POST)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/')
+    return render(request, "admin/createAutor.html", {'form': form})
+
+def createGenero(request):
+    form = GeneroForm()
+    if request.method == "POST":
+        form = GeneroForm(request.POST)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/')
+    return render(request, "admin/createGenero.html", {'form': form})
+
+def createEditorial(request):
+    form = EditorialForm()
+    if request.method == "POST":
+        form = EditorialForm(request.POST)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/')
+    return render(request, "admin/createEditorial.html", {'form': form})
+
+def createNovedad(request):
+    form = NovedadForm()
+    if request.method == "POST":
+        form = NovedadForm(request.POST)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/')
+    return render(request, "admin/createNovedad.html", {'form': form})
+
+def createCapitulo(request):
+    form = CapituloForm()
+    if request.method == "POST":
+        form = CapituloForm(request.POST)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/')
+    return render(request, "admin/createCapitulo.html", {'form': form})
 
 def login(request):
     form = AuthenticationForm()

@@ -2,13 +2,12 @@
 
 {% block admin %}
 
-<h2>CREAR LIBRO</h2>
+<h2>EDITAR AUTOR</h2>
 
 <form method="POST">
     {{ form.as_p }}
     {% csrf_token %}
-    <button type="submit">Crear</button>
+    <button type="submit">Editar</button>
 </form>
-
 
 {% endblock %}

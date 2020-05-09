@@ -141,14 +141,35 @@ class User(AbstractBaseUser):
     def is_premium(self):
         return self.premium
 
+class Autor(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50,unique=True)
+
+    def __str__(self):
+        return self.nombre
+
+class Genero(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50,unique=True)
+
+    def __str__(self):
+        return self.nombre
+
+class Editorial(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50,unique=True)
+
+    def __str__(self):
+        return self.nombre
+
 class Libro(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=50)
-    autor = models.CharField(max_length=50)
-    isbn = models.IntegerField(unique=True)
-    genero = models.CharField(max_length=20)
-    editorial = models.CharField(max_length=20)
-    descripcion = models.CharField(max_length=250)
+    isbn = models.IntegerField()
+    idAutor = models.OneToOneField(Autor,on_delete=models.CASCADE,null=True)
+    idGenero = models.OneToOneField(Genero,on_delete=models.CASCADE,null=True)
+    idEditorial = models.OneToOneField(Editorial,on_delete=models.CASCADE,null=True)
+    descripcion = models.CharField(max_length=255)
     foto = models.CharField(max_length=100, null=True)
 
     def __str__(self):
@@ -164,8 +185,6 @@ class Configuracion(models.Model):
     id = models.AutoField(primary_key=True)
     maximoPremium = models.IntegerField(default=4)
     maximoStandar = models.IntegerField(default=2)
-    Premium = models.IntegerField(default=1)
-    Standar = models.IntegerField(default=0)
 
 class Favoritos(models.Model):
     id = models.AutoField(primary_key=True)
@@ -177,9 +196,9 @@ class Recomendaciones(models.Model):
     idPerfil = models.ForeignKey(Perfil,on_delete=models.CASCADE)
     idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
 
-class Capitulos(models.Model):
+class Capitulo(models.Model):
     id = models.AutoField(primary_key=True)
-    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
+    idLibro = models.OneToOneField(Libro,on_delete=models.CASCADE)
     nombre = models.CharField(max_length=50)
     archivo = models.CharField(max_length=100)
 
@@ -191,8 +210,11 @@ class Historial(models.Model):
 class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=150)
+    descripcion = models.CharField(max_length=255)
     archivo = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
     
 class Trailer(models.Model):
     id = models.AutoField(primary_key=True)
@@ -200,3 +222,6 @@ class Trailer(models.Model):
     titulo = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=150)
     archivo = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre

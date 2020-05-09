@@ -2,17 +2,76 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
-from .models import Libro
+from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer
 
-class LibroForm(ModelForm):
+class NovedadForm(forms.ModelForm):
+    class Meta:
+        model = Novedad
+        fields = ['titulo','descripcion','archivo']
+        labels = {'titulo':'Titulo','descripcion':'Descripcion','archivo':'Ingrese el archivo'}
+        widgets = {
+            'titulo' : forms.TextInput(attrs={'class':'form-control'}),
+            'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
+            'archivo' : forms.FileInput(attrs={'class':'form-control'})
+        }
+
+class AutorForm(forms.ModelForm):
+    class Meta:
+        model = Autor
+        fields = ['nombre']
+        labels = {'nombre' : 'Nombre'}
+        widgets = {'nombre' : forms.TextInput(attrs={'class':'form-control'})}
+
+class GeneroForm(forms.ModelForm):
+    class Meta:
+        model = Genero
+        fields = ['nombre']
+        labels = {'nombre' : 'Nombre'}
+        widgets = {'nombre' : forms.TextInput(attrs={'class':'form-control'})}
+
+class EditorialForm(forms.ModelForm):
+    class Meta:
+        model = Editorial
+        fields = ['nombre']
+        labels = {'nombre' : 'Nombre'}
+        widgets = {'nombre' : forms.TextInput(attrs={'class':'form-control'})}
+
+class CapituloForm(forms.ModelForm):
+    class Meta:
+        model = Capitulo
+        fields = ['nombre','idLibro','archivo']
+        labels = {'nombre':'Nombre','idLibro':'Libro','archivo':'Ingrese el capitulo'}
+        widgets = {
+            'nombre' : forms.TextInput(attrs={'class':'form-control'}),
+            'idLibro' : forms.Select(attrs={'class':'form-control'}),
+            'archivo' : forms.FileInput(attrs={'class':'form-control'})
+        }
+
+class LibroForm(forms.ModelForm):
     class Meta:
         model = Libro
-        fields = '__all__'
+        fields = ['nombre','isbn','idAutor','idGenero','idEditorial','descripcion','foto']
+        labels = {
+            'nombre' : 'Nombre',
+            'isbn' : 'isbn',
+            'idAutor' : 'Autor',
+            'idGenero' : 'Genero',
+            'idEditorial' : 'Editorial',
+            'descripcion' : 'Descripcion',
+            'foto' : 'Foto'
+        }
+        widgets = {
+            'nombre' : forms.TextInput(attrs={'class':'form-control'}),
+            'isbn' : forms.NumberInput(attrs={'class':'form-control'}),
+            'idAutor' : forms.Select(attrs={'class':'form-control'}),
+            'idGenero' : forms.Select(attrs={'class':'form-control'}),
+            'idEditorial' : forms.Select(attrs={'class':'form-control'}),
+            'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
+            'foto' : forms.FileInput(attrs={'class':'form-control'})
+        }
 
 
-
-
-User = get_user_model( )
+User = get_user_model()
 
 class UserAdminCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
