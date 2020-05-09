@@ -56,7 +56,7 @@ class UserManager(BaseUserManager):
         return user
 
 class TipoTarjetaManager(models.Manager):
-    def create_tipo_tarjeta(nombre):
+    def create_tipo_tarjeta(self,nombre):
         tipo_tarjeta_obj = TipoTarjeta()
         tipo_tarjeta_obj.nombre = nombre
         tipo_tarjeta_obj.save()
@@ -69,7 +69,7 @@ class TipoTarjeta(models.Model):
     TipoTarjeta = TipoTarjetaManager()
 
 class TarjetaManager(models.Manager):
-    def create_tarjeta(dni,numero,clave,fechaVencimiento,tipo):
+    def create_tarjeta(self,dni,numero,clave,fechaVencimiento,tipo):
         tarjeta_obj = Tarjeta()
         tarjeta_obj.dni = dni
         tarjeta_obj.numero = numero

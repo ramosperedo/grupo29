@@ -2,13 +2,41 @@
 
 {% block admin %}
 
-<h2>CREAR NOVEDAD</h2>
+<h2>Crear Novedad</h2>
 
 <form method="POST">
-    {{ form.as_p }}
     {% csrf_token %}
-    <button type="submit">Crear</button>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="form-group">
+                <label> Titulo</label>
+                <input class="form-control" type="text" name="titulo" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="form-group">
+                <label>Descripcion</label>
+                <textarea class="form-control" name="descripcion" cols="30" rows="10"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="form-group">
+                <label>Ingrese el archivo</label>
+                <input class="form-control" type="file" name="archivo" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Crear</button>
+            </div>
+        </div>
+    </div>
 </form>
-
 
 {% endblock %}
