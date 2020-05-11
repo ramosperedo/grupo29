@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
 from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm
-from .models import Libro
+from .models import Libro, Novedad
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from app.models import TarjetaManager
@@ -14,7 +14,7 @@ def createBook(request):
     # Comprobamos si se ha enviado el formulario
     if request.method == "POST":
         # Añadimos los datos recibidos al formulario
-        form = LibroForm(request.POST)
+        form = LibroForm(request.POST,request.FILES)
         # Si el formulario es válido...
         if form.is_valid():
             # Guardamos el formulario pero sin confirmarlo,
@@ -35,7 +35,7 @@ def editBook(request, libro_id):
     # Comprobamos si se ha enviado el formulario
     if request.method == "POST":
         # Actualizamos el formulario con los datos recibidos
-        form = LibroForm(request.POST, instance=instancia)
+        form = LibroForm(request.POST,request.FILES, instance=instancia)
         # Si el formulario es válido...
         if form.is_valid():
             # Guardamos el formulario pero sin confirmarlo,
@@ -43,6 +43,8 @@ def editBook(request, libro_id):
             instancia = form.save(commit=False)
             # Podemos guardarla cuando queramos
             instancia.save()
+            # Después de guardar redireccionamos a la lista
+            return redirect('shared/listOfBooks.html')
     # Si llegamos al final renderizamos el formulario
     return render(request, "admin/editBook.html", {'form': form})
 
@@ -90,7 +92,7 @@ def createEditorial(request):
 def createNovedad(request):
     form = NovedadForm()
     if request.method == "POST":
-        form = NovedadForm(request.POST)
+        form = NovedadForm(request.POST,request.FILES)
         if form.is_valid():
             instancia = form.save(commit=False)
             instancia.save()

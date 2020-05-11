@@ -4,7 +4,7 @@
 
 <h2>Crear Novedad</h2>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
@@ -38,5 +38,8 @@
         </div>
     </div>
 </form>
+<form>
+    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
+  </form>
 
 {% endblock %}

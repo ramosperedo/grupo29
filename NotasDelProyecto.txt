@@ -1,4 +1,7 @@
-Notas de recordatorio
+Notas de recordatorio:
 
-_Cuando se actualiza el model.py, hay que realizar un makemigrations y migrate
- para actualizar la BBDD
+_Para actualizar el model.py se debe realizar: python manage.py makemigrations
+ Luego para confirmar y actualizar BBDD: python manage.py migrate
+
+_Traer una rama especifica del repositorio: $ git checkout -b <nombrerama>
+ Luego para traer el contenido: git pull origin <nombrerama>

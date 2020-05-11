@@ -58,7 +58,7 @@ class LibroForm(forms.ModelForm):
             'idGenero' : 'Genero',
             'idEditorial' : 'Editorial',
             'descripcion' : 'Descripcion',
-            'foto' : 'Foto'
+            'foto' : 'Ingrese una foto'
         }
         widgets = {
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
@@ -67,8 +67,14 @@ class LibroForm(forms.ModelForm):
             'idGenero' : forms.Select(attrs={'class':'form-control'}),
             'idEditorial' : forms.Select(attrs={'class':'form-control'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
-            'foto' : forms.FileInput(attrs={'class':'form-control'})
+            'foto' : forms.FileInput(attrs={'class':'form-control','required':'false','blank':'true'})
         }
+    def validateIsbn(self):
+        isbn = self.cleaned_data.get('isbn')
+        if len(str(isbn)) == 10 or len(str(isbn)) == 13:
+            return True
+        else:
+            return False
 
 
 User = get_user_model()

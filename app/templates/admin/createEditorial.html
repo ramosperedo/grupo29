@@ -2,13 +2,16 @@
 
 {% block admin %}
 
-<h2>CREAR EDITORIAL</h2>
+<h2>Crear Editorial</h2>
 
 <form method="POST">
     {{ form.as_p }}
     {% csrf_token %}
-    <button type="submit">Crear</button>
+    <button class="btn btn-success" type="submit">Crear</button>
 </form>
+<form>
+    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
+  </form>
 
 
 {% endblock %}

@@ -2,6 +2,44 @@
 
 {% block share %}
 
+<h2>Listado de Libros</h2>
+
+<form method="get" action="/createBook">
+    <button class="btn btn-success" type="submit">Crear Libro</button>
+  </form>
+  <form>
+    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
+  </form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Genero</th>
+            <th>Autor</th>
+            <th>Editorial</th>
+            <th>Accion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for libro in libros %}
+        <tr>
+            <td>{{ libro.nombre }}</td>
+            <td>{{ libro.idGenero }}</td>
+            <td>{{ libro.idAutor }}</td>
+            <td>{{ libro.idEditorial }}</td>
+            <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" 
+          onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');">
+            Borrar</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!--
 <ul>
     {% for libro in libros %}
     <li>
@@ -14,5 +52,6 @@
     </li>
     {% endfor %}
 </ul>
+-->
 
 {% endblock %}

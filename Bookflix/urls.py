@@ -16,7 +16,8 @@ Including another URLconf
 
 from django.conf.urls import url, include
 from django.contrib import admin
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 from app import views
 
@@ -36,5 +37,7 @@ urlpatterns = [
     path('login/', views.login),
     path('logout/', views.logout),
 
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls)
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

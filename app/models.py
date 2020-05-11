@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
 # Create your models here.
 
 class UserManager(BaseUserManager):
-    def create_user(self, nombre, apellido, email, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False, is_premium=False, idTarjeta=None):
+    def create_user(self, email, nombre=None, apellido=None, password=None, is_active=True, is_staff=False, is_admin=False, is_superuser=False, is_premium=False, idTarjeta=None):
         if not email:
             raise ValueError("campo email obligatorio")
         if not password:
@@ -166,11 +166,11 @@ class Libro(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=50)
     isbn = models.IntegerField()
-    idAutor = models.OneToOneField(Autor,on_delete=models.CASCADE,null=True)
-    idGenero = models.OneToOneField(Genero,on_delete=models.CASCADE,null=True)
-    idEditorial = models.OneToOneField(Editorial,on_delete=models.CASCADE,null=True)
+    idAutor = models.ForeignKey(Autor,on_delete=models.CASCADE,null=True)
+    idGenero = models.ForeignKey(Genero,on_delete=models.CASCADE,null=True)
+    idEditorial = models.ForeignKey(Editorial,on_delete=models.CASCADE,null=True)
     descripcion = models.CharField(max_length=255)
-    foto = models.CharField(max_length=100, null=True)
+    foto = models.ImageField(upload_to='images/',null=True)
 
     def __str__(self):
         return self.nombre
@@ -211,10 +211,10 @@ class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=255)
-    archivo = models.CharField(max_length=100)
+    archivo = models.FileField(upload_to='images/')
 
     def __str__(self):
-        return self.nombre
+        return self.titulo
     
 class Trailer(models.Model):
     id = models.AutoField(primary_key=True)
@@ -224,4 +224,4 @@ class Trailer(models.Model):
     archivo = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.nombre
+        return self.titulo
