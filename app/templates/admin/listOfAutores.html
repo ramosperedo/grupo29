@@ -1,0 +1,33 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h2>Listado de Autores</h2>
+
+<form method="get" action="/createAutor">
+    <button class="btn btn-success" type="submit">Cargar Autor</button>
+  </form>
+  <form>
+    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
+  </form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for autor in autores %}
+        <tr>
+            <td>{{ autor.nombre }}</td>
+            <td><a class="btn btn-danger" role="button" href="/deleteAutor/{{ autor.id }}" 
+          onClick="return confirm('¿Seguro que quieres borrar a {{autor.nombre}}?');">
+            Borrar</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h2>Listado de Generos</h2>
+
+<form method="get" action="/createGenero">
+    <button class="btn btn-success" type="submit">Cargar Genero</button>
+  </form>
+  <form>
+    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
+  </form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for genero in generos %}
+        <tr>
+            <td>{{ genero.nombre }}</td>
+            <td><a class="btn btn-danger" role="button" href="/deleteGenero/{{ genero.id }}" 
+          onClick="return confirm('¿Seguro que quieres borrar a {{genero.nombre}}?');">
+            Borrar</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

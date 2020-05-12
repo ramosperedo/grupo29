@@ -2,12 +2,12 @@
 
 {% block admin %}
 
-<h2>Crear Genero</h2>
+<h2>Cargar Genero</h2>
 
 <form method="POST">
     {{ form.as_p }}
     {% csrf_token %}
-    <button class="btn btn-success" type="submit">Crear</button>
+    <button class="btn btn-success" type="submit">Cargar</button>
 </form>
 <form>
     <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">

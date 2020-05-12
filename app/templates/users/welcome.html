@@ -2,7 +2,7 @@
 
 {% block admin %}
 
-<h2>Área para miembros</h2>
+<h2>Área para administradores</h2>
 
   <p>Bienvenido <b>{{request.user.email}}</b>, esta página es exclusiva para usuarios registrados.</p>
 
@@ -10,39 +10,45 @@
 
   <ul>
     <li>
+      <form method="get" action="/listEditoriales">
+        <button class="btn" style="background-color:fuchsia" type="submit">Lista de Editoriales</button>
+      </form>
+    </li>
+    <li>
+      <form method="get" action="/listGeneros">
+        <button class="btn" style="background-color:salmon" type="submit">Lista de Generos</button>
+      </form>
+    </li>
+    <li>
+      <form method="get" action="/listAutores">
+        <button class="btn" style="background-color:goldenrod" type="submit">Lista de Autores</button>
+      </form>
+    </li>
+    <li>
       <form method="get" action="/listBooks">
-        <button style="background-color:sienna" type="submit">Seccion de libros</button>
+        <button class="btn" style="background-color:chocolate" type="submit">Seccion de libros</button>
+      </form>
+    </li>
+  </li>
+  <li>
+    <form method="get" action="/listNovedades">
+      <button class="btn" style="background-color:indianred" type="submit">Seccion de Novedades</button>
+    </form>
+  </li>
+    <li>
+      <form method="get" action="/listTrailers">
+        <button class="btn" style="background-color:aqua" type="submit">Seccion de Trailers</button>
       </form>
     </li>
     <li>
-      <form method="get" action="/createCapitulo">
-        <button style="background-color:cornflowerblue" type="submit">Subir Capitulo</button>
+      <form method="get" action="/listReportes">
+        <button class="btn" style="background-color:burlywood" type="submit">Seccion de Reportes</button>
       </form>
-    </li>
-    <li>
-      <form method="get" action="/createNovedad">
-        <button style="background-color:indianred" type="submit">Crear Novedad</button>
-      </form>
-    </li>
-    <li>
-      <form method="get" action="/createEditorial">
-        <button style="background-color:fuchsia" type="submit">Crear Editorial</button>
-      </form>
-    </li>
-    <li>
-      <form method="get" action="/createGenero">
-        <button style="background-color:salmon" type="submit">Crear Genero</button>
-      </form>
-    </li>
-    <li>
-      <form method="get" action="/createAutor">
-        <button style="background-color:goldenrod" type="submit">Crear Autor</button>
-      </form>
-    </li>
-    <li>
-      <a href="/logout">Cerrar sesión</a>
     </li>
 </ul>
+<li>
+  <a href="/logout">Cerrar sesión</a>
+</li>
 
 {% endblock %}
 

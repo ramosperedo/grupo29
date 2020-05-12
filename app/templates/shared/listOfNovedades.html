@@ -1,0 +1,39 @@
+{% extends 'default/layout.html' %}
+
+{% block share %}
+
+<h2>Listado de Novedades</h2>
+
+<form method="get" action="/createNovedad">
+    <button class="btn btn-success" type="submit">Crear Novedad</button>
+  </form>
+  <form>
+    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
+  </form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Titulo</th>
+            <th>Descripcion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for novedad in novedades %}
+        <tr>
+            <td>{{ novedad.titulo }}</td>
+            <td>{{ novedad.descripcion }}</td>
+            <td><a class="btn btn-info" role="button" href="/viewNovedad/{{ novedad.id }}">Ver</a></td>
+            <td><a class="btn btn-primary" role="button" href="/editNovedad/{{ novedad.id }}">Editar</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteNovedad/{{ novedad.id }}" 
+          onClick="return confirm('¿Seguro que quieres borrar a {{novedad.titulo}?');">
+            Borrar</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
