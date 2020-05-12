@@ -1,0 +1,10 @@
+{% extends 'default/layout.html' %}
+
+{% block share %}
+
+{% if mensaje == "" %}
+<p>aca van los datos del suscriptor</p>
+{% else %}
+<p>{{mensaje}}</p>
+{% endif %}
+{% endblock %}

@@ -131,13 +131,13 @@ class RegisterForm(forms.Form):
     apellido = forms.CharField()
     email    = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirmar password', widget=forms.PasswordInput)
     dni = forms.IntegerField(max_value=99999999, min_value=1000000)
-    numero = forms.IntegerField(max_value=9999999999999999, min_value=1000000000000000)
+    numero = forms.IntegerField(max_value=9999999999999999, min_value=1000000000000000, label='Numero de Tarjeta')
     clave = forms.IntegerField(max_value=999, min_value=100)
-    fechaVencimiento = forms.DateField(required=True)
+    fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget)
     CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
-    tipo = forms.ChoiceField(choices=CHOICES)
+    tipo = forms.ChoiceField(choices=CHOICES, label='Tipo de Trajeta')
 
     #nosotros no modelamos username
     """def clean_username(self):

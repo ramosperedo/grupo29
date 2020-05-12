@@ -13,7 +13,7 @@
 {% else %}
     {% block public %}
         <a>Tiene que loguearse para ver el contenido</a>
-        <a href="login/">click aqui para ingresar</a>
+        <a href="{% url 'login' %}">click aqui para ingresar</a>
     {% endblock %}
 {% endif %}
 </div>

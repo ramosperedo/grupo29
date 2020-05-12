@@ -144,7 +144,6 @@ def register(request):
         numero = form.cleaned_data.get("numero")
         clave = form.cleaned_data.get("clave")
         fechaVencimiento = form.cleaned_data.get("fechaVencimiento")
-        """form.revisandoDatosTarjeta(dni,numero,clave,fechaVencimiento)"""
 
         new_tarj = TarjetaManager.create_tarjeta(dni,numero,clave,fechaVencimiento,tipo)
         new_user  = User.objects.create_suscriptor(nombre, apellido, email, password,new_tarj.id)
@@ -154,6 +153,22 @@ def register(request):
             return redirect('/')
 
     return render(request, "users/register.html", context)
+
+def infoSuscriptor(request, num=0):
+    try:
+        busqueda = User.objects.get(id=num)
+    except Exception as e:
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor"})
+    print(request.user.id,num)
+    if request.user.is_superuser == 1 :
+        if busqueda is not None:
+            return render(request, "shared/infoSuscriptor.html",{'datos':busqueda,'mensaje':""})
+    else:
+        if request.user.id == num:
+            if busqueda is not None:
+                return render(request, "shared/infoSuscriptor.html",{'datos':busqueda,'mensaje':""})
+            else:
+                return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor"})
 
 
 def welcome(request):

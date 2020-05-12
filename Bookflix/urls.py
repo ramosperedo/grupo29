@@ -34,8 +34,9 @@ urlpatterns = [
     path('createEditorial/', views.createEditorial),
     path('createNovedad/', views.createNovedad),
     path('register/', views.register),
-    path('login/', views.login),
+    path('login/', views.login, name='login'),
     path('logout/', views.logout),
+    path('infoSuscriptor/<int:num>', views.infoSuscriptor),
 
     path('admin/', admin.site.urls)
 ]

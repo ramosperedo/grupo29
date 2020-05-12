@@ -69,7 +69,7 @@ class TipoTarjeta(models.Model):
     TipoTarjeta = TipoTarjetaManager()
 
 class TarjetaManager(models.Manager):
-    def create_tarjeta(self,dni,numero,clave,fechaVencimiento,tipo):
+    def create_tarjeta(dni,numero,clave,fechaVencimiento,tipo):
         tarjeta_obj = Tarjeta()
         tarjeta_obj.dni = dni
         tarjeta_obj.numero = numero
@@ -84,7 +84,7 @@ class Tarjeta(models.Model):
     dni = models.IntegerField(default=0)
     numero = models.IntegerField(default=0)
     clave = models.IntegerField(default=0)
-    fechaVencimiento = models.IntegerField(default=0)
+    fechaVencimiento = models.DateField()
     tipo = models.IntegerField(default=0)
 
     Tarjeta = TarjetaManager()
