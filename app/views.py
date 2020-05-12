@@ -146,7 +146,10 @@ def listNovedades(request):
     novedades = Novedad.objects.all()
     return render(request, "shared/listOfNovedades.html", {'novedades': novedades})
 
-def createCapitulo(request):
+def loadFile(request, libro_id):
+    return render(request, "admin/loadFile.html", {'libro_id': libro_id})
+
+def loadCapitulo(request, libro_id):
     form = CapituloForm()
     if request.method == "POST":
         form = CapituloForm(request.POST)

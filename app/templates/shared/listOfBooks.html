@@ -36,7 +36,7 @@
             <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" 
           onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');">
             Borrar</a></td>
-            <td><a class="btn btn-warning" role="button" href="/loadChapter/{{ libro.id }}">Cargar Capitulo</a></td>
+            <td><a class="btn btn-warning" role="button" href="/loadFile/{{ libro.id }}">Cargar Archivo</a></td>
         </tr>
         {% endfor %}
     </tbody>
