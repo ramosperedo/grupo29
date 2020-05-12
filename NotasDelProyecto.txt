@@ -1,7 +1,16 @@
 Notas de recordatorio:
 
-_Para actualizar el model.py se debe realizar: python manage.py makemigrations
+A_Para actualizar el model.py se debe realizar: python manage.py makemigrations
  Luego para confirmar y actualizar BBDD: python manage.py migrate
 
-_Traer una rama especifica del repositorio: $ git checkout -b <nombrerama>
+B_Traer una rama especifica del repositorio: $ git checkout -b <nombrerama>
  Luego para traer el contenido: git pull origin <nombrerama>
+
+C_Metodo para hacer merge efectivo:
+  -Condicion: Tener tu propio branch sin errores, actualizado y cargado en github.
+  1_tener el visual basic vacio
+  2_traer el branch-master (cargar el repositorio)
+  3_realizar las instrucciones de B con tu branch
+  4_posicionarse en master (git checkout master)
+  5_realizar el merge (git merge <namebranch>)
+  -Como ambas ramas estan recien cargadas, no deberia tener incompatibilidad.

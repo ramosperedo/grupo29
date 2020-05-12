@@ -2,14 +2,14 @@
 
 {% block admin %}
 
-<h2>Editar Libro</h2>
+<h2>Editar Novedad</h2>
 
 <form method="POST" enctype="multipart/form-data">
     {{ form.as_p }}
     {% csrf_token %}
     <button class="btn btn-primary" type="submit">Editar</button>
  </form>
-<form method="get" action="/listBooks">
+<form method="get" action="/listNovedades">
     <button class="btn btn-secondary" type="submit">Volver</button>
   </form>
 

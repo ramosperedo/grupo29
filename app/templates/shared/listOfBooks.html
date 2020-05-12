@@ -20,6 +20,8 @@
             <th>Editorial</th>
             <th>Accion</th>
             <th>Accion</th>
+            <th>Accion</th>
+            <th>Accion</th>
         </tr>
     </thead>
     <tbody>
@@ -29,10 +31,12 @@
             <td>{{ libro.idGenero }}</td>
             <td>{{ libro.idAutor }}</td>
             <td>{{ libro.idEditorial }}</td>
+            <td><a class="btn btn-info" role="button" href="/viewBook/{{ libro.id }}">Ver</a></td>
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
             <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" 
           onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');">
             Borrar</a></td>
+            <td><a class="btn btn-warning" role="button" href="/loadChapter/{{ libro.id }}">Cargar Capitulo</a></td>
         </tr>
         {% endfor %}
     </tbody>

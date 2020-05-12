@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
 from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm
-from .models import Libro, Novedad
+from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from app.models import TarjetaManager
@@ -23,7 +23,7 @@ def createBook(request):
             # Podemos guardarla cuando queramos
             instancia.save()
             # Después de guardar redireccionamos a la lista
-            return redirect('/')
+            return redirect('/listBooks')
     # Si llegamos al final renderizamos el formulario
     return render(request, "admin/createBook.html", {'form': form})
 
@@ -44,7 +44,7 @@ def editBook(request, libro_id):
             # Podemos guardarla cuando queramos
             instancia.save()
             # Después de guardar redireccionamos a la lista
-            return redirect('shared/listOfBooks.html')
+            return redirect('/listBooks')
     # Si llegamos al final renderizamos el formulario
     return render(request, "admin/editBook.html", {'form': form})
 
@@ -53,7 +53,7 @@ def deleteBook(request, libro_id):
     instancia = Libro.objects.get(id=libro_id)
     instancia.delete()
     # Después redireccionamos de nuevo a la lista
-    return redirect('shared/listOfBooks.html')
+    return redirect('/listBooks')
 
 def listBooks(request):
     libros = Libro.objects.all()
@@ -66,8 +66,17 @@ def createAutor(request):
         if form.is_valid():
             instancia = form.save(commit=False)
             instancia.save()
-            return redirect('/')
+            return redirect('/listAutores')
     return render(request, "admin/createAutor.html", {'form': form})
+
+def deleteAutor(request, autor_id):
+    instancia = Autor.objects.get(id=autor_id)
+    instancia.delete()
+    return redirect('/listAutores')
+
+def listAutores(request):
+    autores = Autor.objects.all()
+    return render(request, "admin/listOfAutores.html", {'autores': autores})
 
 def createGenero(request):
     form = GeneroForm()
@@ -76,8 +85,17 @@ def createGenero(request):
         if form.is_valid():
             instancia = form.save(commit=False)
             instancia.save()
-            return redirect('/')
+            return redirect('/listGeneros')
     return render(request, "admin/createGenero.html", {'form': form})
+
+def deleteGenero(request, genero_id):
+    instancia = Genero.objects.get(id=genero_id)
+    instancia.delete()
+    return redirect('/listGeneros')
+
+def listGeneros(request):
+    generos = Genero.objects.all()
+    return render(request, "admin/listOfGeneros.html", {'generos': generos})
 
 def createEditorial(request):
     form = EditorialForm()
@@ -86,8 +104,17 @@ def createEditorial(request):
         if form.is_valid():
             instancia = form.save(commit=False)
             instancia.save()
-            return redirect('/')
+            return redirect('/listEditoriales')
     return render(request, "admin/createEditorial.html", {'form': form})
+
+def deleteEditorial(request, editorial_id):
+    instancia = Editorial.objects.get(id=editorial_id)
+    instancia.delete()
+    return redirect('/listEditoriales')
+
+def listEditoriales(request):
+    editoriales = Editorial.objects.all()
+    return render(request, "admin/listOfEditoriales.html", {'editoriales': editoriales})
 
 def createNovedad(request):
     form = NovedadForm()
@@ -96,8 +123,28 @@ def createNovedad(request):
         if form.is_valid():
             instancia = form.save(commit=False)
             instancia.save()
-            return redirect('/')
+            return redirect('/listNovedades')
     return render(request, "admin/createNovedad.html", {'form': form})
+
+def editNovedad(request, novedad_id):
+    instancia = Novedad.objects.get(id=novedad_id)
+    form = NovedadForm(instance=instancia)
+    if request.method == "POST":
+        form = NovedadForm(request.POST,request.FILES, instance=instancia)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/listNovedades')
+    return render(request, "admin/editNovedad.html", {'form': form})
+
+def deleteNovedad(request, novedad_id):
+    instancia = Novedad.objects.get(id=novedad_id)
+    instancia.delete()
+    return redirect('/listNovedades')
+
+def listNovedades(request):
+    novedades = Novedad.objects.all()
+    return render(request, "shared/listOfNovedades.html", {'novedades': novedades})
 
 def createCapitulo(request):
     form = CapituloForm()
