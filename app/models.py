@@ -172,6 +172,7 @@ class Libro(models.Model):
     descripcion = models.CharField(max_length=255)
     foto = models.ImageField(upload_to='images/',null=True)
     vistos = models.IntegerField(null=True, default=0)
+    ultimo = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre
