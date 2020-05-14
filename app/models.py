@@ -45,11 +45,11 @@ class UserManager(BaseUserManager):
                 is_premium=True
         )
         return user
-    def create_suscriptor(self, nombre, apellido, email, password=None,idTarjeta=None):
+    def create_suscriptor(self,nombre, apellido, email, password=None,idTarjeta=None):
         user = self.create_user(
+                email,
                 nombre,
                 apellido,
-                email,
                 password=password,
                 idTarjeta=idTarjeta
         )
@@ -66,7 +66,7 @@ class TipoTarjeta(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=20)
 
-    TipoTarjeta = TipoTarjetaManager()
+    objects = TipoTarjetaManager()
 
 class TarjetaManager(models.Manager):
     def create_tarjeta(dni,numero,clave,fechaVencimiento,tipo):
@@ -81,13 +81,13 @@ class TarjetaManager(models.Manager):
 
 class Tarjeta(models.Model):
     id = models.AutoField(primary_key=True)
-    dni = models.IntegerField(default=0)
+    dni = models.IntegerField(default=0,unique=True)
     numero = models.IntegerField(default=0)
     clave = models.IntegerField(default=0)
     fechaVencimiento = models.DateField()
     tipo = models.IntegerField(default=0)
 
-    Tarjeta = TarjetaManager()
+    objects = TarjetaManager()
 
 class User(AbstractBaseUser):
     nombre = models.CharField(max_length=50)

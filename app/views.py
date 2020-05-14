@@ -2,11 +2,10 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm
-from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero
+from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, SuscriptorForm
+from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
-from app.models import TarjetaManager
 
 def createBook(request):
     # Creamos un formulario vacío
@@ -169,7 +168,7 @@ def login(request):
                 if request.user.is_superuser == 1:
                     return render(request, "users/welcome.html")
                 else:
-                    return render(request, "users/home.html")
+                    return render(request, "users/perfiles.html")
     return render(request, "users/login.html", {'form': form})
 
 User = get_user_model()
@@ -194,38 +193,50 @@ def register(request):
 
         new_tarj = TarjetaManager.create_tarjeta(dni,numero,clave,fechaVencimiento,tipo)
         new_user  = User.objects.create_suscriptor(nombre, apellido, email, password,new_tarj.id)
-        print(new_user)
-        if new_user is not None:
-            do_login(request, new_user)
+        print(new_user)#en la anterior linea el orden de los datos del usuario no son en ese orden
+        if new_user is not None:#pero por un bug raro lo tube que cambiar para que registre bien
+            do_login(request, new_user)#si se llega a arreglar el orden es nombre, apellido, email, pass, idtarjeta
             return redirect('/')
 
     return render(request, "users/register.html", context)
 
+def editarSuscriptor(request, sus_id):
+    instancia = User.objects.get(id=sus_id)
+    form = SuscriptorForm(instance=instancia)
+    if request.method == "POST":
+        form = SuscriptorForm(request.POST, instance=instancia)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+    return render(request, "users/editar.html", {'form': form})
+
 def infoSuscriptor(request, num=0):
     try:
-        busqueda = User.objects.get(id=num)
+        datosSuscriptor = User.objects.get(pk=num)
+        print(datosSuscriptor.email)
+        datosTarjeta = Tarjeta.objects.get(id=datosSuscriptor.idTarjeta)
+        print(datosTarjeta.dni)
+        nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
+        print(nombreTipoTarjeta.nombre)
     except Exception as e:
-        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor"})
-    print(request.user.id,num)
-    if request.user.is_superuser == 1 :
-        if busqueda is not None:
-            return render(request, "shared/infoSuscriptor.html",{'datos':busqueda,'mensaje':""})
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:1"})
+
+    if request.user.id == num:
+        if datosSuscriptor is not None:
+            return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
+        else:
+            return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
     else:
-        if request.user.id == num:
-            if busqueda is not None:
-                return render(request, "shared/infoSuscriptor.html",{'datos':busqueda,'mensaje':""})
-            else:
-                return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor"})
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
 
 
-def welcome(request):
+def inicio(request):
     if request.user.is_authenticated:
         if request.user.is_superuser == 1:
             return render(request, "users/welcome.html")
         else:
             return render(request, "users/home.html")
     return redirect('/login')
-
 
 def logout(request):
     do_logout(request)

@@ -1,0 +1,15 @@
+{% extends 'default/layout.html' %}
+
+{% block suscriptor %}
+
+<h2>Editar Suscriptor</h2>
+
+  <form method="POST">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Confirmar Cambios</button>
+  </form>
+
+  <hr />
+  
+{% endblock %}

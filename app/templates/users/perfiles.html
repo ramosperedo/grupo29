@@ -2,9 +2,9 @@
 
 {% block suscriptor %}
 
-<h2>Bienvenido <strong>MiPerfil</strong></h2>
+<h2>Elija un Perfil</h2>
 
-  <p>Bienvenido <b>{{request.user.email}}</b>, esta página es exclusiva para usuarios registrados.</p>
+  <a class="btn btn-info" role="button" href="{% url 'inicio' %}">MiPerfil</a>
 
   <hr />
 
@@ -14,5 +14,3 @@
     </a>
   
 {% endblock %}
-
-

@@ -47,7 +47,10 @@
     </li>
 </ul>
 <li>
-  <a href="/logout">Cerrar sesión</a>
+  <a href="{% url 'logout' %}" 
+          onClick="return confirm('¿Seguro que quiere cerrar sesión?');">
+          Cerrar sesión
+    </a>
 </li>
 
 {% endblock %}
