@@ -172,7 +172,18 @@ class Libro(models.Model):
     descripcion = models.CharField(max_length=255)
     foto = models.ImageField(upload_to='images/',null=True)
     vistos = models.IntegerField(null=True, default=0)
-    ultimo = models.BooleanField(default=False)
+    ultimoCapitulo = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.nombre
+
+class Capitulo(models.Model):
+    id = models.AutoField(primary_key=True)
+    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=50)
+    archivo = models.CharField(max_length=100)
+    fechaLanzamiento = models.DateField(auto_now=True)
+    fechaVencimiento = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.nombre
@@ -205,15 +216,6 @@ class Historial(models.Model):
     id = models.AutoField(primary_key=True)
     idPerfil = models.ForeignKey(Perfil,on_delete=models.CASCADE)
     idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
-
-class Capitulo(models.Model):
-    id = models.AutoField(primary_key=True)
-    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=50)
-    archivo = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.nombre
 
 class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
