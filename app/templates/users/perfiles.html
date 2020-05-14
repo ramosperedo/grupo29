@@ -4,7 +4,7 @@
 
 <h2>Elija un Perfil</h2>
 
-  <a class="btn btn-info" role="button" href="{% url 'inicio' %}">MiPerfil</a>
+  <a class="btn btn-info" role="button" href="{% url 'inicio' %}">{{user.nombre}}{{user.apellido}}</a>
 
   <hr />
 
