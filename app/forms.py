@@ -139,14 +139,6 @@ class RegisterForm(forms.Form):
     CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
     tipo = forms.ChoiceField(choices=CHOICES, label='Tipo de Trajeta')
 
-    #nosotros no modelamos username
-    """def clean_username(self):
-        username = self.cleaned_data.get('username')
-        qs = User.objects.filter(username=username)
-        if qs.exists():
-            raise forms.ValidationError("Username is taken")
-        return username"""
-
     def clean_email(self):
         email = self.cleaned_data.get('email')
         qs = User.objects.filter(email=email)
@@ -161,20 +153,8 @@ class RegisterForm(forms.Form):
         if password2 != password:
             raise forms.ValidationError("las contraseñas no coinciden.")
         return data
-"""
-    def revisandoDatosTarjeta(self,dni,numero,clave,fechaVencimiento):
 
-        dni = self.cleaned_data.get('dni')
-        numero = self.cleaned_data.get('numero')
-        clave = self.cleaned_data.get('clave')
-        fechaVencimiento = self.cleaned_data.get('fechaVencimiento')
-        if len(str(dni)) != 8 :
-            raise forms.ValidationError("dni invalido")
-        if len(str(numero)) != 13 :
-            raise forms.ValidationError("tarjeta invalida")
-        if len(str(clave)) != 3 : 
-            raise forms.ValidationError("clave invalida")
-        if len(str(fechaVencimiento)) != 4 :
-            raise forms.ValidationError("fecha de vencimiento invalido")
-
-"""
+class SuscriptorForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('nombre', 'apellido', 'email', 'password')

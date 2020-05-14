@@ -1,9 +1,34 @@
 {% extends 'default/layout.html' %}
 
-{% block share %}
+{% block suscriptor %}
 
 {% if mensaje == "" %}
-<p>aca van los datos del suscriptor</p>
+<u><p>Datos del Suscriptor</p></u>
+
+<dl>
+    <dt>Nombre</dt>
+    <dd>{{ datos.nombre }}</dd>
+    <dt>Apellido</dt>
+    <dd>{{ datos.apellido }}</dd>
+    <dt>Email</dt>
+    <dd>{{ datos.email }}</dd>
+</dl>
+
+<u><p>datos de la Tarjeta</p></u>
+
+<dl>
+    <dt>Documento (DNI)</dt>
+    <dd>{{ tarjeta.dni }}</dd>
+    <dt>Numero de Tarjeta</dt>
+    <dd>{{ tarjeta.numero }}</dd>
+    <dt>clave</dt>
+    <dd>{{ tarjeta.clave }}</dd>
+    <dt>fecha de vencimiento</dt>
+    <dd>{{ tarjeta.fechaVencimiento }}</dd>
+    <dt>Tipo de Tarjeta</dt>
+    <dd>{{ tipo.nombre }}</dd>
+</dl>
+
 {% else %}
 <p>{{mensaje}}</p>
 {% endif %}

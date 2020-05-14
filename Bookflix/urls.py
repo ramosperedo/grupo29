@@ -23,7 +23,7 @@ from app import views
 
 urlpatterns = [
 
-    path('', views.welcome),
+    path('', views.inicio),
     path('createBook/', views.createBook),
     path('editBook/<int:libro_id>', views.editBook),
     path('deleteBook/<int:libro_id>', views.deleteBook),
@@ -44,8 +44,10 @@ urlpatterns = [
     path('listNovedades/', views.listNovedades),
     path('register/', views.register),
     path('login/', views.login, name='login'),
-    path('logout/', views.logout),
+    path('logout/', views.logout, name='logout'),
     path('infoSuscriptor/<int:num>', views.infoSuscriptor),
+    path('inicio', views.inicio, name='inicio'),
+    path('editarSuscriptor/<int:sus_id>', views.editarSuscriptor, name='editarsus'),
 
     path('admin/', admin.site.urls)
 ]
