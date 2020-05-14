@@ -28,7 +28,7 @@ urlpatterns = [
     path('editBook/<int:libro_id>', views.editBook),
     path('deleteBook/<int:libro_id>', views.deleteBook),
     path('listBooks/', views.listBooks),
-    path('createCapitulo/', views.createCapitulo),
+    path('loadFile/<int:libro_id>', views.loadFile),
     path('createAutor/', views.createAutor),
     path('deleteAutor/<int:autor_id>', views.deleteAutor),
     path('listAutores/', views.listAutores),
