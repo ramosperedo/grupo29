@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
-from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer
+from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 
 class NovedadForm(forms.ModelForm):
     class Meta:
@@ -126,24 +126,20 @@ class LoginForm(forms.Form):
     username = forms.EmailField(label='E-mail')
     password = forms.CharField(widget=forms.PasswordInput)
 
+CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
+
 class RegisterForm(forms.Form):
     nombre = forms.CharField()
     apellido = forms.CharField()
     email    = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirmar password', widget=forms.PasswordInput)
-    dni = forms.IntegerField(max_value=99999999, min_value=1000000)
-    numero = forms.IntegerField(max_value=9999999999999999, min_value=1000000000000000, label='Numero de Tarjeta')
-    clave = forms.IntegerField(max_value=999, min_value=100)
-    fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget)
-    CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
-    tipo = forms.ChoiceField(choices=CHOICES, label='Tipo de Trajeta')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         qs = User.objects.filter(email=email)
         if qs.exists():
-            raise forms.ValidationError("email is taken")
+            raise forms.ValidationError("este email ya esta registrado")
         return email
 
     def clean(self):
@@ -154,7 +150,35 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("las contraseñas no coinciden.")
         return data
 
+class RegisterForm2(forms.Form):
+    dni = forms.IntegerField(max_value=99999999, min_value=1000000)
+    numero = forms.IntegerField(max_value=9999999999999999, min_value=1000000000000000, label='Numero de Tarjeta')
+    clave = forms.IntegerField(max_value=999, min_value=100)
+    fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget)
+    tipo = forms.ChoiceField(choices=CHOICES, label='Tipo de Trajeta')
+
+class RegisterForm3(forms.Form):
+    premium = forms.BooleanField(required=False) 
+
 class SuscriptorForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('nombre', 'apellido', 'email', 'password')
+        fields = ('nombre', 'apellido', 'email')
+
+class TarjetaForm(forms.ModelForm):
+    class Meta:
+        model = Tarjeta
+        fields = ('dni', 'numero', 'clave', 'fechaVencimiento', 'tipo')
+        labels = {
+            'numero': 'Numero de Tarjeta',
+            'fechaVencimiento': 'Fecha de Vencimiento'
+        }
+        widgets = {
+            'fechaVencimiento': forms.SelectDateWidget(),
+            'tipo': forms.Select(choices=CHOICES),
+        }
+class TipoTarjetaForm(forms.ModelForm):
+    class Meta:
+        model = TipoTarjeta
+        fields = ('nombre',)
+        

@@ -2,10 +2,11 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, SuscriptorForm
+from .forms import RegisterForm, RegisterForm2, RegisterForm3, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm
 from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
+from django.contrib import messages
 
 def createBook(request):
     # Creamos un formulario vacío
@@ -177,25 +178,26 @@ def login(request):
 User = get_user_model()
 def register(request):
     form = RegisterForm(request.POST or None)
+    form2 = RegisterForm2(request.POST or None)
+    form3 = RegisterForm3(request.POST or None)
     context = {
-        "form": form
+        "form": form, "form2": form2, "form3": form3
     }
-    if form.is_valid():
+    if form.is_valid() and form2.is_valid() and form3.is_valid():
         print(form.cleaned_data)
         nombre = form.cleaned_data.get("nombre")
         apellido  = form.cleaned_data.get("apellido")
         email  = form.cleaned_data.get("email")
         password  = form.cleaned_data.get("password")
-
-        tipo = form.cleaned_data.get("tipo")
-
-        dni = form.cleaned_data.get("dni")
-        numero = form.cleaned_data.get("numero")
-        clave = form.cleaned_data.get("clave")
-        fechaVencimiento = form.cleaned_data.get("fechaVencimiento")
+        premium = form3.cleaned_data.get("premium")
+        tipo = form2.cleaned_data.get("tipo")
+        dni = form2.cleaned_data.get("dni")
+        numero = form2.cleaned_data.get("numero")
+        clave = form2.cleaned_data.get("clave")
+        fechaVencimiento = form2.cleaned_data.get("fechaVencimiento")
 
         new_tarj = TarjetaManager.create_tarjeta(dni,numero,clave,fechaVencimiento,tipo)
-        new_user  = User.objects.create_suscriptor(nombre, apellido, email, password,new_tarj.id)
+        new_user  = User.objects.create_suscriptor(nombre, apellido, email, premium, password,new_tarj.id)
         print(new_user)#en la anterior linea el orden de los datos del usuario no son en ese orden
         if new_user is not None:#pero por un bug raro lo tube que cambiar para que registre bien
             do_login(request, new_user)#si se llega a arreglar el orden es nombre, apellido, email, pass, idtarjeta
@@ -205,13 +207,19 @@ def register(request):
 
 def editarSuscriptor(request, sus_id):
     instancia = User.objects.get(id=sus_id)
+    instancia2 = Tarjeta.objects.get(id=instancia.idTarjeta)
     form = SuscriptorForm(instance=instancia)
+    form2 = TarjetaForm(instance=instancia2)
     if request.method == "POST":
         form = SuscriptorForm(request.POST, instance=instancia)
-        if form.is_valid():
+        form2 = TarjetaForm(request.POST, instance=instancia2)
+        if form.is_valid() and form2.is_valid():
             instancia = form.save(commit=False)
+            instancia2 = form2.save(commit=False)
             instancia.save()
-    return render(request, "users/editar.html", {'form': form})
+            instancia2.save()
+            messages.success(request, 'se modificó sus datos')
+    return render(request, "users/editar.html", {'form': form,'form2': form2})
 
 def infoSuscriptor(request, num=0):
     try:

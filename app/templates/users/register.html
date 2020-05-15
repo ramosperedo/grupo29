@@ -1,15 +1,28 @@
 {% extends 'default/layout.html' %}
 
 {% block public %}
-
-<h2>Registrar Suscriptor</h2>
+<table>
+  <tr>
+    <td>
+<h4>Registrar Suscriptor</h4>
 
   <form method="POST">
     {{ form.as_p }}
+    </td>
+    <td>***</td>
+    <td>
+<h4>Registrar Tarjeta</h4>
+    {{ form2.as_p }}
     {% csrf_token %}
+    </td>
+    <td>
+    {{ form3.as_p }}
+    </td>
+  </tr>
+</table>
     <button type="submit" class="btn btn-primary">Registrar</button>
   </form>
-
+    
   <hr />
 
   <a href="/login">Iniciar sesión</a>

@@ -3,8 +3,10 @@
 {% block suscriptor %}
 
 {% if mensaje == "" %}
+<table>
+    <tr>
+        <td>
 <u><p>Datos del Suscriptor</p></u>
-
 <dl>
     <dt>Nombre</dt>
     <dd>{{ datos.nombre }}</dd>
@@ -13,8 +15,12 @@
     <dt>Email</dt>
     <dd>{{ datos.email }}</dd>
 </dl>
-
-<u><p>datos de la Tarjeta</p></u>
+        </td>
+        <td>
+            ***
+        </td>
+        <td>
+<u><p>Datos de la Tarjeta</p></u>
 
 <dl>
     <dt>Documento (DNI)</dt>
@@ -28,6 +34,10 @@
     <dt>Tipo de Tarjeta</dt>
     <dd>{{ tipo.nombre }}</dd>
 </dl>
+        </td>
+    </tr>
+</table>
+<a class="btn btn-info" role="button" href="/editarSuscriptor/{{ user.id }}">Editar</a>
 
 {% else %}
 <p>{{mensaje}}</p>

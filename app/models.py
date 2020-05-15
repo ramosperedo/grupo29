@@ -38,19 +38,23 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None):
         user = self.create_user(
                 email,
+                nombre="",
+                apellido="",
                 password=password,
                 is_staff=True,
                 is_admin=True,
                 is_superuser=True,
-                is_premium=True
+                is_premium=True,
+                idTarjeta=0
         )
         return user
-    def create_suscriptor(self,nombre, apellido, email, password=None,idTarjeta=None):
+    def create_suscriptor(self,nombre, apellido, email, premium, password=None,idTarjeta=None):
         user = self.create_user(
                 email,
                 nombre,
                 apellido,
                 password=password,
+                is_premium=premium,
                 idTarjeta=idTarjeta
         )
         return user
