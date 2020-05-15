@@ -141,6 +141,10 @@ def deleteNovedad(request, novedad_id):
     instancia.delete()
     return redirect('/listNovedades')
 
+def viewNovedad(request, novedad_id):
+    instancia = Novedad.objects.get(id=novedad_id)
+    return render(request, "shared/viewNovedad.html", {'novedad': instancia})
+
 def listNovedades(request):
     novedades = Novedad.objects.all()
     return render(request, "shared/listOfNovedades.html", {'novedades': novedades})

@@ -41,6 +41,7 @@ urlpatterns = [
     path('createNovedad/', views.createNovedad),
     path('editNovedad/<int:novedad_id>', views.editNovedad),
     path('deleteNovedad/<int:novedad_id>', views.deleteNovedad),
+    path('viewNovedad/<int:novedad_id>', views.viewNovedad),
     path('listNovedades/', views.listNovedades),
     path('register/', views.register),
     path('login/', views.login, name='login'),
