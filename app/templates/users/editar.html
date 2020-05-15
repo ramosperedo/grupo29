@@ -1,15 +1,33 @@
 {% extends 'default/layout.html' %}
 
 {% block suscriptor %}
-
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+<table>
+  <tr>
+    <td>
 <h2>Editar Suscriptor</h2>
 
   <form method="POST">
     {{ form.as_p }}
+    {{ form2.as_p }}
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">Confirmar Cambios</button>
   </form>
-
+    </td>
+    <td>***</td>
+    <td>
+<h4>Perfiles Asociados</h4>
+<button type="submit" class="btn btn-dark">{{user.nombre}}{{user.apellido}}</button>
+    </td>
+  </tr>
+</table>
   <hr />
+  
   
 {% endblock %}
