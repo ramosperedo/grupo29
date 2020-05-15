@@ -5,6 +5,7 @@ from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 
 class NovedadForm(forms.ModelForm):
+    archivo = forms.FileField(required=False)
     class Meta:
         model = Novedad
         fields = ['titulo','descripcion','archivo']
@@ -48,6 +49,7 @@ class CapituloForm(forms.ModelForm):
         }
 
 class LibroForm(forms.ModelForm):
+    foto = forms.FileField(required=False)
     class Meta:
         model = Libro
         fields = ['nombre','isbn','idAutor','idGenero','idEditorial','descripcion','foto']
@@ -67,14 +69,14 @@ class LibroForm(forms.ModelForm):
             'idGenero' : forms.Select(attrs={'class':'form-control'}),
             'idEditorial' : forms.Select(attrs={'class':'form-control'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
-            'foto' : forms.FileInput(attrs={'class':'form-control','required':'false','blank':'true'})
+            'foto' : forms.FileInput(attrs={'class':'form-control'})
         }
-    def validateIsbn(self):
+
+    def clean_isbn(self):
         isbn = self.cleaned_data.get('isbn')
-        if len(str(isbn)) == 10 or len(str(isbn)) == 13:
-            return True
-        else:
-            return False
+        if len(str(isbn))!=10 and len(str(isbn))!=13:
+            raise forms.ValidationError("El isbn debe ser de 10 o 13 digitos")
+        return isbn
 
 
 User = get_user_model()
@@ -139,7 +141,7 @@ class RegisterForm(forms.Form):
         email = self.cleaned_data.get('email')
         qs = User.objects.filter(email=email)
         if qs.exists():
-            raise forms.ValidationError("este email ya esta registrado")
+            raise forms.ValidationError("Este email ya se encuentra registrado")
         return email
 
     def clean(self):

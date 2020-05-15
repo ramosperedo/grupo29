@@ -9,9 +9,9 @@
     {% csrf_token %}
     <button class="btn btn-success" type="submit">Cargar</button>
 </form>
-<form>
-    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
-  </form>
+<form method="get" action="/listGenero">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
 
 
 {% endblock %}

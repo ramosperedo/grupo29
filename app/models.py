@@ -174,7 +174,7 @@ class Libro(models.Model):
     idGenero = models.ForeignKey(Genero,on_delete=models.CASCADE,null=True)
     idEditorial = models.ForeignKey(Editorial,on_delete=models.CASCADE,null=True)
     descripcion = models.CharField(max_length=255)
-    foto = models.ImageField(upload_to='images/',null=True)
+    foto = models.ImageField(upload_to='images/',null=True,blank=True)
     vistos = models.IntegerField(null=True, default=0)
     ultimoCapitulo = models.BooleanField(default=False)
 
@@ -225,7 +225,7 @@ class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=255)
-    archivo = models.FileField(upload_to='images/')
+    archivo = models.FileField(upload_to='images/',blank=True)
 
     def __str__(self):
         return self.titulo

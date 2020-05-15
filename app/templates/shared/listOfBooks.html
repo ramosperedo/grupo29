@@ -3,13 +3,14 @@
 {% block share %}
 
 <h2>Listado de Libros</h2>
-
+{% if user.is_superuser == 1 %}
 <form method="get" action="/createBook">
     <button class="btn btn-success" type="submit">Crear Libro</button>
   </form>
-  <form>
-    <input class="btn btn-secondary" type="button" value="Volver" onclick="history.back()">
-  </form>
+  {% endif %}
+<form method="get" action="/inicio">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
 
 <table>
     <thead>
@@ -19,9 +20,11 @@
             <th>Autor</th>
             <th>Editorial</th>
             <th>Accion</th>
+            {% if user.is_superuser == 1 %}
             <th>Accion</th>
             <th>Accion</th>
             <th>Accion</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -32,9 +35,11 @@
             <td>{{ libro.idAutor }}</td>
             <td>{{ libro.idEditorial }}</td>
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
+            {% if user.is_superuser == 1 %}
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
             <td><a class="btn btn-danger" role="button" {# href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" #}>Borrar</a></td>
             <td><a class="btn btn-warning" role="button" {# href="/loadFile/{{ libro.id }}"#}>Cargar Archivo</a></td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
