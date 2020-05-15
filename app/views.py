@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
 from .forms import RegisterForm, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, SuscriptorForm
 from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
@@ -241,3 +241,10 @@ def inicio(request):
 def logout(request):
     do_logout(request)
     return redirect('/')
+
+def novedadView(request, novedad_id):
+    instancia = get_object_or_404(Novedad, id = novedad_id)
+    context = {
+        "obj" : instancia
+        }
+    return render (request, "shared/novedad.html", context)
