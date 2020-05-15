@@ -1,0 +1,17 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h2>{{obj.titulo}}</h2>
+<p>{{obj.descripcion}}</p>
+
+{% if obj.archivo %}
+<p>aca hiria archivo</p>
+{% endif %}
+
+<form method="get" action="/listNovedades">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
+
+
+{% endblock %}}
