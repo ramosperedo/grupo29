@@ -3,10 +3,11 @@
 {% block share %}
 
 <h2>Listado de Novedades</h2>
-
+{% if user.is_superuser == 1 %}
 <form method="get" action="/createNovedad">
     <button class="btn btn-success" type="submit">Crear Novedad</button>
   </form>
+  {% endif %}
 <form method="get" action="/inicio">
     <button class="btn btn-secondary" type="submit">Volver</button>
 </form>
@@ -15,20 +16,22 @@
     <thead>
         <tr>
             <th>Titulo</th>
-            <th>Descripcion</th>
+            <th>Accion</th>
+            {% if user.is_superuser == 1 %}
             <th>Accion</th>
             <th>Accion</th>
-            <th>Accion</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
         {% for novedad in novedades %}
         <tr>
             <td>{{ novedad.titulo }}</td>
-            <td>{{ novedad.descripcion }}</td>
-            <td><a class="btn btn-info" role="button" href="/novedadView/{{ novedad.id }}">Ver</a></td>
+            <td><a class="btn btn-info" role="button" href="/viewNovedad/{{ novedad.id }}">Ver</a></td>
+            {% if user.is_superuser == 1 %}
             <td><a class="btn btn-primary" role="button" href="/editNovedad/{{ novedad.id }}">Editar</a></td>
-            <td><a class="btn btn-danger" role="button" {# href="/deleteNovedad/{{ novedad.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{novedad.titulo}?');" #}> Borrar</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteNovedad/{{ novedad.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{novedad.titulo}}?');"> Borrar</a></td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

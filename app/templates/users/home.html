@@ -7,6 +7,19 @@
   <p>Bienvenido <b>{{request.user.email}}</b>, esta página es exclusiva para usuarios registrados.</p>
 
   <hr />
+  <ul>
+  <li>
+    <form method="get" action="/listBooks">
+      <button class="btn" style="background-color:chocolate" type="submit">Seccion de libros</button>
+    </form>
+</li>
+<li>
+  <form method="get" action="/listNovedades">
+    <button class="btn" style="background-color:indianred" type="submit">Seccion de Novedades</button>
+  </form>
+</li>
+</ul>
+
 
   <a href="{% url 'logout' %}" 
           onClick="return confirm('¿Seguro que quiere cerrar sesión?');">
