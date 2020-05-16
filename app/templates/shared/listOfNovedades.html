@@ -1,6 +1,6 @@
 {% extends 'default/layout.html' %}
 
-{% block share %}
+{% block admin %}
 
 <h2>Listado de Novedades</h2>
 {% if user.is_superuser == 1 %}
@@ -34,6 +34,41 @@
             <td><a class="btn btn-primary" role="button" href="/editNovedad/{{ novedad.id }}">Editar</a></td>
             <td><a class="btn btn-danger" role="button" href="/deleteNovedad/{{ novedad.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{novedad.titulo}}?');"> Borrar</a></td>
             {% endif %}
+        </tr>
+        {% endfor %}
+        
+    </tbody>
+</table>
+{% else %}
+        <h2>No existen Novedades</h2>
+{% endif %}
+{% endblock %}
+
+{% block suscriptor %}
+
+<h2>Listado de Novedades</h2>
+<form method="get" action="/inicio">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
+{% if novedades %}
+<table>
+    <thead>
+        <tr>
+            <th>Titulo</th>
+            <th>Descripcion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        
+        {% for novedad in novedades %}
+        <tr>
+            <td>{{ novedad.titulo }}</td>
+            <td>{{ novedad.descripcion }}</td>
+            <td><a class="btn btn-info" role="button" href="/novedadView/{{ novedad.id }}">Ver</a></td>
         </tr>
         {% endfor %}
         

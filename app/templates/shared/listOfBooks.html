@@ -1,6 +1,6 @@
 {% extends 'default/layout.html' %}
 
-{% block share %}
+{% block admin %}
 
 <h2>Listado de Libros</h2>
 {% if user.is_superuser == 1 %}
@@ -48,6 +48,57 @@
 
 <!--
 
+-->
+
+{% endblock %}
+
+{% block suscriptor %}
+
+<h2>Listado de Libros</h2>
+
+<form method="get" action="/inicio">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Genero</th>
+            <th>Autor</th>
+            <th>Editorial</th>
+            <th>Accion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for libro in libros %}
+        <tr>
+            <td>{{ libro.nombre }}</td>
+            <td>{{ libro.idGenero }}</td>
+            <td>{{ libro.idAutor }}</td>
+            <td>{{ libro.idEditorial }}</td>
+            <td><a class="btn btn-info" role="button" href="/viewBook/{{ libro.id }}">Ver</a></td>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!--
+<ul>
+    {% for libro in libros %}
+    <li>
+        {{ libro.nombre }}, {{ libro.isbn }}
+        <a href="/editBook/{{ libro.id }}">Editar</a>
+        <a href="/deleteBook/{{ libro.id }}" 
+          onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');">
+            Borrar
+        </a>
+    </li>
+    {% endfor %}
+</ul>
 -->
 
 {% endblock %}
