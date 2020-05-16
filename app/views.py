@@ -143,8 +143,11 @@ def deleteNovedad(request, novedad_id):
     return redirect('/listNovedades')
 
 def viewNovedad(request, novedad_id):
-    instancia = Novedad.objects.get(id=novedad_id)
-    return render(request, "shared/viewNovedad.html", {'novedad': instancia})
+    instancia = get_object_or_404(Novedad, id = novedad_id)
+    context = {
+        "obj" : instancia
+        }
+    return render (request, "shared/novedad.html", context)
 
 def listNovedades(request):
     novedades = Novedad.objects.all()
@@ -256,10 +259,3 @@ def inicio(request):
 def logout(request):
     do_logout(request)
     return redirect('/')
-
-def novedadView(request, novedad_id):
-    instancia = get_object_or_404(Novedad, id = novedad_id)
-    context = {
-        "obj" : instancia
-        }
-    return render (request, "shared/novedad.html", context)
