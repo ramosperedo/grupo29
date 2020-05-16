@@ -10,7 +10,7 @@
 <form method="get" action="/inicio">
     <button class="btn btn-secondary" type="submit">Volver</button>
 </form>
-
+{% if novedades %}
 <table>
     <thead>
         <tr>
@@ -22,6 +22,8 @@
         </tr>
     </thead>
     <tbody>
+        
+        
         {% for novedad in novedades %}
         <tr>
             <td>{{ novedad.titulo }}</td>
@@ -33,7 +35,10 @@
             Borrar</a></td>
         </tr>
         {% endfor %}
+        
     </tbody>
 </table>
-
+{% else %}
+        <h2>No existen Novedades</h2>
+{% endif %}
 {% endblock %}

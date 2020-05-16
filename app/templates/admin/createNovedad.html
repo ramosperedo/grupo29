@@ -6,30 +6,7 @@
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="form-group">
-                <label> Titulo</label>
-                <input class="form-control" type="text" name="titulo" required>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="form-group">
-                <label>Descripcion</label>
-                <textarea class="form-control" name="descripcion" cols="30" rows="10"></textarea>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="form-group">
-                <label>Ingrese el archivo</label>
-                <input class="form-control" type="file" name="archivo" required>
-            </div>
-        </div>
-    </div>
+    {{ form.as_p }}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="form-group">

@@ -67,7 +67,7 @@ class LibroForm(forms.ModelForm):
             'idGenero' : forms.Select(attrs={'class':'form-control'}),
             'idEditorial' : forms.Select(attrs={'class':'form-control'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
-            'foto' : forms.FileInput(attrs={'class':'form-control','required':'false','blank':'true'})
+            'foto' : forms.FileInput(attrs={'class':'form-control'})
         }
     def validateIsbn(self):
         isbn = self.cleaned_data.get('isbn')
