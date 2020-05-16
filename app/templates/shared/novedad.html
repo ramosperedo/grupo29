@@ -6,7 +6,11 @@
 <p>{{obj.descripcion}}</p>
 
 {% if obj.archivo %}
-<img src= "/static/{{obj.archivo}}"></img>
+<img src= "/{{obj.archivo}}"></img>
+{% endif %}
+
+{% if obj.archivoVideo %}
+<video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
 {% endif %}
 
 <form method="get" action="/listNovedades">

@@ -221,7 +221,9 @@ class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=50, unique=True)
     descripcion = models.CharField(max_length=255)
-    archivo = models.ImageField(upload_to='images/', null = True, blank = True)
+    archivo = models.ImageField(upload_to='static/images/', null = True, blank = True)
+    archivoVideo = models.FileField(upload_to='static/videos/', null = True, blank = True)
+
 
     def __str__(self):
         return self.titulo

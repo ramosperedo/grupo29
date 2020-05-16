@@ -7,12 +7,13 @@ from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer
 class NovedadForm(forms.ModelForm):
     class Meta:
         model = Novedad
-        fields = ['titulo','descripcion','archivo']
-        labels = {'titulo':'Titulo','descripcion':'Descripcion','archivo':'Ingrese el archivo'}
+        fields = ['titulo','descripcion','archivo','archivoVideo']
+        labels = {'titulo':'Titulo','descripcion':'Descripcion','archivo':'Ingrese el Imagen', 'archivoVideo': 'Ingrese Video'}
         widgets = {
             'titulo' : forms.TextInput(attrs={'class':'form-control'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
-            'archivo' : forms.FileInput(attrs={'class':'form-control'})
+            'archivo' : forms.FileInput(attrs={'class':'form-control'}),
+            'archivoVideo' : forms.FileInput(attrs={'class': 'form-control'})
         }
 
 class AutorForm(forms.ModelForm):
