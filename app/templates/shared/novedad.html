@@ -1,26 +1,43 @@
 {% extends 'default/layout.html' %}
 
 {% block admin %}
+    <h2>{{obj.titulo}}</h2>
+    <p>{{obj.descripcion}}</p>
 
-<h2>{{obj.titulo}}</h2>
-<p>{{obj.descripcion}}</p>
+    {% if obj.archivo %}
+    <img src= "/{{obj.archivo}}"></img>
+    {% endif %}
 
-{% if obj.archivo %}
-<img src= "/{{obj.archivo}}"></img>
-{% endif %}
+    {% if obj.archivoVideo %}
+    <video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
+    {% endif %}
 
-{% if obj.archivoVideo %}
-<video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
-{% endif %}
-
-<form method="get" action="/listNovedades">
-    <button class="btn btn-secondary" type="submit">Volver</button>
-</form>
-<form method="get" action="/editNovedad/{{obj.id}}">
-    <button class="btn btn-primary" type="submit">Editar</button>
-</form>
-<form method="get" action="/deleteNovedad/{{ obj.id }}">
-    <button class="btn btn-danger" type="submit">Borrar</button>
-</form>
+    <form method="get" action="/listNovedades">
+        <button class="btn btn-secondary" type="submit">Volver</button>
+    </form>
+    <form method="get" action="/editNovedad/{{obj.id}}">
+        <button class="btn btn-primary" type="submit">Editar</button>
+    </form>
+    <form method="get" action="/deleteNovedad/{{ obj.id }}">
+        <button class="btn btn-danger" type="submit">Borrar</button>
+    </form>
 
 {% endblock %}}
+
+{% block suscriptor %}
+   
+    <h2>{{obj.titulo}}</h2>
+    <p>{{obj.descripcion}}</p>
+
+    {% if obj.archivo %}
+    <img src= "/{{obj.archivo}}"></img>
+    {% endif %}
+
+    {% if obj.archivoVideo %}
+    <video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
+    {% endif %}
+
+    <form method="get" action="/listNovedades">
+        <button class="btn btn-secondary" type="submit">Volver</button>
+    </form>
+{% endblock %}
