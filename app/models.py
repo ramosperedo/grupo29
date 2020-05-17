@@ -164,12 +164,12 @@ class Editorial(models.Model):
 
 class Libro(models.Model):
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50,unique=True)
     isbn = models.IntegerField()
     idAutor = models.ForeignKey(Autor,on_delete=models.CASCADE,null=True)
     idGenero = models.ForeignKey(Genero,on_delete=models.CASCADE,null=True)
     idEditorial = models.ForeignKey(Editorial,on_delete=models.CASCADE,null=True)
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField(max_length=1000)
     foto = models.ImageField(upload_to='images/',null=True,blank=True)
     vistos = models.IntegerField(null=True, default=0)
     ultimoCapitulo = models.BooleanField(default=False)
@@ -220,7 +220,7 @@ class Historial(models.Model):
 class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
     titulo = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField(max_length=1000)
     archivo = models.FileField(upload_to='images/',blank=True)
 
     def __str__(self):
@@ -230,7 +230,7 @@ class Trailer(models.Model):
     id = models.AutoField(primary_key=True)
     idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
     titulo = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=150)
+    descripcion = models.CharField(max_length=1000)
     archivo = models.CharField(max_length=100)
 
     def __str__(self):
