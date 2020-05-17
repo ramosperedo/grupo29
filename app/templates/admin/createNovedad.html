@@ -7,16 +7,7 @@
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="form-group">
                 <button class="btn btn-primary" type="submit">Crear</button>
-            </div>
-        </div>
-    </div>
+                <a class="btn btn-secondary" role="button" href="/listNovedades">Volver</a>
 </form>
-<form method="get" action="/listNovedades">
-    <button class="btn btn-secondary" type="submit">Volver</button>
-</form>
-
 {% endblock %}

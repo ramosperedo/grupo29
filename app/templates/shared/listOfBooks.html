@@ -3,15 +3,15 @@
 {% block admin %}
 
 <h2>Listado de Libros</h2>
-{% if user.is_superuser == 1 %}
+<div class="btn-group" role="group" aria-label="Basic example">
 <form method="get" action="/createBook">
     <button class="btn btn-success" type="submit">Crear Libro</button>
   </form>
-  {% endif %}
+  &nbsp
 <form method="get" action="/inicio">
     <button class="btn btn-secondary" type="submit">Volver</button>
 </form>
-
+</div>
 <table>
     <thead>
         <tr>
@@ -20,11 +20,9 @@
             <th>Autor</th>
             <th>Fecha de Vencimiento</th>
             <th>Accion</th>
-            {% if user.is_superuser == 1 %}
             <th>Accion</th>
             <th>Accion</th>
             <th>Accion</th>
-            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -35,20 +33,14 @@
             <td>{{ libro.idAutor }}</td>
             <td>-</td>
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
-            {% if user.is_superuser == 1 %}
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
             <td><a class="btn btn-danger" role="button" {# href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" #}>Borrar</a></td>
             <td><a class="btn btn-warning" role="button" {# href="/loadFile/{{ libro.id }}"#}>Cargar Archivo</a></td>
-            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-
-<!--
-
--->
 
 {% endblock %}
 
@@ -68,9 +60,6 @@
             <th>Autor</th>
             <th>Editorial</th>
             <th>Accion</th>
-            <th>Accion</th>
-            <th>Accion</th>
-            <th>Accion</th>
         </tr>
     </thead>
     <tbody>
@@ -85,20 +74,5 @@
     </tbody>
 </table>
 
-
-<!--
-<ul>
-    {% for libro in libros %}
-    <li>
-        {{ libro.nombre }}, {{ libro.isbn }}
-        <a href="/editBook/{{ libro.id }}">Editar</a>
-        <a href="/deleteBook/{{ libro.id }}" 
-          onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');">
-            Borrar
-        </a>
-    </li>
-    {% endfor %}
-</ul>
--->
 
 {% endblock %}

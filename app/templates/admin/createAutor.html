@@ -8,10 +8,7 @@
     {{ form.as_p }}
     {% csrf_token %}
     <button class="btn btn-success" type="submit">Cargar</button>
+    <a class="btn btn-secondary" role="button" href="/listAutores">Volver</a>
 </form>
-<form method="get" action="/listAutores">
-    <button class="btn btn-secondary" type="submit">Volver</button>
-</form>
-
 
 {% endblock %}

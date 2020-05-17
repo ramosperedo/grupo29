@@ -5,16 +5,15 @@ from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 
 class NovedadForm(forms.ModelForm):
-    archivo = forms.FileField(required=False)
+    archivo = forms.FileField(required=False,widget=forms.FileInput(attrs={'class':'form-control'}), label=('Ingrese una foto'))
+    archivoVideo = forms.FileField(required=False,widget=forms.FileInput(attrs={'class':'form-control'}), label=('Ingrese un video'))
     class Meta:
         model = Novedad
         fields = ['titulo','descripcion','archivo','archivoVideo']
-        labels = {'titulo':'Titulo','descripcion':'Descripcion','archivo':'Ingrese el Imagen', 'archivoVideo': 'Ingrese Video'}
+        labels = {'titulo':'Titulo','descripcion':'Descripcion'}
         widgets = {
             'titulo' : forms.TextInput(attrs={'class':'form-control'}),
-            'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
-            'archivo' : forms.FileInput(attrs={'class':'form-control'}),
-            'archivoVideo' : forms.FileInput(attrs={'class': 'form-control'})
+            'descripcion' : forms.Textarea(attrs={'class':'form-control'})
         }
 
 class AutorForm(forms.ModelForm):
@@ -50,7 +49,7 @@ class CapituloForm(forms.ModelForm):
         }
 
 class LibroForm(forms.ModelForm):
-    foto = forms.FileField(required=False)
+    foto = forms.FileField(required=False,widget=forms.FileInput(attrs={'class':'form-control'}), label=('Ingrese una imagen de portada'))
     class Meta:
         model = Libro
         fields = ['nombre','isbn','idAutor','idGenero','idEditorial','descripcion','foto']
@@ -60,8 +59,7 @@ class LibroForm(forms.ModelForm):
             'idAutor' : 'Autor',
             'idGenero' : 'Genero',
             'idEditorial' : 'Editorial',
-            'descripcion' : 'Descripcion',
-            'foto' : 'Ingrese una foto'
+            'descripcion' : 'Descripcion'
         }
         widgets = {
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
@@ -69,8 +67,7 @@ class LibroForm(forms.ModelForm):
             'idAutor' : forms.Select(attrs={'class':'form-control'}),
             'idGenero' : forms.Select(attrs={'class':'form-control'}),
             'idEditorial' : forms.Select(attrs={'class':'form-control'}),
-            'descripcion' : forms.Textarea(attrs={'class':'form-control'}),
-            'foto' : forms.FileInput(attrs={'class':'form-control'})
+            'descripcion' : forms.Textarea(attrs={'class':'form-control'})
         }
 
     def clean_isbn(self):
