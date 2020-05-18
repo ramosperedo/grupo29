@@ -212,8 +212,8 @@ def register(request):
 
     return render(request, "users/register.html", context)
 
-def editarSuscriptor(request, sus_id):
-    instancia = User.objects.get(id=sus_id)
+def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
+    instancia = User.objects.get(id=request.user.id)#aca tendria que ir sus_id si queremos modificar otro
     instancia2 = Tarjeta.objects.get(id=instancia.idTarjeta)
     form = SuscriptorForm(instance=instancia)
     form2 = TarjetaForm(instance=instancia2)
@@ -225,7 +225,7 @@ def editarSuscriptor(request, sus_id):
             instancia2 = form2.save(commit=False)
             instancia.save()
             instancia2.save()
-            messages.success(request, 'se modificó sus datos')
+            messages.success(request, 'se modificó sus datos!!')
     return render(request, "users/editar.html", {'form': form,'form2': form2})
 
 def infoSuscriptor(request, num=0):
