@@ -6,7 +6,7 @@
 <table>
     <tr>
         <td>
-<u><p>Datos del Suscriptor</p></u>
+<u><h4>Datos del Suscriptor</h4></u>
 <dl>
     <dt>Nombre</dt>
     <dd>{{ datos.nombre }}</dd>
@@ -14,13 +14,17 @@
     <dd>{{ datos.apellido }}</dd>
     <dt>Email</dt>
     <dd>{{ datos.email }}</dd>
+    <dt>Premium</dt>
+    {% if datos.premium %}
+        <dd>Si</dd>
+        {% else %}
+        <dd>No</dd>
+    {% endif %}
 </dl>
         </td>
+        <td>&nbsp &nbsp &nbsp &nbsp</td>
         <td>
-            ***
-        </td>
-        <td>
-<u><p>Datos de la Tarjeta</p></u>
+<u><h4>Datos de la Tarjeta</h4></u>
 
 <dl>
     <dt>Documento (DNI)</dt>
@@ -35,9 +39,15 @@
     <dd>{{ tipo.nombre }}</dd>
 </dl>
         </td>
+        <td>&nbsp &nbsp &nbsp &nbsp</td>
+        <td>
+            <u><h4>Perfiles</h4></u>
+            <a class="btn" style="background-color:hotpink" role="button" >{{user.nombre}}{{user.apellido}}</a>
+            <a class="btn" style="background-color:tomato" role="button" >Administrar perfiles</a>
+        </td>
     </tr>
 </table>
-<a class="btn btn-info" role="button" href="/editarSuscriptor/{{ user.id }}">Editar</a>
+<a class="btn btn-info" role="button" href="/editarSuscriptor/{{ user.id }}">Editar Informacion</a>
 
 {% else %}
 <p>{{mensaje}}</p>

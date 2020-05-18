@@ -5,12 +5,12 @@ from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 
 class NovedadForm(forms.ModelForm):
-    archivo = forms.FileField(required=False)
-    archivoVideo = forms.FileField(required=False)
+    archivo = forms.FileField(required=False, label=('Ingrese una Imagen'))
+    archivoVideo = forms.FileField(required=False, label=('Ingrese un Video'))
     class Meta:
         model = Novedad
         fields = ['titulo','descripcion','archivo','archivoVideo']
-        labels = {'titulo':'Titulo','descripcion':'Descripcion','archivo':'Ingrese una Imagen','archivoVideo':'Ingrese un Video'}
+        labels = {'titulo':'Titulo','descripcion':'Descripcion'}
         widgets = {
             'titulo' : forms.TextInput(attrs={'class':'form-control'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'})
@@ -157,24 +157,46 @@ class RegisterForm2(forms.Form):
     fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
     tipo = forms.ChoiceField(choices=CHOICES, label='Tipo de Trajeta')
 
+    def clean_dni(self):
+        dniBuscar = self.cleaned_data.get('dni')
+        obj = Tarjeta.objects.filter(dni=dniBuscar)
+        if obj:
+            raise forms.ValidationError("Este dni ya esta registrado")
+        return dniBuscar
+
 class RegisterForm3(forms.Form):
     premium = forms.BooleanField(required=False) 
 
 class SuscriptorForm(forms.ModelForm):
+    premium = forms.BooleanField(required=False) 
     class Meta:
         model = User
-        fields = ('nombre', 'apellido', 'email')
+        fields = ('nombre', 'apellido', 'email', 'premium')
+        labels = {
+            'nombre': 'Nombre',
+            'apellido': 'Apellido',
+            'email': 'E-mail'
+        }
+        widgets = {
+            'nombre' : forms.TextInput(attrs={'class':'form-control'}),
+            'apellido' : forms.TextInput(attrs={'class':'form-control'}),
+            'email' : forms.EmailInput(attrs={'class':'form-control'})
+        }
 
 class TarjetaForm(forms.ModelForm):
     class Meta:
         model = Tarjeta
         fields = ('dni', 'numero', 'clave', 'fechaVencimiento', 'tipo')
         labels = {
+            'dni' : 'Dni Titular',
             'numero': 'Numero de Tarjeta',
             'fechaVencimiento': 'Fecha de Vencimiento'
         }
         widgets = {
-            'fechaVencimiento': forms.SelectDateWidget(),
+            'dni' : forms.NumberInput(attrs={'class':'form-control'}),
+            'numero' : forms.NumberInput(attrs={'class':'form-control'}),
+            'clave' : forms.NumberInput(attrs={'class':'form-control'}),
+            'fechaVencimiento': forms.SelectDateWidget(attrs={'class':'form-control'}),
             'tipo': forms.Select(choices=CHOICES),
         }
 class TipoTarjetaForm(forms.ModelForm):

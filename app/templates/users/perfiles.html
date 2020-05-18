@@ -3,14 +3,10 @@
 {% block suscriptor %}
 
 <h2>Elija un Perfil</h2>
+<br />  <br />  <br />
 
   <a class="btn btn-info" role="button" href="{% url 'inicio' %}">{{user.nombre}}{{user.apellido}}</a>
 
-  <hr />
 
-  <a href="{% url 'logout' %}" 
-          onClick="return confirm('¿Seguro que quiere cerrar sesión?');">
-          Cerrar sesión
-    </a>
   
 {% endblock %}

@@ -169,7 +169,7 @@ class Editorial(models.Model):
 class Libro(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=50,unique=True)
-    isbn = models.IntegerField()
+    isbn = models.IntegerField(unique=True)
     idAutor = models.ForeignKey(Autor,on_delete=models.CASCADE,null=True)
     idGenero = models.ForeignKey(Genero,on_delete=models.CASCADE,null=True)
     idEditorial = models.ForeignKey(Editorial,on_delete=models.CASCADE,null=True)
