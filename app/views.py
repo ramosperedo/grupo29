@@ -56,7 +56,7 @@ def deleteBook(request, libro_id):
     return redirect('/listBooks')
 
 def listBooks(request):
-    libros = Libro.objects.all()
+    libros = Libro.objects.all().order_by('vistos')
     return render(request, "shared/listOfBooks.html", {'libros': libros})
 
 def createAutor(request):
@@ -217,6 +217,7 @@ def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
     instancia2 = Tarjeta.objects.get(id=instancia.idTarjeta)
     form = SuscriptorForm(instance=instancia)
     form2 = TarjetaForm(instance=instancia2)
+    #form3 = RegisterForm3(request.POST or None)
     if request.method == "POST":
         form = SuscriptorForm(request.POST, instance=instancia)
         form2 = TarjetaForm(request.POST, instance=instancia2)
@@ -237,7 +238,7 @@ def infoSuscriptor(request, num=0):
         nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
         print(nombreTipoTarjeta.nombre)
     except Exception as e:
-        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:1"})
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"ACCESO NO PERMITIDO"})
 
     if request.user.id == num:
         if datosSuscriptor is not None:

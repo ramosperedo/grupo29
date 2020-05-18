@@ -1,26 +1,30 @@
 {% extends 'default/layout.html' %}
 
 {% block public %}
+<h2>Registrase</h2>
 <table>
   <tr>
     <td>
-<h4>Registrar Suscriptor</h4>
+<h4>Informacion suscriptor</h4>
 
   <form method="POST">
     {{ form.as_p }}
     </td>
-    <td>***</td>
+    <td>&nbsp &nbsp &nbsp &nbsp</td>
     <td>
-<h4>Registrar Tarjeta</h4>
+      &nbsp
+<h4>Informacion de Tarjeta</h4>
     {{ form2.as_p }}
     {% csrf_token %}
     </td>
-    <td>***</td>
-    <td width="250">
-    {{ form3.as_p }}
-    <a>Al tiquear este campo se le amplia 
-      el numero de perfiles de 2 a 4 pero tambien 
-      aumenta el costo de la suscripcion</a>
+    <td>&nbsp &nbsp &nbsp &nbsp</td>
+    <td>
+      <h4>Tipo de Suscripcion</h4>
+      <a>La suscripcion normal de 000$ trae 2 perfiles para el suscriptor</a>
+      <hr />
+      <a>Si selecciona la suscripcion premium de 000$ Tendra el beneficio de 4 perfiles</a>
+      <hr />
+      {{ form3.as_p }}
     </td>
     <td></td>
   </tr>
@@ -29,8 +33,6 @@
   </form>
     
   <hr />
-
-  <a href="/login">Iniciar sesión</a>
-
+  
 {% endblock %}
 
