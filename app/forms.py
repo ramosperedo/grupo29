@@ -5,12 +5,12 @@ from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 
 class NovedadForm(forms.ModelForm):
-    archivo = forms.FileField(required=False,widget=forms.FileInput(attrs={'class':'form-control'}), label=('Ingrese una foto'))
-    archivoVideo = forms.FileField(required=False,widget=forms.FileInput(attrs={'class':'form-control'}), label=('Ingrese un video'))
+    archivo = forms.FileField(required=False)
+    archivoVideo = forms.FileField(required=False)
     class Meta:
         model = Novedad
         fields = ['titulo','descripcion','archivo','archivoVideo']
-        labels = {'titulo':'Titulo','descripcion':'Descripcion'}
+        labels = {'titulo':'Titulo','descripcion':'Descripcion','archivo':'Ingrese una Imagen','archivoVideo':'Ingrese un Video'}
         widgets = {
             'titulo' : forms.TextInput(attrs={'class':'form-control'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'})
@@ -49,7 +49,7 @@ class CapituloForm(forms.ModelForm):
         }
 
 class LibroForm(forms.ModelForm):
-    foto = forms.FileField(required=False,widget=forms.FileInput(attrs={'class':'form-control'}), label=('Ingrese una imagen de portada'))
+    foto = forms.FileField(required=False)
     class Meta:
         model = Libro
         fields = ['nombre','isbn','idAutor','idGenero','idEditorial','descripcion','foto']
@@ -129,11 +129,11 @@ class LoginForm(forms.Form):
 CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
 
 class RegisterForm(forms.Form):
-    nombre = forms.CharField()
-    apellido = forms.CharField()
-    email    = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirmar password', widget=forms.PasswordInput)
+    nombre = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label=('Nombre'))
+    apellido = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label=('Apellido'))
+    email    = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}), label=('E-mail'))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label=('Contraseña'))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label=('Confirmar contraseña'))
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -151,10 +151,10 @@ class RegisterForm(forms.Form):
         return data
 
 class RegisterForm2(forms.Form):
-    dni = forms.IntegerField(max_value=99999999, min_value=1000000)
-    numero = forms.IntegerField(max_value=9999999999999999, min_value=1000000000000000, label='Numero de Tarjeta')
-    clave = forms.IntegerField(max_value=999, min_value=100)
-    fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget)
+    dni = forms.IntegerField(max_value=99999999, min_value=1000000, widget=forms.NumberInput(attrs={'class':'form-control'}), label=('Dni Titular'))
+    numero = forms.IntegerField(max_value=9999999999999999, min_value=1000000000000000, widget=forms.NumberInput(attrs={'class':'form-control'}), label=('Numero de Tarjeta'))
+    clave = forms.IntegerField(max_value=999, min_value=100, widget=forms.NumberInput(attrs={'class':'form-control'}), label=('Clave'))
+    fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
     tipo = forms.ChoiceField(choices=CHOICES, label='Tipo de Trajeta')
 
 class RegisterForm3(forms.Form):

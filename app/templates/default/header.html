@@ -24,13 +24,20 @@
                             <a class="nav-link text-dark" href="/">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/logout">Cerrar sesión</a>
+                            <a class="nav-link text-dark" href="{% url 'logout' %}" 
+                            onClick="return confirm('¿Seguro que quiere cerrar sesión?');">
+                            Cerrar sesión
+                            </a>
                         </li>
                         {% if user.is_superuser != 1 %}
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="/infoSuscriptor/{{user.id}}">Mi Informacion</a>
                         </li>
                         {% endif %}
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/">Iniciar sesion</a>
+                        </li>
                         {% endif %}
                     </ul>
                 </div>
