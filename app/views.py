@@ -8,6 +8,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.conf import settings
+import os
 
 
 def createBook(request):
@@ -53,6 +55,11 @@ def editBook(request, libro_id):
 def deleteBook(request, libro_id):
     # Recuperamos la instancia de la persona y la borramos
     instancia = Libro.objects.get(id=libro_id)
+    try:
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        os.remove(os.path.join(BASE_DIR,instancia.foto.url.replace('/','\\')))
+    except Exception as e:
+        pass
     instancia.delete()
     # Después redireccionamos de nuevo a la lista
     return redirect('/listBooks')
@@ -144,6 +151,15 @@ def editNovedad(request, novedad_id):
 
 def deleteNovedad(request, novedad_id):
     instancia = Novedad.objects.get(id=novedad_id)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        os.remove(os.path.join(BASE_DIR,instancia.archivo.url.replace('/','\\')))
+    except Exception as e:
+        pass
+    try:
+        os.remove(os.path.join(BASE_DIR,instancia.archivoVideo.url.replace('/','\\')))
+    except Exception as e:
+        pass
     instancia.delete()
     return redirect('/listNovedades')
 
