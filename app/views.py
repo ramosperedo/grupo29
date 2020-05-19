@@ -7,6 +7,8 @@ from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero, TarjetaMa
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
+from django.core.paginator import Paginator
+
 
 def createBook(request):
     # Creamos un formulario vacío
@@ -57,7 +59,10 @@ def deleteBook(request, libro_id):
 
 def listBooks(request):
     libros = Libro.objects.all()
-    return render(request, "shared/listOfBooks.html", {'libros': libros})
+    paginator = Paginator(libros, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "shared/listOfBooks.html", {'libros': page_obj})
 
 def createAutor(request):
     form = AutorForm()
@@ -151,7 +156,11 @@ def viewNovedad(request, novedad_id):
 
 def listNovedades(request):
     novedades = Novedad.objects.all()
-    return render(request, "shared/listOfNovedades.html", {'novedades': novedades})
+    paginator = Paginator(novedades, 5)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'shared/listOfNovedades.html', {'novedades': page_obj})
 
 def loadFile(request, libro_id):
     return render(request, "admin/loadFile.html", {'libro_id': libro_id})

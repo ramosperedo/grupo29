@@ -6,6 +6,7 @@ from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer,
 
 class NovedadForm(forms.ModelForm):
     archivo = forms.FileField(required=False)
+    archivoVideo = forms.FileField(required=False)
     class Meta:
         model = Novedad
         fields = ['titulo','descripcion','archivo','archivoVideo']

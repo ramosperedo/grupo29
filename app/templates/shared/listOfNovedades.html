@@ -39,6 +39,23 @@
         
     </tbody>
 </table>
+<div class="pagination">
+    <span class="step-links">
+        {% if novedades.has_previous %}
+            <a href="?page=1">&laquo; primera</a>
+            <a href="?page={{ novedades.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ novedades.number }} of {{ novedades.paginator.num_pages }}.
+        </span>
+
+        {% if novedades.has_next %}
+            <a href="?page={{ novedades.next_page_number }}">proxima</a>
+            <a href="?page={{ novedades.paginator.num_pages }}">ultima &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 {% else %}
         <h2>No existen Novedades</h2>
 {% endif %}
@@ -74,6 +91,23 @@
         
     </tbody>
 </table>
+<div class="pagination">
+    <span class="step-links">
+        {% if novedades.has_previous %}
+            <a href="?page=1">&laquo; primera</a>
+            <a href="?page={{ novedades.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ novedades.number }} of {{ novedades.paginator.num_pages }}.
+        </span>
+
+        {% if novedades.has_next %}
+            <a href="?page={{ novedades.next_page_number }}">proxima</a>
+            <a href="?page={{ novedades.paginator.num_pages }}">ultima &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 {% else %}
         <h2>No existen Novedades</h2>
 {% endif %}

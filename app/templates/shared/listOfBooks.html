@@ -45,6 +45,23 @@
     </tbody>
 </table>
 
+<div class="pagination">
+    <span class="step-links">
+        {% if libros.has_previous %}
+            <a href="?page=1">&laquo; primera</a>
+            <a href="?page={{ libros.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ libros.number }} of {{ libros.paginator.num_pages }}.
+        </span>
+
+        {% if libros.has_next %}
+            <a href="?page={{ libros.next_page_number }}">proxima</a>
+            <a href="?page={{ libros.paginator.num_pages }}">ultima &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 
 <!--
 
@@ -84,7 +101,23 @@
         {% endfor %}
     </tbody>
 </table>
+<div class="pagination">
+    <span class="step-links">
+        {% if libros.has_previous %}
+            <a href="?page=1">&laquo; primera</a>
+            <a href="?page={{ libros.previous_page_number }}">anterior</a>
+        {% endif %}
 
+        <span class="current">
+            Page {{ libros.number }} of {{ libros.paginator.num_pages }}.
+        </span>
+
+        {% if libros.has_next %}
+            <a href="?page={{ libros.next_page_number }}">proxima</a>
+            <a href="?page={{ libros.paginator.num_pages }}">ultima &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 
 <!--
 <ul>
