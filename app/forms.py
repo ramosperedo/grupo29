@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
+from datetime import date
 
 class NovedadForm(forms.ModelForm):
     archivo = forms.FileField(required=False, label=('Ingrese una Imagen'))
@@ -163,6 +164,11 @@ class RegisterForm2(forms.Form):
         if obj:
             raise forms.ValidationError("Este dni ya esta registrado")
         return dniBuscar
+    def clean_fechaVencimiento(self):
+        fecha = self.cleaned_data.get('fechaVencimiento')
+        if fecha < date.today():
+            raise forms.ValidationError("la fecha tiene que ser mayor a la actual")
+        return fecha
 
 class RegisterForm3(forms.Form):
     premium = forms.BooleanField(required=False) 
@@ -184,6 +190,7 @@ class SuscriptorForm(forms.ModelForm):
         }
 
 class TarjetaForm(forms.ModelForm):
+    fechaVencimiento = forms.DateField(required=True,label='Fecha Vencimiento',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
     class Meta:
         model = Tarjeta
         fields = ('dni', 'numero', 'clave', 'fechaVencimiento', 'tipo')
@@ -199,6 +206,11 @@ class TarjetaForm(forms.ModelForm):
             'fechaVencimiento': forms.SelectDateWidget(attrs={'class':'form-control'}),
             'tipo': forms.Select(choices=CHOICES),
         }
+    def clean_fechaVencimiento(self):
+        fecha = self.cleaned_data.get('fechaVencimiento')
+        if fecha < date.today():
+            raise forms.ValidationError("la fecha tiene que ser mayor a la actual")
+        return fecha
 class TipoTarjetaForm(forms.ModelForm):
     class Meta:
         model = TipoTarjeta
