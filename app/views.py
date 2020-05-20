@@ -173,10 +173,16 @@ def viewNovedad(request, novedad_id):
 def listNovedades(request):
     novedades = Novedad.objects.all()
     paginator = Paginator(novedades, 5)
-
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'shared/listOfNovedades.html', {'novedades': page_obj})
+
+def listTrailers(request):
+    trailers = Trailer.objects.all()
+    paginator = Paginator(trailers, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'shared/listOfTrailers.html', {'trailers': page_obj})
 
 def loadFile(request, libro_id):
     return render(request, "admin/loadFile.html", {'libro_id': libro_id})

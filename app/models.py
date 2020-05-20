@@ -237,7 +237,8 @@ class Trailer(models.Model):
     idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
     titulo = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=1000)
-    archivo = models.CharField(max_length=100)
+    archivo = models.ImageField(upload_to='static/images/',null=True,blank=True)
+    archivoVideo = models.FileField(upload_to='static/videos/',null=True,blank=True)
 
     def __str__(self):
         return self.titulo

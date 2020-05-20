@@ -10,16 +10,25 @@
 {% endif %}
 <table>
   <tr>
-    <td>
+    
 <h2>Editar Suscriptor</h2>
-
   <form method="POST">
+    <td>
     {{ form.as_p }}
-    {{ form2.as_p }}
-    {% csrf_token %}
     <button type="submit" class="btn btn-primary">Confirmar Cambios</button>
+  </td>
+  <td>&nbsp &nbsp &nbsp &nbsp</td>
+  <td>
+    {{ form2.as_p }}
+  </td>
+    {% csrf_token %}
+    <td>&nbsp &nbsp &nbsp &nbsp</td>
+
   </form>
-    </td>
+    <td>
+      
+    <h5>Seccion de cambio de contraseña</h5>
+      <a class="btn btn-primary" role="button" {# href="/loadFile/{{ libro.id }}"#}>Cambiar Contraseña</a></td>
   </tr>
 </table>
   <hr />
