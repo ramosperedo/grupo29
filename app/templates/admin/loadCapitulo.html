@@ -1,0 +1,14 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h2>Cargar Capitulo</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <button class="btn btn-success" type="submit">Cargar</button>
+    <a class="btn btn-secondary" role="button" href="/listBooks">Volver</a>
+</form>
+
+{% endblock %}

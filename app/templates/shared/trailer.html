@@ -1,0 +1,50 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+    
+    <div class="btn-group" role="group" aria-label="Basic example">
+    <form method="get" action="/listTrailers">
+        <button class="btn btn-secondary" type="submit">Volver</button>
+    </form>
+    &nbsp
+    <form method="get" action="/editTrailer/{{obj.id}}">
+        <button class="btn btn-primary" type="submit">Editar</button>
+    </form>
+    &nbsp
+    <form method="get" action="/deleteTrailer/{{ obj.id }}">
+        <button class="btn btn-danger" onClick="return confirm('¿Seguro que quieres borrar a {{obj.titulo}}?');" type="submit">Borrar</button>
+    </form>
+    </div>
+
+    <h2>{{obj.titulo}}</h2>
+    <strong>Libro: </strong> {% if obj.idLibro %} {{obj.idLibro}} {% else %} No disponible actualmente {% endif %}
+    <p>{{obj.descripcion}}</p>
+
+    {% if obj.archivo %}
+    <img src= "/{{obj.archivo}}"></img>
+    {% endif %}
+
+    {% if obj.archivoVideo %}
+    <video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
+    {% endif %}
+
+{% endblock %}}
+
+{% block suscriptor %}
+   
+    <h2>{{obj.titulo}}</h2>
+    <strong>Libro: </strong> {% if obj.idLibro %} {{obj.idLibro}} {% else %} No disponible actualmente {% endif %}
+    <p>{{obj.descripcion}}</p>
+
+    {% if obj.archivo %}
+    <img src= "/{{obj.archivo}}"></img>
+    {% endif %}
+
+    {% if obj.archivoVideo %}
+    <video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
+    {% endif %}
+
+    <form method="get" action="/listTrailers">
+        <button class="btn btn-secondary" type="submit">Volver</button>
+    </form>
+{% endblock %}

@@ -22,20 +22,32 @@
             <th>Accion</th>
             <th>Accion</th>
             <th>Accion</th>
+            {% if not libro.ultimoCapitulo %}
             <th>Accion</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
         {% for libro in libros %}
         <tr>
             <td>{{ libro.nombre }}</td>
+            {% if libro.idGenero %}
             <td>{{ libro.idGenero }}</td>
+            {% else %}
+            <td>No disponible</td>
+            {% endif %}
+            {% if libro.idAutor %}
             <td>{{ libro.idAutor }}</td>
+            {% else %}
+            <td>No disponible</td>
+            {% endif %}
             <td>-</td>
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
-            <td><a class="btn btn-danger" role="button" {# href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" #} >Borrar</a></td>
-            <td><a class="btn btn-warning" role="button" {# href="/loadFile/{{ libro.id }}"#}>Cargar Archivo</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" >Borrar</a></td>
+            {% if not libro.ultimoCapitulo %}
+            <td><a class="btn btn-warning" role="button" href="/loadFile/{{ libro.id }}">Cargar Archivo</a></td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
@@ -75,7 +87,7 @@
             <th>Nombre</th>
             <th>Genero</th>
             <th>Autor</th>
-            <th>Editorial</th>
+            <th>Fecha de Vencimiento</th>
             <th>Accion</th>
         </tr>
     </thead>
@@ -83,10 +95,18 @@
         {% for libro in libros %}
         <tr>
             <td>{{ libro.nombre }}</td>
+            {% if libro.idGenero %}
             <td>{{ libro.idGenero }}</td>
+            {% else %}
+            <td>No disponible</td>
+            {% endif %}
+            {% if libro.idAutor %}
             <td>{{ libro.idAutor }}</td>
-            <td>{{ libro.idEditorial }}</td>
-            <td><a class="btn btn-info" role="button" href="/viewBook/{{ libro.id }}">Ver</a></td>
+            {% else %}
+            <td>No disponible</td>
+            {% endif %}
+            <td>-</td>
+            <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
         {% endfor %}
     </tbody>
 </table>

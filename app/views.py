@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, RegisterForm2, RegisterForm3, LoginForm, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm
+from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm
 from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
@@ -65,7 +65,7 @@ def deleteBook(request, libro_id):
     return redirect('/listBooks')
 
 def listBooks(request):
-    libros = Libro.objects.all()
+    libros = Libro.objects.all().order_by('vistos')
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -83,6 +83,8 @@ def createAutor(request):
 
 def deleteAutor(request, autor_id):
     instancia = Autor.objects.get(id=autor_id)
+    #Antes de eliminar el autor, debo modificar el autor en los libros que lo disponen
+    Libro.objects.filter(idAutor=autor_id).update(idAutor=None)
     instancia.delete()
     return redirect('/listAutores')
 
@@ -102,6 +104,7 @@ def createGenero(request):
 
 def deleteGenero(request, genero_id):
     instancia = Genero.objects.get(id=genero_id)
+    Libro.objects.filter(idAutor=genero_id).update(idGenero=None)
     instancia.delete()
     return redirect('/listGeneros')
 
@@ -121,6 +124,7 @@ def createEditorial(request):
 
 def deleteEditorial(request, editorial_id):
     instancia = Editorial.objects.get(id=editorial_id)
+    Libro.objects.filter(idAutor=editorial_id).update(idEditorial=None)
     instancia.delete()
     return redirect('/listEditoriales')
 
@@ -177,6 +181,48 @@ def listNovedades(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'shared/listOfNovedades.html', {'novedades': page_obj})
 
+def createTrailer(request):
+    form = TrailerForm()
+    if request.method == "POST":
+        form = TrailerForm(request.POST,request.FILES)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/listTrailers')
+    return render(request, "admin/createTrailer.html", {'form': form})
+
+def editTrailer(request, trailer_id):
+    instancia = Trailer.objects.get(id=trailer_id)
+    form = TrailerForm(instance=instancia)
+    if request.method == "POST":
+        form = TrailerForm(request.POST,request.FILES, instance=instancia)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/listTrailers')
+    return render(request, "admin/editTrailer.html", {'form': form})
+
+def deleteTrailer(request, trailer_id):
+    instancia = Trailer.objects.get(id=trailer_id)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        os.remove(os.path.join(BASE_DIR,instancia.archivo.url.replace('/','\\')))
+    except Exception as e:
+        pass
+    try:
+        os.remove(os.path.join(BASE_DIR,instancia.archivoVideo.url.replace('/','\\')))
+    except Exception as e:
+        pass
+    instancia.delete()
+    return redirect('/listTrailers')
+
+def viewTrailer(request, trailer_id):
+    instancia = get_object_or_404(Trailer, id = trailer_id)
+    context = {
+        "obj" : instancia
+        }
+    return render (request, "shared/trailer.html", context)
+
 def listTrailers(request):
     trailers = Trailer.objects.all()
     paginator = Paginator(trailers, 5)
@@ -187,6 +233,16 @@ def listTrailers(request):
 def loadFile(request, libro_id):
     return render(request, "admin/loadFile.html", {'libro_id': libro_id})
 
+def loadCapituloCompleto(request,libro_id):
+    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+    return redirect('/listBooks')
+
+def loadCapituloEnPartes(request,libro_id):
+    #Se pregunta si el capitulo a subir es el ultimo, si es asi se ejecuta la siguiente linea
+    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+    #tambien, poner el mismo vencimiento del ultimo en todos los capitulos
+    return redirect('/listBooks')
+
 def loadCapitulo(request, libro_id):
     form = CapituloForm()
     if request.method == "POST":
@@ -195,7 +251,7 @@ def loadCapitulo(request, libro_id):
             instancia = form.save(commit=False)
             instancia.save()
             return redirect('/')
-    return render(request, "admin/createCapitulo.html", {'form': form})
+    return render(request, "admin/loadCapitulo.html", {'form': form})
 
 def login(request):
     form = AuthenticationForm()

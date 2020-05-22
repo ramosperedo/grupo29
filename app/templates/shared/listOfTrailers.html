@@ -1,0 +1,106 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h2>Listado de Trailers</h2>
+<div class="btn-group" role="group" aria-label="Basic example">
+<form method="get" action="/createTrailer">
+    <button class="btn btn-success" type="submit">Crear Trailer</button>
+</form>
+&nbsp
+<form method="get" action="/inicio">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
+</div>
+{% if trailers %}
+<table>
+    <thead>
+        <tr>
+            <th>Titulo</th>
+            <th>Accion</th>
+            <th>Accion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for trailer in trailers %}
+        <tr>
+            <td>{{ trailer.titulo }}</td>
+            <td><a class="btn btn-info" role="button" href="/viewTrailer/{{ trailer.id }}">Ver</a></td>
+            <td><a class="btn btn-primary" role="button" href="/editTrailer/{{ trailer.id }}">Editar</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteTrailer/{{ trailer.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{trailer.titulo}}?');"> Borrar</a></td>
+        </tr>
+        {% endfor %}
+        
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if trailers.has_previous %}
+            <a href="?page=1">&laquo; primera</a>
+            <a href="?page={{ trailers.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ trailers.number }} of {{ trailers.paginator.num_pages }}.
+        </span>
+
+        {% if trailers.has_next %}
+            <a href="?page={{ trailers.next_page_number }}">proxima</a>
+            <a href="?page={{ trailers.paginator.num_pages }}">ultima &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% else %}
+    <h4>No hay trailers disponibles</h4>
+{% endif %}
+{% endblock %}
+
+{% block suscriptor %}
+
+<h2>Listado de Trailers</h2>
+<form method="get" action="/inicio">
+    <button class="btn btn-secondary" type="submit">Volver</button>
+</form>
+{% if trailers %}
+<table>
+    <thead>
+        <tr>
+            <th>Titulo</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        
+        {% for trailer in trailers %}
+        <tr>
+            <td>{{ trailer.titulo }}</td>
+            <td><a class="btn btn-info" role="button" href="/viewTrailer/{{ trailer.id }}">Ver</a></td>
+        </tr>
+        {% endfor %}
+        
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if trailers.has_previous %}
+            <a href="?page=1">&laquo; primera</a>
+            <a href="?page={{ trailer.previous_page_number }}">anterior</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ trailer.number }} of {{ trailer.paginator.num_pages }}.
+        </span>
+
+        {% if trailers.has_next %}
+            <a href="?page={{ trailers.next_page_number }}">proxima</a>
+            <a href="?page={{ trailers.paginator.num_pages }}">ultima &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% else %}
+        <h4>No hay trailers disponibles</h4>
+{% endif %}
+{% endblock %}

@@ -6,11 +6,21 @@ A_Para actualizar el model.py se debe realizar: python manage.py makemigrations
 B_Traer una rama especifica del repositorio: $ git checkout -b <nombrerama>
  Luego para traer el contenido: git pull origin <nombrerama>
 
-C_Metodo para hacer merge efectivo:
-  -Condicion: Tener tu propio branch sin errores, actualizado y cargado en github.
-  1_tener el visual basic vacio
-  2_traer el branch-master (cargar el repositorio)
-  3_realizar las instrucciones de B con tu branch
-  4_posicionarse en master (git checkout master)
-  5_realizar el merge (git merge <namebranch>)
-  -Como ambas ramas estan recien cargadas, no deberia tener incompatibilidad.
+C_Para realizar el un Merge entre 2 branch, ambos deben estar "commiteados", y antes de hacer el commit del 
+resultado, se debe solucionar todos los Changes ocurridos.
+
+Algunos comandos:
+git branch <newbranch> (crear una nueva rama)
+git branch -d <youbranch> (eliminar una rama)
+git add . & git commit -m <youbranch> (commit local)
+
+
+Rama Luis
+
+preguntas: 
+abrir "ver" en la lista de trailers. Si el trailer esta vinculado a un libro, este boton abre el detalle libro?
+
+hechos:
+-Se hizo la seccion de trailers completamente. el idLibro es opcional.
+-Se realizo los delete Autor/Genero/Editorial correctos. Ej: al eliminar un autor, si existen libros con dicho
+autor, se pone el campo idAutor en None. El formulario de estos sigue siendo obligatorio.

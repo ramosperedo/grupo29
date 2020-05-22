@@ -5,6 +5,20 @@ from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 from datetime import date
 
+
+class TrailerForm(forms.ModelForm):
+    archivo = forms.FileField(required=False, label=('Ingrese una Imagen'))
+    archivoVideo = forms.FileField(required=False, label=('Ingrese un Video'))
+    class Meta:
+        model = Trailer
+        fields = ['titulo','idLibro','descripcion','archivo','archivoVideo']
+        labels = {'titulo':'Titulo','idLibro':'Libro','descripcion':'Descripcion'}
+        widgets = {
+            'titulo' : forms.TextInput(attrs={'class':'form-control'}),
+            'idLibro' : forms.Select(attrs={'class':'form-control'}),
+            'descripcion' : forms.Textarea(attrs={'class':'form-control'})
+        }
+
 class NovedadForm(forms.ModelForm):
     archivo = forms.FileField(required=False, label=('Ingrese una Imagen'))
     archivoVideo = forms.FileField(required=False, label=('Ingrese un Video'))
@@ -41,12 +55,13 @@ class EditorialForm(forms.ModelForm):
 class CapituloForm(forms.ModelForm):
     class Meta:
         model = Capitulo
-        fields = ['nombre','idLibro','archivo']
-        labels = {'nombre':'Nombre','idLibro':'Libro','archivo':'Ingrese el capitulo'}
+        fields = ['nombre','idLibro','archivo','fechaLanzamiento','fechaVencimiento']
+        labels = {'nombre':'Nombre','idLibro':'Libro','archivo':'Ingrese el Capitulo','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento'}
         widgets = {
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
             'idLibro' : forms.Select(attrs={'class':'form-control'}),
-            'archivo' : forms.FileInput(attrs={'class':'form-control'})
+            'fechaLanzamiento' : forms.SelectDateWidget(attrs={'class':'form-control'}),
+            'fechaVencimiento' : forms.SelectDateWidget(attrs={'class':'form-control'})
         }
 
 class LibroForm(forms.ModelForm):
@@ -65,9 +80,9 @@ class LibroForm(forms.ModelForm):
         widgets = {
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
             'isbn' : forms.NumberInput(attrs={'class':'form-control'}),
-            'idAutor' : forms.Select(attrs={'class':'form-control'}),
-            'idGenero' : forms.Select(attrs={'class':'form-control'}),
-            'idEditorial' : forms.Select(attrs={'class':'form-control'}),
+            'idAutor' : forms.Select(attrs={'class':'form-control','required':'true'}),
+            'idGenero' : forms.Select(attrs={'class':'form-control','required':'true'}),
+            'idEditorial' : forms.Select(attrs={'class':'form-control','required':'true'}),
             'descripcion' : forms.Textarea(attrs={'class':'form-control'})
         }
 
@@ -123,9 +138,9 @@ class UserAdminChangeForm(forms.ModelForm):
         # field does not have access to the initial value
         return self.initial["password"]
 
-class LoginForm(forms.Form):
-    username = forms.EmailField(label='E-mail')
-    password = forms.CharField(widget=forms.PasswordInput)
+#class LoginForm(forms.Form):
+#    username = forms.EmailField(label='E-mail')
+#    password = forms.CharField(widget=forms.PasswordInput)
 
 CHOICES = ((0, 'Elija uno'),(1, 'MasterCard'),(2, 'American Express'),(3, 'Visa'),)
 
