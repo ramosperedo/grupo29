@@ -7,7 +7,7 @@ from datetime import date
 
 
 class TrailerForm(forms.ModelForm):
-    archivo = forms.FileField(required=False, label=('Ingrese una Imagen'))
+    archivo = forms.FileField(required=False, label=('Ingrese un archivo'))
     archivoVideo = forms.FileField(required=False, label=('Ingrese un Video'))
     class Meta:
         model = Trailer
@@ -53,16 +53,22 @@ class EditorialForm(forms.ModelForm):
         widgets = {'nombre' : forms.TextInput(attrs={'class':'form-control'})}
 
 class CapituloForm(forms.ModelForm):
+    archivo = forms.FileField(required=True, label=('Ingrese el Capitulo'))
     class Meta:
         model = Capitulo
-        fields = ['nombre','idLibro','archivo','fechaLanzamiento','fechaVencimiento']
-        labels = {'nombre':'Nombre','idLibro':'Libro','archivo':'Ingrese el Capitulo','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento'}
+        fields = ['idLibro','nombre','archivo','fechaLanzamiento','fechaVencimiento']
+        labels = {'nombre':'Nombre','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento'}
         widgets = {
+            'idLibro' : forms.HiddenInput(),
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
-            'idLibro' : forms.Select(attrs={'class':'form-control'}),
             'fechaLanzamiento' : forms.SelectDateWidget(attrs={'class':'form-control'}),
             'fechaVencimiento' : forms.SelectDateWidget(attrs={'class':'form-control'})
         }
+    def clean_idLibro(self):
+        idLibro = self.cleaned_data['idLibro']
+        if idLibro is None:
+            return self.fields['idLibro'].initial
+        return idLibro
 
 class LibroForm(forms.ModelForm):
     foto = forms.FileField(required=False)

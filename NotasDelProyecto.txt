@@ -15,12 +15,5 @@ git branch -d <youbranch> (eliminar una rama)
 git add . & git commit -m <youbranch> (commit local)
 
 
-Rama Luis
-
-preguntas: 
-abrir "ver" en la lista de trailers. Si el trailer esta vinculado a un libro, este boton abre el detalle libro?
-
-hechos:
--Se hizo la seccion de trailers completamente. el idLibro es opcional.
--Se realizo los delete Autor/Genero/Editorial correctos. Ej: al eliminar un autor, si existen libros con dicho
-autor, se pone el campo idAutor en None. El formulario de estos sigue siendo obligatorio.
+fallas:
+El registrar usuario; el Tipo de Tarjeta esta como opcional

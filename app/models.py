@@ -183,8 +183,8 @@ class Libro(models.Model):
 
 class Capitulo(models.Model):
     id = models.AutoField(primary_key=True)
+    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE,blank=True)
     nombre = models.CharField(max_length=50)
-    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
     archivo = models.FileField(upload_to='static/file/')
     fechaLanzamiento = models.DateField()
     fechaVencimiento = models.DateField()
@@ -237,7 +237,7 @@ class Trailer(models.Model):
     idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE,null=True,blank=True)
     titulo = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=1000)
-    archivo = models.ImageField(upload_to='static/images/',null=True,blank=True)
+    archivo = models.FileField(upload_to='static/file/',null=True,blank=True)
     archivoVideo = models.FileField(upload_to='static/videos/',null=True,blank=True)
 
     def __str__(self):

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
 from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm
-from .models import Libro, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
+from .models import Libro, Capitulo, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
@@ -233,24 +233,41 @@ def listTrailers(request):
 def loadFile(request, libro_id):
     return render(request, "admin/loadFile.html", {'libro_id': libro_id})
 
-def loadCapituloCompleto(request,libro_id):
-    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
-    return redirect('/listBooks')
-
-def loadCapituloEnPartes(request,libro_id):
-    #Se pregunta si el capitulo a subir es el ultimo, si es asi se ejecuta la siguiente linea
-    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
-    #tambien, poner el mismo vencimiento del ultimo en todos los capitulos
-    return redirect('/listBooks')
-
-def loadCapitulo(request, libro_id):
+def loadLibroEnCapitulos(request, libro_id):
     form = CapituloForm()
     if request.method == "POST":
-        form = CapituloForm(request.POST)
+        form = CapituloForm(request.POST,request.FILES)
         if form.is_valid():
             instancia = form.save(commit=False)
+            #Eliminamos todos los capitulos anteriores existentes para libro_id
+            Capitulo.objects.filter(idLibro=libro_id).delete()
+            #Actualizamos el estado del libro (Si esta completo o no)
+            #Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+            #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
+            instancia.objects.update(idLibro=libro_id)
             instancia.save()
             return redirect('/')
+    return render(request, "admin/loadCapitulo.html", {'form': form})
+
+def loadLibroCompleto(request, libro_id):
+    form = CapituloForm()
+    if request.method == "POST":
+        form = CapituloForm(request.POST,request.FILES)
+        form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
+        if form.is_valid():
+            print('HOLAAAAAAAAAAAAA')
+            print(form.cleaned_data['idLibro'])
+            print(form.cleaned_data['nombre'])
+            print(form.cleaned_data['fechaLanzamiento'])
+            print(form.cleaned_data['fechaVencimiento'])
+            instancia = form.save(commit=False)
+            #Eliminamos todos los capitulos anteriores existentes para libro_id
+            Capitulo.objects.filter(idLibro=libro_id).delete()
+            #Actualizamos el estado del libro (Si esta completo o no)
+            #Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+            #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
+            instancia.save()
+            return redirect('/listBooks')
     return render(request, "admin/loadCapitulo.html", {'form': form})
 
 def login(request):

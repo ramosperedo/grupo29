@@ -29,7 +29,7 @@
             <td>{{ trailer.titulo }}</td>
             <td><a class="btn btn-info" role="button" href="/viewTrailer/{{ trailer.id }}">Ver</a></td>
             <td><a class="btn btn-primary" role="button" href="/editTrailer/{{ trailer.id }}">Editar</a></td>
-            <td><a class="btn btn-danger" role="button" href="/deleteTrailer/{{ trailer.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{trailer.titulo}}?');"> Borrar</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteTrailer/{{ trailer.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{trailer.titulo}}?');"> Eliminar</a></td>
         </tr>
         {% endfor %}
         
