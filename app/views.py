@@ -83,9 +83,10 @@ def createAutor(request):
 
 def deleteAutor(request, autor_id):
     instancia = Autor.objects.get(id=autor_id)
-    #Antes de eliminar el autor, debo modificar el autor en los libros que lo disponen
-    Libro.objects.filter(idAutor=autor_id).update(idAutor=None)
-    instancia.delete()
+    if Libro.objects.filter(idAutor=autor_id):
+        messages.info(request, 'No se pudo eliminar el autor, revise que no existan libros que lo incluyan')
+    else:
+        instancia.delete()
     return redirect('/listAutores')
 
 def listAutores(request):
@@ -104,8 +105,10 @@ def createGenero(request):
 
 def deleteGenero(request, genero_id):
     instancia = Genero.objects.get(id=genero_id)
-    Libro.objects.filter(idAutor=genero_id).update(idGenero=None)
-    instancia.delete()
+    if Libro.objects.filter(idGenero=genero_id):
+        messages.info(request, 'No se pudo eliminar el genero, revise que no existan libros que lo incluyan')
+    else:
+        instancia.delete()
     return redirect('/listGeneros')
 
 def listGeneros(request):
@@ -124,8 +127,10 @@ def createEditorial(request):
 
 def deleteEditorial(request, editorial_id):
     instancia = Editorial.objects.get(id=editorial_id)
-    Libro.objects.filter(idAutor=editorial_id).update(idEditorial=None)
-    instancia.delete()
+    if Libro.objects.filter(idEditorial=editorial_id):
+        messages.info(request, 'No se pudo eliminar la editorial, revise que no existan libros que la incluyan')
+    else:
+        instancia.delete()
     return redirect('/listEditoriales')
 
 def listEditoriales(request):
@@ -235,19 +240,22 @@ def loadFile(request, libro_id):
 
 def loadLibroEnCapitulos(request, libro_id):
     form = CapituloForm()
+    form2 = RegisterForm3()
+    form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
+    form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
     if request.method == "POST":
         form = CapituloForm(request.POST,request.FILES)
-        if form.is_valid():
+        form2 = RegisterForm3(request.POST)
+        if form.is_valid() and form2.is_valid():
             instancia = form.save(commit=False)
-            #Eliminamos todos los capitulos anteriores existentes para libro_id
-            Capitulo.objects.filter(idLibro=libro_id).delete()
+            completo = form2.cleaned_data.get("premium")
             #Actualizamos el estado del libro (Si esta completo o no)
-            #Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+            if completo:
+                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
             #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
-            instancia.objects.update(idLibro=libro_id)
             instancia.save()
-            return redirect('/')
-    return render(request, "admin/loadCapitulo.html", {'form': form})
+            return redirect('/listBooks')
+    return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
 
 def loadLibroCompleto(request, libro_id):
     form = CapituloForm()
@@ -255,16 +263,11 @@ def loadLibroCompleto(request, libro_id):
         form = CapituloForm(request.POST,request.FILES)
         form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
         if form.is_valid():
-            print('HOLAAAAAAAAAAAAA')
-            print(form.cleaned_data['idLibro'])
-            print(form.cleaned_data['nombre'])
-            print(form.cleaned_data['fechaLanzamiento'])
-            print(form.cleaned_data['fechaVencimiento'])
             instancia = form.save(commit=False)
             #Eliminamos todos los capitulos anteriores existentes para libro_id
             Capitulo.objects.filter(idLibro=libro_id).delete()
             #Actualizamos el estado del libro (Si esta completo o no)
-            #Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+            Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
             #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
             instancia.save()
             return redirect('/listBooks')

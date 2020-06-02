@@ -22,10 +22,8 @@
             <th>Accion</th>
             <th>Accion</th>
             <th>Accion</th>
-            {% if not libro.ultimoCapitulo %}
             <th>Accion</th>
             <th>Accion</th>
-            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -48,7 +46,7 @@
             <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" >Eliminar</a></td>
             {% if not libro.ultimoCapitulo %}
             <td><a class="btn btn-warning" role="button" href="/loadLibroCompleto/{{ libro.id }}">Subir Libro Completo</a></td>
-            <td><a class="btn btn-warning" role="button" href="/loadFile/{{ libro.id }}">Subir Libro por Capitulos</a></td>
+            <td><a class="btn btn-warning" role="button" href="/loadLibroEnCapitulos/{{ libro.id }}">Subir Libro por Capitulos</a></td>
             {% endif %}
         </tr>
         {% endfor %}
