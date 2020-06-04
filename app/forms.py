@@ -3,8 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
-from datetime import date
-
+from datetime import date, datetime
 
 class TrailerForm(forms.ModelForm):
     archivo = forms.FileField(required=False, label=('Ingrese un archivo'))
