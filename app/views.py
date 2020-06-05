@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm
+from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm, BuscadorForm
 from .models import Libro, Capitulo, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
@@ -356,14 +356,48 @@ def infoSuscriptor(request, num=0):
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
 
 
-def inicio(request):
-    if request.user.is_authenticated:
-        if request.user.is_superuser == 1:
-            return render(request, "users/welcome.html")
-        else:
-            return render(request, "users/home.html")
-    return redirect('/login')
+#def inicio(request):
+    #form = BuscadorForm()
+    #if request.user.is_authenticated:
+        #if request.user.is_superuser == 1:
+            #return render(request, "users/welcome.html",{'form': form})
+        #else:
+            #return render(request, "users/home.html",{'form': form})
+    #return redirect('/login')
 
 def logout(request):
     do_logout(request)
     return redirect('/')
+
+def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
+    #averiguar si buscar una cadena vacia implica algun resultado
+    BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
+    BuscandoAutor = Autor.objects.filter(nombre__contains=autor).first()
+    if BuscandoAutor is not None:
+        BuscandoLibro = BuscandoLibro.filter(idAutor=BuscandoAutor.id)
+    BuscandoGenero = Genero.objects.filter(nombre__contains=genero).first()
+    if BuscandoGenero is not None:
+        BuscandoLibro = BuscandoLibro.filter(idGenero=BuscandoGenero.id)
+    BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial).first()
+    if BuscandoEditorial is not None:
+        BuscandoLibro = BuscandoLibro.filter(idEditorial=BuscandoEditorial.id)
+    if BuscandoLibro.count() == 0:
+        return ""
+    else:
+        return BuscandoLibro
+
+def inicio(request):
+    form = BuscadorForm(request.POST or None)
+    if request.user.is_authenticated:
+        resultado=""
+        if form.is_valid():
+            nombre = form.cleaned_data.get("nombre")
+            autor  = form.cleaned_data.get("autor")
+            genero  = form.cleaned_data.get("genero")
+            editorial  = form.cleaned_data.get("editorial")
+            resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
+        if request.user.is_superuser == 1:
+            return render(request, "users/welcome.html",{'form': form,'res':resultado})
+        else:
+            return render(request, "users/home.html",{'form': form,'res':resultado})
+    return redirect('/login')

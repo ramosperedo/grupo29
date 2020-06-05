@@ -13,3 +13,8 @@
 .form {
     width: 450px;
  }
+ /* en teroria esto deberia de alinear el contenido de las tablas en la parte superior
+td {
+    vertical-align: text-top;
+}
+*/

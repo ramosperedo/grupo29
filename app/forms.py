@@ -235,4 +235,10 @@ class TipoTarjetaForm(forms.ModelForm):
     class Meta:
         model = TipoTarjeta
         fields = ('nombre',)
-        
+
+class BuscadorForm(forms.Form):
+    nombre = forms.CharField(required=False,label="Nombre", widget=forms.TextInput(attrs={'class':'form-control'}))
+    autor = forms.CharField(required=False,label="Autor", widget=forms.TextInput(attrs={'class':'form-control'}))
+    genero = forms.CharField(required=False,label="Genero", widget=forms.TextInput(attrs={'class':'form-control'}))
+    editorial = forms.CharField(required=False,label="Editorial", widget=forms.TextInput(attrs={'class':'form-control'}))
+    
