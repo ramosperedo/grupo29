@@ -372,15 +372,25 @@ def logout(request):
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
     #averiguar si buscar una cadena vacia implica algun resultado
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
-    BuscandoAutor = Autor.objects.filter(nombre__contains=autor).first()
-    if BuscandoAutor is not None:
-        BuscandoLibro = BuscandoLibro.filter(idAutor=BuscandoAutor.id)
-    BuscandoGenero = Genero.objects.filter(nombre__contains=genero).first()
-    if BuscandoGenero is not None:
-        BuscandoLibro = BuscandoLibro.filter(idGenero=BuscandoGenero.id)
-    BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial).first()
-    if BuscandoEditorial is not None:
-        BuscandoLibro = BuscandoLibro.filter(idEditorial=BuscandoEditorial.id)
+    print (BuscandoLibro)
+    if autor != "":
+        BuscandoAutor = Autor.objects.filter(nombre__contains=autor).first()
+        print (BuscandoAutor.id)
+        if BuscandoAutor is not None:
+            BuscandoLibro = BuscandoLibro.filter(idAutor=BuscandoAutor.id)
+    if genero != "":
+        BuscandoGenero = Genero.objects.filter(nombre__contains=genero).first()
+        print (BuscandoLibro)
+        print (BuscandoGenero)
+        if BuscandoGenero is not None:
+            BuscandoLibro = BuscandoLibro.filter(idGenero=BuscandoGenero.id)
+    if editorial != "":
+        BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial).first()
+        print (BuscandoLibro)
+        print (BuscandoEditorial)
+        if BuscandoEditorial is not None:
+            BuscandoLibro = BuscandoLibro.filter(idEditorial=BuscandoEditorial.id)
+    print (BuscandoLibro)
     if BuscandoLibro.count() == 0:
         return ""
     else:
