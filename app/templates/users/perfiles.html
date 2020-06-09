@@ -3,10 +3,29 @@
 {% block suscriptor %}
 
 <h2>Elija un Perfil</h2>
+
 <br />  <br />  <br />
 
-  <a class="btn btn-info" role="button" href="{% url 'inicio' %}">{{user.nombre}}{{user.apellido}}</a>
-
-
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <a class="btn btn-info" role="button" href="{% url 'inicio' %}">{{user.nombre}}{{user.apellido}}</a>
+    </div>
+    <div class="col-sm">
+      Perfil 2
+    </div>
+    <div class="col-sm">
+      Perfil 3
+    </div>
+    <div class="col-sm">
+      Perfil 4
+    </div>
+    <div class="col-sm">
+      <form method="get" action="/createPerfil">
+        <button class="btn btn-success" type="submit">Crear Perfil</button>
+      </form>
+    </div>
+  </div>
+</div>
   
 {% endblock %}

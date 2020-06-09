@@ -20,31 +20,35 @@
     <strong>Libro: </strong> {% if obj.idLibro %} {{obj.idLibro}} {% else %} No disponible actualmente {% endif %}
     <p>{{obj.descripcion}}</p>
 
-    {% if obj.archivo %}
-    <img src= "/{{obj.archivo}}"></img>
-    {% endif %}
-
     {% if obj.archivoVideo %}
+    <h3>Video del Trailer</h3>
     <video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
+    {% endif %}
+    
+    {% if obj.archivo %}
+    <h3>Archivo del Trailer</h3>
+    <embed src="/{{obj.archivo}}" width="800px" height="1000px" />
     {% endif %}
 
 {% endblock %}}
 
 {% block suscriptor %}
+    <form method="get" action="/listTrailers">
+        <button class="btn btn-secondary" type="submit">Volver</button>
+    </form>
    
     <h2>{{obj.titulo}}</h2>
     <strong>Libro: </strong> {% if obj.idLibro %} {{obj.idLibro}} {% else %} No disponible actualmente {% endif %}
     <p>{{obj.descripcion}}</p>
 
-    {% if obj.archivo %}
-    <img src= "/{{obj.archivo}}"></img>
-    {% endif %}
-
     {% if obj.archivoVideo %}
+    <h3>Video del Trailer</h3>
     <video controls autoplay src= "/{{obj.archivoVideo}}" type="video/mp4"></video>
     {% endif %}
 
-    <form method="get" action="/listTrailers">
-        <button class="btn btn-secondary" type="submit">Volver</button>
-    </form>
+    {% if obj.archivo %}
+    <h3>Archivo del Trailer</h3>
+    <embed src="/{{obj.archivo}}" width="800px" height="1000px" />
+    {% endif %}
+
 {% endblock %}
