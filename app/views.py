@@ -9,6 +9,7 @@ from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.db.models.query import EmptyQuerySet
 import os
 
 
@@ -373,24 +374,47 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
     #averiguar si buscar una cadena vacia implica algun resultado
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
     print (BuscandoLibro)
+    querysetvacio = Libro.objects.none()
+    print (querysetvacio)
     if autor != "":
-        BuscandoAutor = Autor.objects.filter(nombre__contains=autor).first()
-        print (BuscandoAutor.id)
+        BuscandoAutor = Autor.objects.filter(nombre__contains=autor)
         if BuscandoAutor is not None:
-            BuscandoLibro = BuscandoLibro.filter(idAutor=BuscandoAutor.id)
+            for autores in BuscandoAutor:
+                print (autores.id)
+                temp = BuscandoLibro.filter(idAutor=autores.id)
+                print (temp)
+                querysetvacio = querysetvacio.union(temp)
+            print ('aca esta el queryset recolector de autor')
+            print (querysetvacio)
     if genero != "":
-        BuscandoGenero = Genero.objects.filter(nombre__contains=genero).first()
+        BuscandoGenero = Genero.objects.filter(nombre__contains=genero)
         print (BuscandoLibro)
         print (BuscandoGenero)
         if BuscandoGenero is not None:
-            BuscandoLibro = BuscandoLibro.filter(idGenero=BuscandoGenero.id)
+            for generos in BuscandoGenero:
+                print (generos.id)
+                temp = BuscandoLibro.filter(idGenero=generos.id)
+                print (temp)
+                querysetvacio = querysetvacio.union(temp)
+            print ('aca esta el queryset recolector de genero')
+            print (querysetvacio)
     if editorial != "":
-        BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial).first()
+        BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial)
         print (BuscandoLibro)
         print (BuscandoEditorial)
         if BuscandoEditorial is not None:
-            BuscandoLibro = BuscandoLibro.filter(idEditorial=BuscandoEditorial.id)
+            for editoriales in BuscandoEditorial:
+                print (editoriales.id)
+                temp = BuscandoLibro.filter(idEditorial=editoriales.id)
+                print (temp)
+                querysetvacio = querysetvacio.union(temp)
+            print ('aca esta el queryset recolector de editorial')
+            print (querysetvacio)
     print (BuscandoLibro)
+    if isinstance(querysetvacio, EmptyQuerySet):
+        querysetvacio = BuscandoLibro
+    else:
+        BuscandoLibro = BuscandoLibro.intersection(querysetvacio)
     if BuscandoLibro.count() == 0:
         return ""
     else:

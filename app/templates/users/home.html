@@ -41,11 +41,17 @@
 {% if res == "" %}
     <a>No se Encontró resultados</a>
 {% else %}
+<table>
+  
   {% for resultado in res %}
   <tr>
+  <td>
     {{resultado.nombre}}
+  </td>
   </tr>
   {% endfor %}
+
+</table>
 {% endif %}
   
 </td>
