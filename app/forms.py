@@ -2,14 +2,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
-<<<<<<< HEAD
-from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
-from datetime import date, datetime
-=======
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta, Perfil
-from datetime import date
-
->>>>>>> luisbranch6
+from datetime import date, datetime
 
 class PerfilForm(forms.ModelForm):
     class Meta:
