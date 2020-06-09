@@ -2,13 +2,14 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm, PerfilForm
+from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm, PerfilForm, BuscadorForm
 from .models import Configuracion, Libro, Capitulo, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta, Perfil, PerfilManager
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.db.models.query import EmptyQuerySet
 import os
 
 
@@ -364,6 +365,59 @@ def infoSuscriptor(request, num=0):
     else:
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
 
+def logout(request):
+    do_logout(request)
+    return redirect('/')
+
+def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
+    #averiguar si buscar una cadena vacia implica algun resultado
+    BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
+    print (BuscandoLibro)
+    querysetvacio = Libro.objects.none()
+    print (querysetvacio)
+    if autor != "":
+        BuscandoAutor = Autor.objects.filter(nombre__contains=autor)
+        if BuscandoAutor is not None:
+            for autores in BuscandoAutor:
+                print (autores.id)
+                temp = BuscandoLibro.filter(idAutor=autores.id)
+                print (temp)
+                querysetvacio = querysetvacio.union(temp)
+            print ('aca esta el queryset recolector de autor')
+            print (querysetvacio)
+    if genero != "":
+        BuscandoGenero = Genero.objects.filter(nombre__contains=genero)
+        print (BuscandoLibro)
+        print (BuscandoGenero)
+        if BuscandoGenero is not None:
+            for generos in BuscandoGenero:
+                print (generos.id)
+                temp = BuscandoLibro.filter(idGenero=generos.id)
+                print (temp)
+                querysetvacio = querysetvacio.union(temp)
+            print ('aca esta el queryset recolector de genero')
+            print (querysetvacio)
+    if editorial != "":
+        BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial)
+        print (BuscandoLibro)
+        print (BuscandoEditorial)
+        if BuscandoEditorial is not None:
+            for editoriales in BuscandoEditorial:
+                print (editoriales.id)
+                temp = BuscandoLibro.filter(idEditorial=editoriales.id)
+                print (temp)
+                querysetvacio = querysetvacio.union(temp)
+            print ('aca esta el queryset recolector de editorial')
+            print (querysetvacio)
+    print (BuscandoLibro)
+    if isinstance(querysetvacio, EmptyQuerySet):
+        querysetvacio = BuscandoLibro
+    else:
+        BuscandoLibro = BuscandoLibro.intersection(querysetvacio)
+    if BuscandoLibro.count() == 0:
+        return ""
+    else:
+        return BuscandoLibro
 
 def administrarPerfiles(request):
     config = Configuracion.objects.all()
@@ -381,13 +435,17 @@ def createPerfil(request):
     return render(request, "users/createPerfil.html", {'form': form})
 
 def inicio(request):
+    form = BuscadorForm(request.POST or None)
     if request.user.is_authenticated:
+        resultado=""
+        if form.is_valid():
+            nombre = form.cleaned_data.get("nombre")
+            autor  = form.cleaned_data.get("autor")
+            genero  = form.cleaned_data.get("genero")
+            editorial  = form.cleaned_data.get("editorial")
+            resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
         if request.user.is_superuser == 1:
-            return render(request, "users/welcome.html")
+            return render(request, "users/welcome.html",{'form': form,'res':resultado})
         else:
-            return render(request, "users/home.html")
+            return render(request, "users/home.html",{'form': form,'res':resultado})
     return redirect('/login')
-
-def logout(request):
-    do_logout(request)
-    return redirect('/')

@@ -3,12 +3,10 @@
 {% block suscriptor %}
 
 <h2>Bienvenido <strong>{{user.nombre}}{{user.apellido}}</strong></h2>
-
-  <p>Bienvenido <b>{{request.user.email}}</b>, esta página es exclusiva para usuarios registrados.</p>
-
   <hr />
-
-
+<table>
+  <tr>
+    <td valign="top">
 <ul>
   <li>
     <form method="get" action="/listBooks">
@@ -27,8 +25,38 @@
   </li>
 
 </ul>
-
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+<div class="abs-center">
+  <form method="POST">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Buscar</button>
+  </form>
+</div>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td valign="top">
+{% if res == "" %}
+    <a>No se Encontró resultados</a>
+{% else %}
+<table>
   
+  {% for resultado in res %}
+  <tr>
+  <td>
+    {{resultado.nombre}}
+  </td>
+  </tr>
+  {% endfor %}
+
+</table>
+{% endif %}
+  
+</td>
+</tr>
+</table>
 {% endblock %}
 
 
