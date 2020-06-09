@@ -2,8 +2,29 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
+<<<<<<< HEAD
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta
 from datetime import date, datetime
+=======
+from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta, Perfil
+from datetime import date
+
+>>>>>>> luisbranch6
+
+class PerfilForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ['idSuscriptor','nombre']
+        labels = {'nombre':'Nombre'}
+        widgets = {
+            'idSuscriptor' : forms.HiddenInput(),
+            'nombre' : forms.TextInput(attrs={'class':'form-control'})
+        }
+    def clean_idSuscriptor(self):
+        idSuscriptor = self.cleaned_data['idSuscriptor']
+        if idSuscriptor is None:
+            return self.fields['idSuscriptor'].initial
+        return idSuscriptor
 
 class TrailerForm(forms.ModelForm):
     archivo = forms.FileField(required=False, label=('Ingrese un archivo'))
@@ -55,11 +76,12 @@ class CapituloForm(forms.ModelForm):
     archivo = forms.FileField(required=True, label=('Ingrese el Capitulo'))
     class Meta:
         model = Capitulo
-        fields = ['idLibro','nombre','archivo','fechaLanzamiento','fechaVencimiento']
-        labels = {'nombre':'Nombre','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento'}
+        fields = ['idLibro','nombre','numero','archivo','fechaLanzamiento','fechaVencimiento']
+        labels = {'nombre':'Nombre','numero':'Numero de capitulo','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento'}
         widgets = {
             'idLibro' : forms.HiddenInput(),
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
+            'numero' : forms.NumberInput(attrs={'class':'form-control'}),
             'fechaLanzamiento' : forms.SelectDateWidget(attrs={'class':'form-control'}),
             'fechaVencimiento' : forms.SelectDateWidget(attrs={'class':'form-control'})
         }
