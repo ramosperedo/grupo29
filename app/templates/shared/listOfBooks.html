@@ -30,16 +30,8 @@
         {% for libro in libros %}
         <tr>
             <td>{{ libro.nombre }}</td>
-            {% if libro.idGenero %}
             <td>{{ libro.idGenero }}</td>
-            {% else %}
-            <td>No disponible</td>
-            {% endif %}
-            {% if libro.idAutor %}
             <td>{{ libro.idAutor }}</td>
-            {% else %}
-            <td>No disponible</td>
-            {% endif %}
             <td>-</td>
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
@@ -95,16 +87,8 @@
         {% for libro in libros %}
         <tr>
             <td>{{ libro.nombre }}</td>
-            {% if libro.idGenero %}
             <td>{{ libro.idGenero }}</td>
-            {% else %}
-            <td>No disponible</td>
-            {% endif %}
-            {% if libro.idAutor %}
             <td>{{ libro.idAutor }}</td>
-            {% else %}
-            <td>No disponible</td>
-            {% endif %}
             <td>-</td>
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
         {% endfor %}

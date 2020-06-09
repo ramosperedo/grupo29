@@ -1,0 +1,15 @@
+{% extends 'default/layout.html' %}
+
+{% block suscriptor %}
+
+<h2>Crear Perfil</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {{ form.as_p }}
+    {{ form2.as_p }}
+    {% csrf_token %}
+    <button class="btn btn-success" type="submit">Crear</button>
+    <a class="btn btn-secondary" role="button" href="/perfiles">Volver</a>
+</form>
+
+{% endblock %}
