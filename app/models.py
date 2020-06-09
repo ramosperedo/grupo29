@@ -177,6 +177,8 @@ class Libro(models.Model):
     foto = models.ImageField(upload_to='images/',null=True,blank=True)
     vistos = models.IntegerField(null=True, default=0)
     ultimoCapitulo = models.BooleanField(default=False)
+    fechaLanzamientoFinal = models.DateField(null=True)
+    fechaVencimientoFinal = models.DateField(null=True)
 
     def __str__(self):
         return self.nombre
@@ -185,6 +187,7 @@ class Capitulo(models.Model):
     id = models.AutoField(primary_key=True)
     idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE,blank=True)
     nombre = models.CharField(max_length=50,unique=True)
+    numero = models.IntegerField(unique=True,default=0)
     archivo = models.FileField(upload_to='static/file/')
     fechaLanzamiento = models.DateField()
     fechaVencimiento = models.DateField()
@@ -192,11 +195,21 @@ class Capitulo(models.Model):
     def __str__(self):
         return self.nombre
 
+class PerfilManager(models.Manager):
+    def create_perfil(nombre,idSuscriptor):
+        perfil_obj = Perfil()
+        perfil_obj.nombre = nombre
+        perfil_obj.idSuscriptor = idSuscriptor
+        perfil_obj.save()
+        return perfil_obj
+
 class Perfil(models.Model):
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
-    foto = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50,unique=True)
+    foto = models.CharField(max_length=50,null=True,blank=True)
     idSuscriptor = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    objects = PerfilManager()
     
     def __str__(self):
         return self.nombre

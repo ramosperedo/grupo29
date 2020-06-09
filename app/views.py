@@ -2,8 +2,8 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
-from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm
-from .models import Libro, Capitulo, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta
+from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm, PerfilForm
+from .models import Configuracion, Libro, Capitulo, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta, Perfil, PerfilManager
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
@@ -66,10 +66,11 @@ def deleteBook(request, libro_id):
 
 def listBooks(request):
     libros = Libro.objects.all().order_by('vistos')
+    capitulos = Capitulo.objects.all()
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, "shared/listOfBooks.html", {'libros': page_obj})
+    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'capitulos': capitulos})
 
 def createAutor(request):
     form = AutorForm()
@@ -241,17 +242,26 @@ def loadFile(request, libro_id):
 def loadLibroEnCapitulos(request, libro_id):
     form = CapituloForm()
     form2 = RegisterForm3()
+    capitulos = Capitulo.objects.filter(idLibro=libro_id)
+    if capitulos:
+        numero = capitulos.order_by('-numero').first().numero
+        form.fields['numero'].initial = numero + 1
+    else:
+        form.fields['numero'].initial = 1
     form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
     form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
     if request.method == "POST":
         form = CapituloForm(request.POST,request.FILES)
         form2 = RegisterForm3(request.POST)
         if form.is_valid() and form2.is_valid():
+            fechaV = form.cleaned_data['fechaVencimiento']
+            fechaL = form.cleaned_data['fechaLanzamiento']
             instancia = form.save(commit=False)
             completo = form2.cleaned_data.get("premium")
-            #Actualizamos el estado del libro (Si esta completo o no)
+            #Actualizamos el estado del libro (Si esta completo o no, las fechas de vencimiento y lanzamiento)
             if completo:
-                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaLanzamientoFinal=fechaL, fechaVencimientoFinal=fechaV)
+                Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
             #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
             instancia.save()
             return redirect('/listBooks')
@@ -298,7 +308,6 @@ def register(request):
         "form": form, "form2": form2, "form3": form3
     }
     if form.is_valid() and form2.is_valid() and form3.is_valid():
-        print(form.cleaned_data)
         nombre = form.cleaned_data.get("nombre")
         apellido  = form.cleaned_data.get("apellido")
         email  = form.cleaned_data.get("email")
@@ -309,11 +318,11 @@ def register(request):
         numero = form2.cleaned_data.get("numero")
         clave = form2.cleaned_data.get("clave")
         fechaVencimiento = form2.cleaned_data.get("fechaVencimiento")
-
         new_tarj = TarjetaManager.create_tarjeta(dni,numero,clave,fechaVencimiento,tipo)
         new_user  = User.objects.create_suscriptor(nombre, apellido, email, premium, password,new_tarj.id)
         print(new_user)#en la anterior linea el orden de los datos del usuario no son en ese orden
         if new_user is not None:#pero por un bug raro lo tube que cambiar para que registre bien
+            PerfilManager.create_perfil(nombre+apellido,new_user.id)
             do_login(request, new_user)#si se llega a arreglar el orden es nombre, apellido, email, pass, idtarjeta
             return redirect('/')
 
@@ -355,6 +364,21 @@ def infoSuscriptor(request, num=0):
     else:
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
 
+
+def administrarPerfiles(request):
+    config = Configuracion.objects.all()
+    return render(request, "users/perfiles.html",{'config': config})
+
+def createPerfil(request):
+    form = PerfilForm()
+    if request.method == "POST":
+        form = CapituloForm(request.POST)
+        form.fields['idSuscriptor'].initial = User.objects.get(id=request.user.id)
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.save()
+            return redirect('/administrarPerfiles')
+    return render(request, "users/createPerfil.html", {'form': form})
 
 def inicio(request):
     if request.user.is_authenticated:

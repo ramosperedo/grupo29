@@ -53,6 +53,8 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('infoSuscriptor/<int:num>', views.infoSuscriptor),
+    path('perfiles/', views.administrarPerfiles),
+    path('createPerfil/', views.createPerfil),
     path('inicio', views.inicio, name='inicio'),
     path('editarSuscriptor/<int:sus_id>', views.editarSuscriptor, name='editarsus'),
 
