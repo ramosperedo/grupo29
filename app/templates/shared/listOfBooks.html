@@ -12,6 +12,7 @@
     <button class="btn btn-secondary" type="submit">Volver</button>
 </form>
 </div>
+{% if libros %}
 <table>
     <thead>
         <tr>
@@ -32,7 +33,11 @@
             <td>{{ libro.nombre }}</td>
             <td>{{ libro.idGenero }}</td>
             <td>{{ libro.idAutor }}</td>
-            <td>-</td>
+            {% if libro.fechaVencimientoFinal %}
+            <td>{{ libro.fechaVencimientoFinal }}</td>
+            {% else %}
+            <td>---</td>
+            {% endif %}
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
             <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" >Eliminar</a></td>
@@ -63,6 +68,9 @@
     </span>
 </div>
 
+{% else %}
+    <h4>No hay libros disponibles</h4>
+{% endif %}
 {% endblock %}
 
 {% block suscriptor %}
@@ -72,7 +80,7 @@
 <form method="get" action="/inicio">
     <button class="btn btn-secondary" type="submit">Volver</button>
 </form>
-
+{% if librosActivos %}
 <table>
     <thead>
         <tr>
@@ -84,12 +92,12 @@
         </tr>
     </thead>
     <tbody>
-        {% for libro in libros %}
+        {% for libro in librosActivos %}
         <tr>
             <td>{{ libro.nombre }}</td>
             <td>{{ libro.idGenero }}</td>
             <td>{{ libro.idAutor }}</td>
-            <td>-</td>
+            <td>{{ libro.fechaVencimientoFinal }}</td>
             <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
         {% endfor %}
     </tbody>
@@ -112,4 +120,7 @@
     </span>
 </div>
 
+{% else %}
+    <h4>No hay libros disponibles</h4>
+{% endif %}
 {% endblock %}
