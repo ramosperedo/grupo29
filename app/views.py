@@ -9,8 +9,12 @@ from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
+<<<<<<< HEAD
 from django.db.models.query import EmptyQuerySet
 import os
+=======
+import os, datetime
+>>>>>>> luisbranch6
 
 
 def createBook(request):
@@ -66,12 +70,19 @@ def deleteBook(request, libro_id):
     return redirect('/listBooks')
 
 def listBooks(request):
+    now = datetime.date.today()
     libros = Libro.objects.all().order_by('vistos')
+    librosActivos = []
+    for libro in libros:
+        cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
+        if cumple:
+            librosActivos.append(libro)
+            Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=cumple.first().fechaVencimiento)
     capitulos = Capitulo.objects.all()
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'capitulos': capitulos})
+    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'librosActivos': librosActivos})
 
 def createAutor(request):
     form = AutorForm()
@@ -256,12 +267,11 @@ def loadLibroEnCapitulos(request, libro_id):
         form2 = RegisterForm3(request.POST)
         if form.is_valid() and form2.is_valid():
             fechaV = form.cleaned_data['fechaVencimiento']
-            fechaL = form.cleaned_data['fechaLanzamiento']
             instancia = form.save(commit=False)
             completo = form2.cleaned_data.get("premium")
-            #Actualizamos el estado del libro (Si esta completo o no, las fechas de vencimiento y lanzamiento)
+            #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
             if completo:
-                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaLanzamientoFinal=fechaL, fechaVencimientoFinal=fechaV)
+                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
                 Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
             #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
             instancia.save()
@@ -274,11 +284,13 @@ def loadLibroCompleto(request, libro_id):
         form = CapituloForm(request.POST,request.FILES)
         form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
         if form.is_valid():
+            fechaV = form.cleaned_data['fechaVencimiento']
+            fechaL = form.cleaned_data['fechaLanzamiento']
             instancia = form.save(commit=False)
             #Eliminamos todos los capitulos anteriores existentes para libro_id
             Capitulo.objects.filter(idLibro=libro_id).delete()
             #Actualizamos el estado del libro (Si esta completo o no)
-            Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+            Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaLanzamientoFinal=fechaL, fechaVencimientoFinal=fechaV)
             #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
             instancia.save()
             return redirect('/listBooks')
