@@ -9,12 +9,9 @@ from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
-<<<<<<< HEAD
 from django.db.models.query import EmptyQuerySet
-import os
-=======
 import os, datetime
->>>>>>> luisbranch6
+
 
 
 def createBook(request):
@@ -68,21 +65,23 @@ def deleteBook(request, libro_id):
     instancia.delete()
     # Después redireccionamos de nuevo a la lista
     return redirect('/listBooks')
-
-def listBooks(request):
+def libros_activos(libros):
     now = datetime.date.today()
-    libros = Libro.objects.all().order_by('vistos')
-    librosActivos = []
+    librosActivos = Libro.objects.none()
     for libro in libros:
         cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
         if cumple:
-            librosActivos.append(libro)
+            librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id))
             Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=cumple.first().fechaVencimiento)
+    return librosActivos
+
+def listBooks(request):
+    libros = Libro.objects.filter().order_by('vistos')
     capitulos = Capitulo.objects.all()
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'librosActivos': librosActivos})
+    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'librosActivos': libros_activos(libros)})
 
 def createAutor(request):
     form = AutorForm()
@@ -383,7 +382,10 @@ def logout(request):
 
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
     #averiguar si buscar una cadena vacia implica algun resultado
+    BuscandoLibro = Libro.objects.none()
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
+    if admin == 0:
+        BuscandoLibro = libros_activos(BuscandoLibro)
     print (BuscandoLibro)
     querysetvacio = Libro.objects.none()
     print (querysetvacio)
@@ -449,13 +451,15 @@ def createPerfil(request):
 def inicio(request):
     form = BuscadorForm(request.POST or None)
     if request.user.is_authenticated:
-        resultado=""
+        resultado="-"
         if form.is_valid():
             nombre = form.cleaned_data.get("nombre")
             autor  = form.cleaned_data.get("autor")
             genero  = form.cleaned_data.get("genero")
             editorial  = form.cleaned_data.get("editorial")
-            resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
+            datos = nombre+autor+genero+editorial
+            if datos !="":
+                resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
         if request.user.is_superuser == 1:
             return render(request, "users/welcome.html",{'form': form,'res':resultado})
         else:
