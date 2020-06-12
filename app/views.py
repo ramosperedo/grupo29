@@ -9,12 +9,8 @@ from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
-<<<<<<< HEAD
 from django.db.models.query import EmptyQuerySet
-import os
-=======
 import os, datetime
->>>>>>> luisbranch6
 
 
 def createBook(request):
