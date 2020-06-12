@@ -357,24 +357,18 @@ def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
             messages.success(request, 'se modificó sus datos!!')
     return render(request, "users/editar.html", {'form': form,'form2': form2})
 
-def infoSuscriptor(request, num=0):
+def infoSuscriptor(request):
     try:
-        datosSuscriptor = User.objects.get(pk=num)
-        print(datosSuscriptor.email)
+        datosSuscriptor = User.objects.get(pk=request.user.id)
         datosTarjeta = Tarjeta.objects.get(id=datosSuscriptor.idTarjeta)
-        print(datosTarjeta.dni)
         nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
-        print(nombreTipoTarjeta.nombre)
     except Exception as e:
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"ACCESO NO PERMITIDO"})
 
-    if request.user.id == num:
-        if datosSuscriptor is not None:
-            return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
-        else:
-            return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
+    if datosSuscriptor is not None:
+        return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
     else:
-        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
 
 def logout(request):
     do_logout(request)
@@ -465,3 +459,10 @@ def inicio(request):
         else:
             return render(request, "users/home.html",{'form': form,'res':resultado})
     return redirect('/login')
+
+def historial(request):
+    resultado = Libro.objects.raw("SELECT app_libro.id, app_libro.id AS libro_id, app_libro.nombre AS nombre_libro, app_autor.id,app_autor.id AS autor_id,app_autor.nombre AS nombre_autor FROM app_libro, app_autor WHERE app_libro.idAutor_id=app_autor.id")
+    for obj in resultado:
+        print (obj.libro_id,"-",obj.autor_id)
+    return render(request, "users/historial.html",{'libros':resultado})
+#necesito hacer un join entre el historial, capitulo y el libro

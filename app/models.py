@@ -232,7 +232,7 @@ class Recomendaciones(models.Model):
 class Historial(models.Model):
     id = models.AutoField(primary_key=True)
     idPerfil = models.ForeignKey(Perfil,on_delete=models.CASCADE)
-    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
+    idCapitulo = models.ForeignKey(Capitulo,on_delete=models.CASCADE)
 
 class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
