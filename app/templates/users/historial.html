@@ -9,14 +9,32 @@
 </ul>
 {% endif %}
 
-
-
 <table>
-  <tr>
-    
-
-  </tr>
+    {% if mensaje == "" %}
+        <tr>
+            <th>Nombre del Libro</th>
+            <th>Capitulo</th>
+            <th>Enlace</th>
+        </tr>
+        {% for resultado in libros %}
+        <tr>
+            <td valign="top">
+                <strong>{{resultado.libro_nombre}}</strong>
+            </td>
+            <td width="150px" align="center">
+                {{resultado.capitulo_nombre}}
+            </td>
+            <td valign="top">
+                {{resultado.libro_id}}
+            </td>
+        </tr>
+        {% endfor %}
+    {% else %}
+    <tr><td valign="top"><p>{{mensaje}}</p></td></tr>
+    {% endif %}
 </table>
+
+
 <hr />
   
   

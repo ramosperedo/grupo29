@@ -460,9 +460,48 @@ def inicio(request):
             return render(request, "users/home.html",{'form': form,'res':resultado})
     return redirect('/login')
 
+""" 
+esta es la consulta sql del historial
+SELECT 
+app_historial.id,
+app_capitulo.id,
+app_libro.id,
+app_historial.id AS historial_id,
+app_capitulo.id AS capitulo_id,
+app_libro.id AS libro_id, 
+app_capitulo.nombre AS capitulo_nombre,
+app_libro.nombre AS libro_nombre,
+app_capitulo.fechaLanzamiento,
+app_capitulo.fechaVencimiento 
+FROM 
+app_historial,app_capitulo,app_libro 
+WHERE 
+app_historial.idCapitulo_id = app_capitulo.id AND 
+app_capitulo.idLibro_id = app_libro.id AND 
+app_historial.idPerfil_id = 1    
+"""
 def historial(request):
-    resultado = Libro.objects.raw("SELECT app_libro.id, app_libro.id AS libro_id, app_libro.nombre AS nombre_libro, app_autor.id,app_autor.id AS autor_id,app_autor.nombre AS nombre_autor FROM app_libro, app_autor WHERE app_libro.idAutor_id=app_autor.id")
+    lista = [] 
+    now = datetime.date.today()
+    nombre_temporal=""
+    mensaje="no se encontro resultados"
+    resultado = Libro.objects.raw("SELECT app_historial.id,app_capitulo.id,app_libro.id,app_historial.id AS historial_id,app_capitulo.id AS capitulo_id,app_libro.id AS libro_id, app_capitulo.nombre AS capitulo_nombre,app_libro.nombre AS libro_nombre,app_capitulo.fechaLanzamiento,app_capitulo.fechaVencimiento FROM app_historial,app_capitulo,app_libro WHERE app_historial.idCapitulo_id = app_capitulo.id AND app_capitulo.idLibro_id = app_libro.id AND app_historial.idPerfil_id = "+str(1))
     for obj in resultado:
-        print (obj.libro_id,"-",obj.autor_id)
-    return render(request, "users/historial.html",{'libros':resultado})
-#necesito hacer un join entre el historial, capitulo y el libro
+        if obj.fechaLanzamiento < now and obj.fechaVencimiento > now :
+            datos = {
+                        "historial_id": obj.historial_id,
+                        "capitulo_id": obj.capitulo_id,
+                        "libro_id": obj.libro_id,
+                        "capitulo_nombre": obj.capitulo_nombre,
+                        "libro_nombre": obj.libro_nombre if (obj.libro_nombre != nombre_temporal) else "",
+                        "fechaLanzamiento": obj.fechaLanzamiento,
+                        "fechaVencimiento": obj.fechaVencimiento
+                        }
+            lista.append(datos)
+            nombre_temporal = obj.libro_nombre
+            mensaje=""
+        print (obj.libro_id,"-",obj.capitulo_nombre,"-",obj.fechaLanzamiento,"-",obj.fechaVencimiento)
+    for dato in lista:
+        print (dato)
+    return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje})
+    
