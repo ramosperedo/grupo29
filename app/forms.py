@@ -247,6 +247,7 @@ class TarjetaForm(forms.ModelForm):
         if fecha < date.today():
             raise forms.ValidationError("la fecha tiene que ser mayor a la actual")
         return fecha
+
 class TipoTarjetaForm(forms.ModelForm):
     class Meta:
         model = TipoTarjeta

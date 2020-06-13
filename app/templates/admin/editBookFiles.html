@@ -1,0 +1,32 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+{% if capitulos %}
+    <table>
+    {% if obj.LibroEnCapitulos %}
+        {%for capitulo in capitulos %}
+            <tr>
+                <td>{{capitulo.numero}}</td>
+                <td>{{capitulo.nombre}}</td>
+                <td><a class="btn btn-primary" role="button" href="/editCapitulo/{{ capitulo.id }}">Editar</a></td>
+                <td><a class="btn btn-danger" role="button" href="/deleteCapitulo/{{ capitulo.id }}" onClick="return confirm('¿Seguro que quieres borrar a el capitulo?');"> Eliminar</a></td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <a class="btn btn-warning" role="button" href="/loadLibroCompleto/{{ obj.id }}">Subir Libro Completo</a>
+        </tr>
+    {% else %}
+        <tr>
+            <td>{{obj.nombre}}</td>
+            <td><a class="btn btn-primary" role="button" href="/editCapitulo/{{ capitulo.id }}">Editar</a></td>
+            <td><a class="btn btn-danger" role="button" href="/deleteCapitulo/{{ capitulo.id }}" onClick="return confirm('¿Seguro que quieres borrar a el libro?');"> Eliminar</a></td>
+        </tr>
+    {% endif %}
+    </table>
+{% else %}
+    <p>Libro esta vacio</p>
+    <a class="btn btn-warning" role="button" href="/loadLibroCompleto/{{ obj.id }}">Subir Libro Completo</a>
+    <a class="btn btn-warning" role="button" href="/loadLibroEnCapitulos/{{ obj.id }}">Subir Libro por Capitulos</a>
+{% endif %}
+{% endblock %}

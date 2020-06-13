@@ -5,6 +5,9 @@
 <h2>Editar Libro</h2>
 
 <form method="POST" enctype="multipart/form-data">
+    <form method="get" action="/editBookFiles/{{obj.id}}">
+        <button class="btn btn-warning" type="submit">Modificar Archivos</button>
+    </form>
     {{ form.as_p }}
     {% csrf_token %}
     <button class="btn btn-primary" type="submit">Editar</button>
