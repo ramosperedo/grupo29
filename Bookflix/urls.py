@@ -52,19 +52,12 @@ urlpatterns = [
     path('register/', views.register),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
-    path('infoSuscriptor/<int:num>', views.infoSuscriptor),
+    path('infoSuscriptor/', views.infoSuscriptor, name='infoSus'),
     path('perfiles/', views.administrarPerfiles),
     path('createPerfil/', views.createPerfil),
     path('inicio', views.inicio, name='inicio'),
     path('editarSuscriptor/<int:sus_id>', views.editarSuscriptor, name='editarsus'),
-    path('viewBook/<int:libro_id>', views.detalleLibro),
-    path('marcarCapitulo/<int:capitulo_id>', views.marcarCapitulo),
-    path('leerCapitulo/<int:capitulo_id>', views.leerCapitulo),
-    path('editBookFiles/<int:libro_id>', views.editBookFiles),
-    path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
-    path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
-
-
+    path('historial/', views.historial, name='historial'),
 
     path('admin/', admin.site.urls)
 ]

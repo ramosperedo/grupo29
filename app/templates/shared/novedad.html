@@ -6,11 +6,11 @@
     <form method="get" action="/listNovedades">
         <button class="btn btn-secondary" type="submit">Volver</button>
     </form>
-    
+    &nbsp
     <form method="get" action="/editNovedad/{{obj.id}}">
         <button class="btn btn-primary" type="submit">Editar</button>
     </form>
-    
+    &nbsp
     <form method="get" action="/deleteNovedad/{{ obj.id }}">
         <button class="btn btn-danger" onClick="return confirm('¿Seguro que quieres borrar a {{obj.titulo}}?');" type="submit">Eliminar</button>
     </form>

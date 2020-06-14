@@ -2,15 +2,14 @@ from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
-from .forms import *
-from .models import *
+from .forms import RegisterForm, RegisterForm2, RegisterForm3, LibroForm, AutorForm, GeneroForm, EditorialForm, CapituloForm, NovedadForm, TrailerForm, SuscriptorForm, TarjetaForm, TipoTarjetaForm, PerfilForm, BuscadorForm
+from .models import Configuracion, Libro, Capitulo, Novedad, Trailer, Autor, Editorial, Genero, TarjetaManager, Tarjeta, TipoTarjeta, Perfil, PerfilManager
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models.query import EmptyQuerySet
-
 import os, datetime
 
 
@@ -66,7 +65,6 @@ def deleteBook(request, libro_id):
     instancia.delete()
     # Después redireccionamos de nuevo a la lista
     return redirect('/listBooks')
-
 def libros_activos(libros):
     now = datetime.date.today()
     librosActivos = Libro.objects.none()
@@ -270,10 +268,6 @@ def loadLibroEnCapitulos(request, libro_id):
             fechaV = form.cleaned_data['fechaVencimiento']
             instancia = form.save(commit=False)
             completo = form2.cleaned_data.get("premium")
-            libro = Libro.objects.get(id = libro_id)
-            if (libro.LibroEnCapitulos == False):
-                libro.LibroEnCapitulos = True
-                libro.save()
             #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
             if completo:
                 Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
@@ -312,7 +306,7 @@ def login(request):
             if user is not None:
                 do_login(request, user)
                 if request.user.is_superuser == 1:
-                    return render(request, "users/welcome.html")
+                    return redirect('/')
                 else:
                     return render(request, "users/perfiles.html")
     return render(request, "users/login.html", {'form': form})
@@ -363,24 +357,18 @@ def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
             messages.success(request, 'se modificó sus datos!!')
     return render(request, "users/editar.html", {'form': form,'form2': form2})
 
-def infoSuscriptor(request, num=0):
+def infoSuscriptor(request):
     try:
-        datosSuscriptor = User.objects.get(pk=num)
-        print(datosSuscriptor.email)
+        datosSuscriptor = User.objects.get(pk=request.user.id)
         datosTarjeta = Tarjeta.objects.get(id=datosSuscriptor.idTarjeta)
-        print(datosTarjeta.dni)
         nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
-        print(nombreTipoTarjeta.nombre)
     except Exception as e:
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"ACCESO NO PERMITIDO"})
 
-    if request.user.id == num:
-        if datosSuscriptor is not None:
-            return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
-        else:
-            return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
+    if datosSuscriptor is not None:
+        return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
     else:
-        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
 
 def logout(request):
     do_logout(request)
@@ -472,66 +460,48 @@ def inicio(request):
             return render(request, "users/home.html",{'form': form,'res':resultado})
     return redirect('/login')
 
-def detalleLibro(request, libro_id):
-    instancia = get_object_or_404(Libro, id = libro_id)
-    capitulos = Capitulo.objects.all().filter(idLibro = libro_id)
-    trailers = Trailer.objects.all().filter(idLibro = libro_id)
-    context = {
-        "obj" : instancia,
-        "capitulos" : capitulos,
-        "trailers" : trailers
-        }
-    if request.user.is_superuser != 1:
-        perfilActual = PerfilActual.objects.get(idSuscriptor = request.user.id)
-        context["capitulos"] = capitulos.filter(fechaLanzamiento__lte = datetime.date.today()).filter(fechaVencimiento__gte = datetime.date.today())
-        context["abiertos"] = Historial.objects.all().filter(idPerfil = perfilActual.idPerfil).filter(terminado = False)
-    return render (request, "shared/libroDetalle.html", context)
-
-def marcarCapitulo(request, capitulo_id):
-    actual = PerfilActual.objects.get(idSuscriptor = request.user.id)
-    instance = Historial.objects.filter(idPerfil = actual.idPerfil).get(idCapitulo = capitulo_id)
-    instance.terminado = True
-    instance.save()
-    return redirect('/viewBook/'+str(Capitulo.objects.get(id = capitulo_id).idLibro.id))
-
-def leerCapitulo(request, capitulo_id):
-    instance = Capitulo.objects.get(id = capitulo_id)
-    disponible = True
-    if (instance.fechaLanzamiento > datetime.date.today()):
-        disponible = False
-    if not request.user.is_superuser:
-        if not Historial.objects.filter(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil).filter(idCapitulo = Capitulo.objects.get(id = capitulo_id)).exists():
-            marca = Historial(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil, idCapitulo = Capitulo.objects.get(id =capitulo_id))
-            marca.save()
-    context = {
-        "obj" : instance,
-        "disponible" : disponible
-    }
-    return render (request, "shared/leerCapitulo.html", context)
-
-def editBookFiles(request, libro_id):
-    obj = Libro.objects.get(id = libro_id)
-    capitulos = Capitulo.objects.all().filter(idLibro = libro_id)
-    context = {
-        "obj" : obj,
-        "capitulos" : capitulos
-    }
-    return render(request, "admin/editBookFiles.html", context)
-
-def editCapitulo(request, capitulo_id):
-    obj = Capitulo.objects.get(id = capitulo_id)
-    form = CapituloForm(instance = obj)
-    if request.method == "POST":
-        form = CapituloForm(request.POST,request.FILES, instance=obj)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.save()
-            return redirect('/listBooks')
-    return render(request, "admin/editCapitulo.html", {'form': form})
-
-def deleteCapitulo(request, capitulo_id):
-    obj = Capitulo.objects.get(id = capitulo_id)
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    os.remove(os.path.join(BASE_DIR,obj.archivo.url.replace('/','\\')))
-    obj.delete()
-    return redirect('/listBooks')
+""" 
+esta es la consulta sql del historial
+SELECT 
+app_historial.id,
+app_capitulo.id,
+app_libro.id,
+app_historial.id AS historial_id,
+app_capitulo.id AS capitulo_id,
+app_libro.id AS libro_id, 
+app_capitulo.nombre AS capitulo_nombre,
+app_libro.nombre AS libro_nombre,
+app_capitulo.fechaLanzamiento,
+app_capitulo.fechaVencimiento 
+FROM 
+app_historial,app_capitulo,app_libro 
+WHERE 
+app_historial.idCapitulo_id = app_capitulo.id AND 
+app_capitulo.idLibro_id = app_libro.id AND 
+app_historial.idPerfil_id = 1    
+"""
+def historial(request):
+    lista = [] 
+    now = datetime.date.today()
+    nombre_temporal=""
+    mensaje="no se encontro resultados"
+    resultado = Libro.objects.raw("SELECT app_historial.id,app_capitulo.id,app_libro.id,app_historial.id AS historial_id,app_capitulo.id AS capitulo_id,app_libro.id AS libro_id, app_capitulo.nombre AS capitulo_nombre,app_libro.nombre AS libro_nombre,app_capitulo.fechaLanzamiento,app_capitulo.fechaVencimiento FROM app_historial,app_capitulo,app_libro WHERE app_historial.idCapitulo_id = app_capitulo.id AND app_capitulo.idLibro_id = app_libro.id AND app_historial.idPerfil_id = "+str(1))
+    for obj in resultado:
+        if obj.fechaLanzamiento < now and obj.fechaVencimiento > now :
+            datos = {
+                        "historial_id": obj.historial_id,
+                        "capitulo_id": obj.capitulo_id,
+                        "libro_id": obj.libro_id,
+                        "capitulo_nombre": obj.capitulo_nombre,
+                        "libro_nombre": obj.libro_nombre if (obj.libro_nombre != nombre_temporal) else "",
+                        "fechaLanzamiento": obj.fechaLanzamiento,
+                        "fechaVencimiento": obj.fechaVencimiento
+                        }
+            lista.append(datos)
+            nombre_temporal = obj.libro_nombre
+            mensaje=""
+        print (obj.libro_id,"-",obj.capitulo_nombre,"-",obj.fechaLanzamiento,"-",obj.fechaVencimiento)
+    for dato in lista:
+        print (dato)
+    return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje})
+    

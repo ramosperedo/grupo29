@@ -174,7 +174,7 @@ class Libro(models.Model):
     idGenero = models.ForeignKey(Genero,on_delete=models.CASCADE,null=True,blank=True)
     idEditorial = models.ForeignKey(Editorial,on_delete=models.CASCADE,null=True,blank=True)
     descripcion = models.CharField(max_length=1000)
-    foto = models.ImageField(upload_to='static/images/',null=True,blank=True)
+    foto = models.ImageField(upload_to='images/',null=True,blank=True)
     vistos = models.IntegerField(null=True, default=0)
     ultimoCapitulo = models.BooleanField(default=False)
     LibroEnCapitulos = models.BooleanField(default=False)
@@ -185,7 +185,7 @@ class Libro(models.Model):
 
 class Capitulo(models.Model):
     id = models.AutoField(primary_key=True)
-    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE,blank=False)
+    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE,blank=True)
     nombre = models.CharField(max_length=50,unique=True,null=True)
     numero = models.IntegerField(unique=True,default=0)
     archivo = models.FileField(upload_to='static/file/')
@@ -233,7 +233,6 @@ class Historial(models.Model):
     id = models.AutoField(primary_key=True)
     idPerfil = models.ForeignKey(Perfil,on_delete=models.CASCADE)
     idCapitulo = models.ForeignKey(Capitulo,on_delete=models.CASCADE)
-    terminado = models.BooleanField(default=False)
 
 class Novedad(models.Model):
     id = models.AutoField(primary_key=True)
@@ -256,8 +255,3 @@ class Trailer(models.Model):
 
     def __str__(self):
         return self.titulo
-
-class PerfilActual(models.Model):
-    id = models.AutoField(primary_key=True)
-    idPerfil = models.ForeignKey(Perfil,on_delete=models.CASCADE)
-    idSuscriptor = models.ForeignKey(User,on_delete=models.CASCADE)
