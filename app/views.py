@@ -340,7 +340,11 @@ def register(request):
         new_user  = User.objects.create_suscriptor(nombre, apellido, email, premium, password,new_tarj.id)
         print(new_user)#en la anterior linea el orden de los datos del usuario no son en ese orden
         if new_user is not None:#pero por un bug raro lo tube que cambiar para que registre bien
-            PerfilManager.create_perfil(nombre+apellido,new_user.id)
+            ## PerfilManager.create_perfil(nombre+apellido,new_user.id) --- Nose como lo usaban pero a mi no me funciona esto
+            defaultPerfil = Perfil(idSuscriptor = new_user, nombre = nombre)
+            defaultPerfil.save()
+            actual = PerfilActual(idSuscriptor = new_user, idPerfil = defaultPerfil)
+            actual.save()
             do_login(request, new_user)#si se llega a arreglar el orden es nombre, apellido, email, pass, idtarjeta
             return redirect('/')
 
