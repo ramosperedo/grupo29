@@ -306,7 +306,7 @@ def login(request):
             if user is not None:
                 do_login(request, user)
                 if request.user.is_superuser == 1:
-                    return render(request, "users/welcome.html")
+                    return redirect('/')
                 else:
                     return render(request, "users/perfiles.html")
     return render(request, "users/login.html", {'form': form})
