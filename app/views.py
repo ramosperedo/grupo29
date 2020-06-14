@@ -575,3 +575,6 @@ def historial(request):
         print (dato)
     return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje})
     
+def selectperfil(request):
+    print('aca tendria que actualizar el id del perfil actual')
+    return redirect('/')

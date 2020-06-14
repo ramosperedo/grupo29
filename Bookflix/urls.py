@@ -64,6 +64,7 @@ urlpatterns = [
     path('editBookFiles/<int:libro_id>', views.editBookFiles),
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
+    path('selectperfil/',views.selectperfil, name= 'selectperfil'),
 
     path('admin/', admin.site.urls)
 ]
