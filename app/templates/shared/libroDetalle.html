@@ -1,0 +1,180 @@
+{% extends 'default/layout.html' %}
+
+
+{% block admin %}
+<form method="get" action="/listBooks">
+    <button class="btn btn-primary" type="submit">Volver</button>
+</form>
+
+<table style="width:100%">
+<tr>
+<td style="width:50%">
+<h2>{{obj.nombre}}</h2>
+{% if obj.foto %}
+    <img src= "/{{obj.foto}}" width="256"></img>
+{% endif %}
+<p>{{obj.idAutor}}</p>
+<p>{{obj.idGenero}}</p>
+<p>{{obj.idEditorial}}</p>
+<p>{{obj.descripcion}}</p>
+
+<form method="get" action="/editBook/{{obj.id}}">
+    <button class="btn btn-primary" type="submit">Editar Metadatos</button>
+</form>
+</td>
+
+
+<td style="width:50%">
+{% if capitulos %}
+    <table>
+    {% if obj.LibroEnCapitulos %}
+    <th>Capitulos</th>
+    {% for capitulo in capitulos %}
+    <tr>
+        <td>{{capitulo.numero}} {{capitulo.nombre}}</td>
+        <td>
+            <form method="get" action="/leerCapitulo/{{capitulo.id}}">
+                <button class="btn btn-primary" type="submit">Leer</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td>
+            <form method="get" action="/leerCapitulo/{{capitulos.0.id}}">
+                <button class="btn btn-primary" type="submit">Leer Libro</button>
+            </form>
+        </td>
+
+    </tr>
+    {% endif %}
+    <tr>
+        <form method="get" action="/editBookFiles/{{obj.id}}">
+            <button class="btn btn-warning" type="submit">Modificar Archivos</button>
+        </form>
+    </tr>
+    </table> 
+{% else %}
+    <p>Libro esta vacio</p>
+    <a class="btn btn-warning" role="button" href="/loadLibroCompleto/{{ obj.id }}">Subir Libro Completo</a>
+    <a class="btn btn-warning" role="button" href="/loadLibroEnCapitulos/{{ obj.id }}">Subir Libro por Capitulos</a>
+{% endif %}
+</td>
+</tr>
+<tr>
+    <tr><th>Trailers</th></tr>
+    {% if trailers %}
+    {% for trailer in trailers %}
+        <td>{{ trailer.titulo }}</td>
+        <td>
+            <form method="get" action="/viewTrailer/{{trailer.id}}">
+                <button class="btn btn-primary" type="submit">Ver</button>
+            </form>
+        </td>
+        <td>
+            <form method="get" action="/editTrailer/{{trailer.id}}">
+                <button class="btn btn-warning" type="submit">Editar</button>
+            </form>
+        </td>
+    {% endfor %}
+    {% else %}
+        <td>No Hay trailers disponibles</td>
+    {% endif %}
+</tr>
+<tr><th>Reseñas</th></tr>
+<tr><td>No hay reseñas todavia</td></tr>
+
+</table>
+
+
+{% endblock %}
+
+
+{% block suscriptor %}
+<form method="get" action="/listBooks">
+    <button class="btn btn-primary" type="submit">Volver</button>
+</form>
+
+<table style="width:100%">
+    <tr>
+    <td style="width:50%">
+    <h2>{{obj.nombre}}</h2>
+    {% if obj.foto %}
+        <img src= "/{{obj.foto}}" width="256"></img>
+    {% endif %}
+    <p>{{obj.idAutor}}</p>
+    <p>{{obj.idGenero}}</p>
+    <p>{{obj.idEditorial}}</p>
+    <p>{{obj.descripcion}}</p>
+    </td>
+
+
+    <td style="width:50%">
+    {% if capitulos %}
+        <table>
+        {% if obj.LibroEnCapitulos %}
+        <th>Capitulos</th>
+        {% for capitulo in capitulos %}
+        <tr>
+            <td>{{capitulo.numero}} {{capitulo.nombre}}</td>
+            <td>
+                <form method="get" action="/leerCapitulo/{{capitulo.id}}">
+                    <button class="btn btn-primary" type="submit">Leer</button>
+                </form>
+            </td>
+            {% for abierto in abiertos %}
+            {% if capitulo.id == abierto.idCapitulo.id %}
+            <td>
+                <form method="get" action="/marcarCapitulo/{{capitulo.id}}">
+                    <button class="btn btn-danger" type="submit">Marcar Leido</button>
+                </form>
+            </td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        {% else %}
+        <p>Libro completo</p>
+        <tr>
+            <td>
+                <form method="get" action="/leerCapitulo/{{capitulos.0.id}}">
+                    <button class="btn btn-primary" type="submit">Leer Libro</button>
+                </form>
+            </td>
+            {% if capitulo in abiertos %}
+            <td>
+                <form method="get" action="/marcarCapitulo/{{capitulos.0.id}}">
+                    <button class="btn btn-danger" type="submit">Marcar Leido</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endif %}
+        </table>
+    {% else %}
+        <p>Libro no disponible</p>
+    {% endif %}
+    </td>
+    </tr>
+    <tr>
+        <tr><th>Trailers</th></tr>
+        {% if trailers %}
+        {% for trailer in trailers %}
+            <td>{{ trailer.titulo }}</td>
+            <td>
+                <form method="get" action="/viewTrailer/{{trailer.id}}">
+                    <button class="btn btn-primary" type="submit">Ver</button>
+                </form>
+            </td>
+        {% endfor %}
+        {% else %}
+            <td>No Hay trailers disponibles</td>
+        {% endif %}
+    </tr>
+    <tr><th>Reseñas</th></tr>
+    <tr><td>No hay reseñas todavia</td></tr>
+
+    </table>
+
+{% endblock %}

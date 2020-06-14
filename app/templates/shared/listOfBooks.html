@@ -38,7 +38,7 @@
             {% else %}
             <td>---</td>
             {% endif %}
-            <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
+            <td><a class="btn btn-info" role="button" href="/viewBook/{{ libro.id }}">Ver</a></td>
             <td><a class="btn btn-primary" role="button" href="/editBook/{{ libro.id }}">Editar</a></td>
             <td><a class="btn btn-danger" role="button" href="/deleteBook/{{ libro.id }}" onClick="return confirm('¿Seguro que quieres borrar a {{libro.nombre}}?');" >Eliminar</a></td>
             {% if not libro.ultimoCapitulo %}
@@ -98,7 +98,7 @@
             <td>{{ libro.idGenero }}</td>
             <td>{{ libro.idAutor }}</td>
             <td>{{ libro.fechaVencimientoFinal }}</td>
-            <td><a class="btn btn-info" role="button" {# href="/viewBook/{{ libro.id }}" #}>Ver</a></td>
+            <td><a class="btn btn-info" role="button" href="/viewBook/{{ libro.id }}">Ver</a></td>
         {% endfor %}
     </tbody>
 </table>
