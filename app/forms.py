@@ -8,17 +8,11 @@ from datetime import date, datetime
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil
-        fields = ['idSuscriptor','nombre']
+        fields = ['nombre']
         labels = {'nombre':'Nombre'}
         widgets = {
-            'idSuscriptor' : forms.HiddenInput(),
             'nombre' : forms.TextInput(attrs={'class':'form-control'})
         }
-    def clean_idSuscriptor(self):
-        idSuscriptor = self.cleaned_data['idSuscriptor']
-        if idSuscriptor is None:
-            return self.fields['idSuscriptor'].initial
-        return idSuscriptor
 
 class TrailerForm(forms.ModelForm):
     archivo = forms.FileField(required=False, label=('Ingrese un archivo'))

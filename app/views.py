@@ -450,12 +450,12 @@ def administrarPerfiles(request):
 def createPerfil(request):
     form = PerfilForm()
     if request.method == "POST":
-        form = CapituloForm(request.POST)
-        form.fields['idSuscriptor'].initial = User.objects.get(id=request.user.id)
+        form = PerfilForm(request.POST)
         if form.is_valid():
-            instancia = form.save(commit=False)
-            instancia.save()
-            return redirect('/administrarPerfiles')
+            instancia = form.save(commit = False)
+            obj = Perfil(nombre = instancia.nombre , idSuscriptor = User.objects.get(id=request.user.id))
+            obj.save()
+            return redirect('/perfiles')
     return render(request, "users/createPerfil.html", {'form': form})
 
 def inicio(request):
