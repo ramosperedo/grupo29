@@ -12,8 +12,8 @@
 <table>
     {% if mensaje == "" %}
         <tr>
-            <th>Nombre del Libro</th>
-            <th>Capitulo</th>
+            <th>Nombre del Libro&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;Capitulo</th>
             <th>Enlace</th>
         </tr>
         {% for resultado in libros %}
@@ -25,7 +25,7 @@
                 {{resultado.capitulo_nombre}}
             </td>
             <td valign="top">
-                {{resultado.libro_id}}
+                <a class="btn btn-info" role="button" href="/viewBook/{{resultado.libro_id}}">Ver</a>
             </td>
         </tr>
         {% endfor %}
