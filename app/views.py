@@ -406,11 +406,16 @@ def logout(request):
     return redirect('/')
 
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
-    #averiguar si buscar una cadena vacia implica algun resultado
-    BuscandoLibro = Libro.objects.none()
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
+    libros = Libro.objects.all()
+    now = datetime.date.today()
+    librosActivos = Libro.objects.none()
     if admin == 0:
-        BuscandoLibro = libros_activos(BuscandoLibro)
+        for libro in libros:
+            cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
+            if cumple:
+                librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id))
+        BuscandoLibro = librosActivos
     print (BuscandoLibro)
     querysetvacio = Libro.objects.none()
     print (querysetvacio)

@@ -242,7 +242,6 @@ class Novedad(models.Model):
     archivo = models.ImageField(upload_to='static/images/',null=True,blank=True)
     archivoVideo = models.FileField(upload_to='static/videos/',null=True,blank=True)
 
-
     def __str__(self):
         return self.titulo
 
