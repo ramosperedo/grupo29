@@ -42,15 +42,26 @@
     <a>No se Encontró resultados</a>
 {% else %}
 <table>
-  
+  {% if res != "-" %}
+  <tr>
+    <th>
+      Nombre del libro
+    </th>
+    <th>
+      Enlace
+    </th>
+  </tr>
   {% for resultado in res %}
   <tr>
   <td>
     {{resultado.nombre}}
   </td>
+  <td>
+    <a class="btn btn-info" role="button" href="/viewBook/{{ resultado.id }}">Ver</a>
+  </td>
   </tr>
   {% endfor %}
-
+  {% endif %}
 </table>
 {% endif %}
   
