@@ -79,7 +79,8 @@ def libros_activos(libros):
 
 def listBooks(request):
     libros = Libro.objects.filter().order_by('vistos')
-    capitulos = Capitulo.objects.all()
+    if not request.user.admin:
+        libros = libros_activos(libros)
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
