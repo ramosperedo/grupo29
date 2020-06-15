@@ -464,10 +464,13 @@ def inicio(request):
             datos = nombre+autor+genero+editorial
             if datos !="":
                 resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
+        paginator = Paginator(resultado, 5)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         if request.user.is_superuser == 1:
-            return render(request, "users/welcome.html",{'form': form,'res':resultado})
+            return render(request, "users/welcome.html",{'form': form,'res':resultado,'page_obj': page_obj})
         else:
-            return render(request, "users/home.html",{'form': form,'res':resultado})
+            return render(request, "users/home.html",{'form': form,'res':resultado,'page_obj': page_obj})
     return redirect('/login')
 
 def detalleLibro(request, libro_id):
@@ -577,8 +580,11 @@ def historial(request):
         print (obj.libro_id,"-",obj.capitulo_nombre,"-",obj.fechaLanzamiento,"-",obj.fechaVencimiento)
     for dato in lista:
         print (dato)
-    return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje})
+    paginator = Paginator(lista, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje,'page_obj': page_obj})
     
 def selectperfil(request):
     print('aca tendria que actualizar el id del perfil actual')
-    return redirect('/')
+    return redirect('/')#lo dejo asi para el proximo sprint
