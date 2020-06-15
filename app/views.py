@@ -53,7 +53,7 @@ def editBook(request, libro_id):
             # Después de guardar redireccionamos a la lista
             return redirect('/listBooks')
     # Si llegamos al final renderizamos el formulario
-    return render(request, "admin/editBook.html", {'form': form})
+    return render(request, "admin/editBook.html", {'form': form, 'obj':instancia})
 
 def deleteBook(request, libro_id):
     # Recuperamos la instancia de la persona y la borramos
