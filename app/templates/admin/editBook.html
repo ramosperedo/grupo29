@@ -3,11 +3,11 @@
 {% block admin %}
 
 <h2>Editar Libro</h2>
-
+<a class="btn btn-warning" role="button" href="/editBookFiles/{{obj.id}}">Modificar Archivos</a>
 <form method="POST" enctype="multipart/form-data">
     {{ form.as_p }}
     {% csrf_token %}
-    <a class="btn btn-warning" role="button" href="/editBookFiles/{{obj.id}}">Modificar Archivos</a>
+    
     <button class="btn btn-primary" type="submit">Editar</button>
     <a class="btn btn-secondary" role="button" href="/listBooks">Volver</a>
  </form>
