@@ -9,6 +9,7 @@ from django.contrib.auth import login as do_login, logout as do_logout
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.conf import settings
+from django import forms
 from django.db.models.query import EmptyQuerySet
 import os, datetime
 
@@ -65,20 +66,28 @@ def deleteBook(request, libro_id):
     # Después redireccionamos de nuevo a la lista
     return redirect('/listBooks')
 
-def listBooks(request):
+def libros_activos(request,libros):
     now = datetime.date.today()
-    libros = Libro.objects.all().order_by('vistos')
-    librosActivos = []
+    librosActivos = Libro.objects.none()
     for libro in libros:
         cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
+        actualiza = Capitulo.objects.filter(idLibro=libro.id)
         if cumple:
-            librosActivos.append(libro)
-            Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=cumple.first().fechaVencimiento)
+            librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id))
+        if actualiza:
+            Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=actualiza.first().fechaVencimiento)
+    paginator = Paginator(librosActivos, 5)
+    page_number = request.GET.get('page')
+    page_obj2 = paginator.get_page(page_number)
+    return page_obj2
+
+def listBooks(request):
+    libros = Libro.objects.filter().order_by('vistos')
     capitulos = Capitulo.objects.all()
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'librosActivos': librosActivos})
+    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'librosActivos': libros_activos(request,libros)})
 
 def createAutor(request):
     form = AutorForm()
@@ -248,49 +257,69 @@ def loadFile(request, libro_id):
     return render(request, "admin/loadFile.html", {'libro_id': libro_id})
 
 def loadLibroEnCapitulos(request, libro_id):
-    form = CapituloForm()
-    form2 = RegisterForm3()
-    capitulos = Capitulo.objects.filter(idLibro=libro_id)
-    if capitulos:
-        numero = capitulos.order_by('-numero').first().numero
-        form.fields['numero'].initial = numero + 1
+    if Libro.objects.get(id=libro_id).ultimoCapitulo:
+        messages.info(request, 'El libro seleccionado ya se encuentra completo')
+        return redirect('/listBooks')
     else:
-        form.fields['numero'].initial = 1
-    form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
-    form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
-    if request.method == "POST":
-        form = CapituloForm(request.POST,request.FILES)
-        form2 = RegisterForm3(request.POST)
-        if form.is_valid() and form2.is_valid():
-            fechaV = form.cleaned_data['fechaVencimiento']
-            instancia = form.save(commit=False)
-            completo = form2.cleaned_data.get("premium")
-            #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
-            if completo:
-                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
-                Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
-            #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
-            instancia.save()
-            return redirect('/listBooks')
-    return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
+        form = CapituloForm()
+        form2 = RegisterForm3()
+        form.fields['nombre'].required = True
+        form.fields['numero'].required = True
+        capitulos = Capitulo.objects.filter(idLibro=libro_id)
+        if capitulos:
+            numero = capitulos.order_by('-numero').first().numero
+            form.fields['numero'].initial = numero + 1
+        else:
+            form.fields['numero'].initial = 1
+        form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
+        form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
+        if request.method == "POST":
+            form = CapituloForm(request.POST,request.FILES)
+            form2 = RegisterForm3(request.POST)
+            if form.is_valid() and form2.is_valid():
+                fechaV = form.cleaned_data['fechaVencimiento']
+                instancia = form.save(commit=False)
+                completo = form2.cleaned_data.get("premium")
+                #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
+                if completo:
+                    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+                    Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
+                #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
+                instancia.save()
+                return redirect('/listBooks')
+        return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
 
 def loadLibroCompleto(request, libro_id):
-    form = CapituloForm()
-    if request.method == "POST":
-        form = CapituloForm(request.POST,request.FILES)
-        form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
-        if form.is_valid():
-            fechaV = form.cleaned_data['fechaVencimiento']
-            fechaL = form.cleaned_data['fechaLanzamiento']
-            instancia = form.save(commit=False)
-            #Eliminamos todos los capitulos anteriores existentes para libro_id
-            Capitulo.objects.filter(idLibro=libro_id).delete()
-            #Actualizamos el estado del libro (Si esta completo o no)
-            Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaLanzamientoFinal=fechaL, fechaVencimientoFinal=fechaV)
-            #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
-            instancia.save()
-            return redirect('/listBooks')
-    return render(request, "admin/loadCapitulo.html", {'form': form})
+    if Libro.objects.get(id=libro_id).ultimoCapitulo:
+        messages.info(request, 'El libro seleccionado ya se encuentra completo')
+        return redirect('/listBooks')
+    else:
+        form = CapituloForm()
+        form.fields['nombre'].widget = forms.HiddenInput()
+        form.fields['numero'].widget = forms.HiddenInput()
+        if request.method == "POST":
+            form = CapituloForm(request.POST,request.FILES)
+            form.fields['nombre'].widget = forms.HiddenInput()
+            form.fields['numero'].widget = forms.HiddenInput()
+            form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
+            form.fields['nombre'].required = False
+            form.fields['numero'].required = False
+            if form.is_valid():
+                fechaV = form.cleaned_data['fechaVencimiento']
+                fechaL = form.cleaned_data['fechaLanzamiento']
+                if fechaL > fechaV:
+                    messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
+                    return render(request, "admin/loadCapitulo.html", {'form': form})
+                else:
+                    instancia = form.save(commit=False)
+                    #Eliminamos todos los capitulos anteriores existentes para libro_id
+                    Capitulo.objects.filter(idLibro=libro_id).delete()
+                    #Actualizamos el estado del libro (Si esta completo o no)
+                    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaVencimientoFinal=fechaV)
+                    #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
+                    instancia.save()
+                    return redirect('/listBooks')
+        return render(request, "admin/loadCapitulo.html", {'form': form})
 
 def login(request):
     form = AuthenticationForm()
@@ -379,7 +408,10 @@ def logout(request):
 
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
     #averiguar si buscar una cadena vacia implica algun resultado
+    BuscandoLibro = Libro.objects.none()
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
+    if admin == 0:
+        BuscandoLibro = libros_activos(BuscandoLibro)
     print (BuscandoLibro)
     querysetvacio = Libro.objects.none()
     print (querysetvacio)
@@ -445,13 +477,15 @@ def createPerfil(request):
 def inicio(request):
     form = BuscadorForm(request.POST or None)
     if request.user.is_authenticated:
-        resultado=""
+        resultado="-"
         if form.is_valid():
             nombre = form.cleaned_data.get("nombre")
             autor  = form.cleaned_data.get("autor")
             genero  = form.cleaned_data.get("genero")
             editorial  = form.cleaned_data.get("editorial")
-            resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
+            datos = nombre+autor+genero+editorial
+            if datos !="":
+                resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
         if request.user.is_superuser == 1:
             return render(request, "users/welcome.html",{'form': form,'res':resultado})
         else:
