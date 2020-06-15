@@ -427,6 +427,7 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
                 querysetvacio = querysetvacio.union(temp)
             print ('aca esta el queryset recolector de editorial')
             print (querysetvacio)
+    BuscandoLibro = BuscandoLibro.order_by('id')
     print (BuscandoLibro)
     if isinstance(querysetvacio, EmptyQuerySet):
         querysetvacio = BuscandoLibro
