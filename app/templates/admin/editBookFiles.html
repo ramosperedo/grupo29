@@ -3,7 +3,9 @@
 {% block admin %}
 
 {% if capitulos %}
+<p><a class="btn btn-secondary" role="button" href="/listBooks">Volver</a></p>
     <table>
+        
     {% if obj.LibroEnCapitulos %}
         {%for capitulo in capitulos %}
             <tr>
