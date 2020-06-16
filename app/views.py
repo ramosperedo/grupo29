@@ -302,11 +302,11 @@ def loadLibroCompleto(request, libro_id):
         form = CapituloForm()
         form.fields['nombre'].widget = forms.HiddenInput()
         form.fields['numero'].widget = forms.HiddenInput()
+        form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
         if request.method == "POST":
             form = CapituloForm(request.POST,request.FILES)
             form.fields['nombre'].widget = forms.HiddenInput()
             form.fields['numero'].widget = forms.HiddenInput()
-            form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
             form.fields['nombre'].required = False
             form.fields['numero'].required = False
             if form.is_valid():
@@ -552,9 +552,9 @@ def editBookFiles(request, libro_id):
 
 def editCapitulo(request, capitulo_id):
     obj = Capitulo.objects.get(id = capitulo_id)
-    form = CapituloForm(instance = obj)
+    form = CapituloEditForm(instance = obj)
     if request.method == "POST":
-        form = CapituloForm(request.POST,request.FILES, instance=obj)
+        form = CapituloEditForm(request.POST,request.FILES, instance=obj)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.save()
