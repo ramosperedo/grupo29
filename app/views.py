@@ -259,28 +259,40 @@ def loadLibroEnCapitulos(request, libro_id):
         messages.info(request, 'El libro seleccionado ya se encuentra completo')
         return redirect('/listBooks')
     else:
-        form.fields['numero'].initial = 1
-    form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
-    form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
-    if request.method == "POST":
-        form = CapituloForm(request.POST,request.FILES)
-        form2 = RegisterForm3(request.POST)
-        if form.is_valid() and form2.is_valid():
-            fechaV = form.cleaned_data['fechaVencimiento']
-            instancia = form.save(commit=False)
-            completo = form2.cleaned_data.get("premium")
-            libro = Libro.objects.get(id = libro_id)
-            if (libro.LibroEnCapitulos == False):
-                libro.LibroEnCapitulos = True
-                libro.save()
-            #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
-            if completo:
-                Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
-                Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
-            #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
-            instancia.save()
-            return redirect('/listBooks')
-    return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
+        form = CapituloForm()
+        form2 = RegisterForm3()
+        form.fields['nombre'].required = True
+        form.fields['numero'].required = True
+        capitulos = Capitulo.objects.filter(idLibro=libro_id)
+        if capitulos:
+            numero = capitulos.order_by('-numero').first().numero
+            form.fields['numero'].initial = numero + 1
+        else:
+            form.fields['numero'].initial = 1
+        form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
+        form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
+        if request.method == "POST":
+            form = CapituloForm(request.POST,request.FILES)
+            form2 = RegisterForm3(request.POST)
+            if form.is_valid() and form2.is_valid():
+                fechaV = form.cleaned_data['fechaVencimiento']
+                fechaL = form.cleaned_data['fechaLanzamiento']
+                if fechaL > fechaV:
+                    messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
+                    form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
+                    return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
+                else:
+                    instancia = form.save(commit=False)
+                    completo = form2.cleaned_data.get("premium")
+                    #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
+                    if completo:
+                        Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
+                        Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
+                    #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
+                    instancia.save()
+                    Libro.objects.filter(id=libro_id).update(LibroEnCapitulos=True)
+                    return redirect('/listBooks')
+        return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
 
 def loadLibroCompleto(request, libro_id):
     if Libro.objects.get(id=libro_id).ultimoCapitulo:
@@ -308,7 +320,7 @@ def loadLibroCompleto(request, libro_id):
                     #Eliminamos todos los capitulos anteriores existentes para libro_id
                     Capitulo.objects.filter(idLibro=libro_id).delete()
                     #Actualizamos el estado del libro (Si esta completo o no)
-                    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaVencimientoFinal=fechaV)
+                    Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaVencimientoFinal=fechaV, LibroEnCapitulos=False)
                     #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
                     instancia.save()
                     return redirect('/listBooks')
