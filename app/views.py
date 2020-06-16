@@ -76,7 +76,6 @@ def libros_activos(libros):
             librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id))
             Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=cumple.first().fechaVencimiento)
     return librosActivos
-    return libros_activos
 
 def listBooks(request):
     libros = Libro.objects.filter().order_by('vistos')
@@ -85,7 +84,7 @@ def listBooks(request):
     paginator = Paginator(libros, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, "shared/listOfBooks.html", {'libros': page_obj, 'librosActivos': libros_activos(libros)})
+    return render(request, "shared/listOfBooks.html", {'libros': page_obj})
 
 def createAutor(request):
     form = AutorForm()

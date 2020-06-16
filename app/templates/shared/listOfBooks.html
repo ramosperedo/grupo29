@@ -87,7 +87,7 @@
 <form method="get" action="/inicio">
     <button class="btn btn-secondary" type="submit">Volver</button>
 </form>
-{% if librosActivos %}
+{% if libros %}
 <table>
     <thead>
         <tr>
@@ -99,7 +99,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for libro in librosActivos %}
+        {% for libro in libros %}
         <tr>
             <td>{{ libro.nombre }}</td>
             <td>{{ libro.idGenero }}</td>
@@ -111,18 +111,18 @@
 </table>
 <div class="pagination">
     <span class="step-links">
-        {% if librosActivos.has_previous %}
+        {% if libros.has_previous %}
             <a href="?page=1">&laquo; primera</a>
-            <a href="?page={{ librosActivos.previous_page_number }}">anterior</a>
+            <a href="?page={{ libros.previous_page_number }}">anterior</a>
         {% endif %}
 
         <span class="current">
-            Page {{ librosActivos.number }} of {{ librosActivos.paginator.num_pages }}.
+            Page {{ libros.number }} of {{ libros.paginator.num_pages }}.
         </span>
 
-        {% if librosActivos.has_next %}
-            <a href="?page={{ librosActivos.next_page_number }}">proxima</a>
-            <a href="?page={{ librosActivos.paginator.num_pages }}">ultima &raquo;</a>
+        {% if libros.has_next %}
+            <a href="?page={{ libros.next_page_number }}">proxima</a>
+            <a href="?page={{ libros.paginator.num_pages }}">ultima &raquo;</a>
         {% endif %}
     </span>
 </div>
