@@ -337,7 +337,7 @@ def login(request):
             if user is not None:
                 do_login(request, user)
                 if request.user.is_superuser == 1:
-                    return render(request, "users/welcome.html")
+                    return redirect('/')
                 else:
                     return render(request, "users/perfiles.html")
     return render(request, "users/login.html", {'form': form})
@@ -392,35 +392,33 @@ def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
             messages.success(request, 'se modificó sus datos!!')
     return render(request, "users/editar.html", {'form': form,'form2': form2})
 
-def infoSuscriptor(request, num=0):
+def infoSuscriptor(request):
     try:
-        datosSuscriptor = User.objects.get(pk=num)
-        print(datosSuscriptor.email)
+        datosSuscriptor = User.objects.get(pk=request.user.id)
         datosTarjeta = Tarjeta.objects.get(id=datosSuscriptor.idTarjeta)
-        print(datosTarjeta.dni)
         nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
-        print(nombreTipoTarjeta.nombre)
     except Exception as e:
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"ACCESO NO PERMITIDO"})
 
-    if request.user.id == num:
-        if datosSuscriptor is not None:
-            return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
-        else:
-            return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
+    if datosSuscriptor is not None:
+        return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
     else:
-        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:3"})
+        return render(request, "shared/infoSuscriptor.html",{'mensaje':"no se encontro al suscriptor cod:2"})
 
 def logout(request):
     do_logout(request)
     return redirect('/')
 
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
-    #averiguar si buscar una cadena vacia implica algun resultado
-    BuscandoLibro = Libro.objects.none()
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
+    now = datetime.date.today()
+    librosActivos = Libro.objects.none()
     if admin == 0:
-        BuscandoLibro = libros_activos(BuscandoLibro)
+        for libro in BuscandoLibro:
+            cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
+            if cumple:
+                librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id,))
+        BuscandoLibro = librosActivos
     print (BuscandoLibro)
     querysetvacio = Libro.objects.none()
     print (querysetvacio)
@@ -459,14 +457,16 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
             print ('aca esta el queryset recolector de editorial')
             print (querysetvacio)
     print (BuscandoLibro)
-    if isinstance(querysetvacio, EmptyQuerySet):
-        querysetvacio = BuscandoLibro
-    else:
+    if autor+genero+editorial != "":
+        print("queryset vacio antes de la interseccion")
+        print(querysetvacio)
         BuscandoLibro = BuscandoLibro.intersection(querysetvacio)
+        print("queryset vacio despues de la interseccion")
+        print(querysetvacio)
     if BuscandoLibro.count() == 0:
         return ""
     else:
-        return BuscandoLibro
+        return BuscandoLibro.order_by('id')
 
 def administrarPerfiles(request):
     config = Configuracion.objects.all()
@@ -495,10 +495,13 @@ def inicio(request):
             datos = nombre+autor+genero+editorial
             if datos !="":
                 resultado = busqueda(nombre,autor,genero,editorial,request.user.is_superuser)
+        paginator = Paginator(resultado, 5)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         if request.user.is_superuser == 1:
-            return render(request, "users/welcome.html",{'form': form,'res':resultado})
+            return render(request, "users/welcome.html",{'form': form,'res':resultado,'page_obj': page_obj})
         else:
-            return render(request, "users/home.html",{'form': form,'res':resultado})
+            return render(request, "users/home.html",{'form': form,'res':resultado,'page_obj': page_obj})
     return redirect('/login')
 
 def detalleLibro(request, libro_id):
@@ -564,3 +567,55 @@ def deleteCapitulo(request, capitulo_id):
     os.remove(os.path.join(BASE_DIR,obj.archivo.url.replace('/','\\')))
     obj.delete()
     return redirect('/listBooks')
+
+""" 
+esta es la consulta sql del historial
+SELECT 
+app_historial.id,
+app_capitulo.id,
+app_libro.id,
+app_historial.id AS historial_id,
+app_capitulo.id AS capitulo_id,
+app_libro.id AS libro_id, 
+app_capitulo.nombre AS capitulo_nombre,
+app_libro.nombre AS libro_nombre,
+app_capitulo.fechaLanzamiento,
+app_capitulo.fechaVencimiento 
+FROM 
+app_historial,app_capitulo,app_libro 
+WHERE 
+app_historial.idCapitulo_id = app_capitulo.id AND 
+app_capitulo.idLibro_id = app_libro.id AND 
+app_historial.idPerfil_id = 1    
+"""
+def historial(request):
+    lista = [] 
+    now = datetime.date.today()
+    nombre_temporal=""
+    mensaje="no se encontro resultados"
+    resultado = Libro.objects.raw("SELECT app_historial.id,app_capitulo.id,app_libro.id,app_historial.id AS historial_id,app_capitulo.id AS capitulo_id,app_libro.id AS libro_id, app_capitulo.nombre AS capitulo_nombre,app_libro.nombre AS libro_nombre,app_capitulo.fechaLanzamiento,app_capitulo.fechaVencimiento FROM app_historial,app_capitulo,app_libro WHERE app_historial.idCapitulo_id = app_capitulo.id AND app_capitulo.idLibro_id = app_libro.id AND app_historial.idPerfil_id = "+str(1))
+    for obj in resultado:
+        if obj.fechaLanzamiento < now and obj.fechaVencimiento > now :
+            datos = {
+                        "historial_id": obj.historial_id,
+                        "capitulo_id": obj.capitulo_id,
+                        "libro_id": obj.libro_id,
+                        "capitulo_nombre": obj.capitulo_nombre,
+                        "libro_nombre": obj.libro_nombre if (obj.libro_nombre != nombre_temporal) else "",
+                        "fechaLanzamiento": obj.fechaLanzamiento,
+                        "fechaVencimiento": obj.fechaVencimiento
+                        }
+            lista.append(datos)
+            nombre_temporal = obj.libro_nombre
+            mensaje=""
+        print (obj.libro_id,"-",obj.capitulo_nombre,"-",obj.fechaLanzamiento,"-",obj.fechaVencimiento)
+    for dato in lista:
+        print (dato)
+    paginator = Paginator(lista, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje,'page_obj': page_obj})
+    
+def selectperfil(request):
+    print('aca tendria que actualizar el id del perfil actual')
+    return redirect('/')#lo dejo asi para el proximo sprint

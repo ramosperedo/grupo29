@@ -1,0 +1,58 @@
+{% extends 'default/layout.html' %}
+
+{% block suscriptor %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<table>
+    {% if mensaje == "" %}
+        <tr>
+            <th>Nombre del Libro&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;Capitulo</th>
+            <th>Enlace</th>
+        </tr>
+        {% for resultado in libros %}
+        <tr>
+            <td valign="top">
+                <strong>{{resultado.libro_nombre}}</strong>
+            </td>
+            <td width="150px" align="center">
+                {{resultado.capitulo_nombre}}
+            </td>
+            <td valign="top">
+                <a class="btn btn-info" role="button" href="/viewBook/{{resultado.libro_id}}">Ver</a>
+            </td>
+        </tr>
+        {% endfor %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
+    <tr><td valign="top"><p>{{mensaje}}</p></td></tr>
+    {% endif %}
+</table>
+
+
+<hr />
+  
+  
+{% endblock %}
