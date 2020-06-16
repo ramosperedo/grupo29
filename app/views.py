@@ -321,6 +321,7 @@ def loadLibroCompleto(request, libro_id):
                     Capitulo.objects.filter(idLibro=libro_id).delete()
                     #Actualizamos el estado del libro (Si esta completo o no)
                     Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True, fechaVencimientoFinal=fechaV, LibroEnCapitulos=False)
+                    #Capitulo.objects.filter(idLibro=libro_id).update(nombre="Libro Completo")
                     #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
                     instancia.save()
                     return redirect('/listBooks')
