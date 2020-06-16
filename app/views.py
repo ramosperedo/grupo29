@@ -552,9 +552,9 @@ def editBookFiles(request, libro_id):
 
 def editCapitulo(request, capitulo_id):
     obj = Capitulo.objects.get(id = capitulo_id)
-    form = CapituloForm(instance = obj)
+    form = CapituloEditForm(instance = obj)
     if request.method == "POST":
-        form = CapituloForm(request.POST,request.FILES, instance=obj)
+        form = CapituloEditForm(request.POST,request.FILES, instance=obj)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.save()
