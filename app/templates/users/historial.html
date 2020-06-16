@@ -15,6 +15,7 @@
             <th>Nombre del Libro&nbsp;&nbsp;&nbsp;&nbsp;</th>
             <th>&nbsp;&nbsp;&nbsp;&nbsp;Capitulo</th>
             <th>Enlace</th>
+            <th></th>
         </tr>
         {% for resultado in libros %}
         <tr>
@@ -26,6 +27,13 @@
             </td>
             <td valign="top">
                 <a class="btn btn-info" role="button" href="/viewBook/{{resultado.libro_id}}">Ver</a>
+            </td>
+            <td>
+                {% if resultado.terminado == 1 %}
+                <button class="btn btn-success">Leído</button>
+                {% else %}
+                <button class="btn btn-warning">Leyendo</button>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
