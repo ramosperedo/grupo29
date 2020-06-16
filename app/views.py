@@ -399,14 +399,13 @@ def logout(request):
 
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
-    libros = Libro.objects.all()
     now = datetime.date.today()
     librosActivos = Libro.objects.none()
     if admin == 0:
-        for libro in libros:
+        for libro in BuscandoLibro:
             cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
             if cumple:
-                librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id))
+                librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id,))
         BuscandoLibro = librosActivos
     print (BuscandoLibro)
     querysetvacio = Libro.objects.none()
@@ -445,16 +444,17 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
                 querysetvacio = querysetvacio.union(temp)
             print ('aca esta el queryset recolector de editorial')
             print (querysetvacio)
-    BuscandoLibro = BuscandoLibro.order_by('id')
     print (BuscandoLibro)
-    if isinstance(querysetvacio, EmptyQuerySet):
-        querysetvacio = BuscandoLibro
-    else:
+    if autor+genero+editorial != "":
+        print("queryset vacio antes de la interseccion")
+        print(querysetvacio)
         BuscandoLibro = BuscandoLibro.intersection(querysetvacio)
+        print("queryset vacio despues de la interseccion")
+        print(querysetvacio)
     if BuscandoLibro.count() == 0:
         return ""
     else:
-        return BuscandoLibro
+        return BuscandoLibro.order_by('id')
 
 def administrarPerfiles(request):
     config = Configuracion.objects.all()
