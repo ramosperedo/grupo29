@@ -302,11 +302,11 @@ def loadLibroCompleto(request, libro_id):
         form = CapituloForm()
         form.fields['nombre'].widget = forms.HiddenInput()
         form.fields['numero'].widget = forms.HiddenInput()
+        form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
         if request.method == "POST":
             form = CapituloForm(request.POST,request.FILES)
             form.fields['nombre'].widget = forms.HiddenInput()
             form.fields['numero'].widget = forms.HiddenInput()
-            form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
             form.fields['nombre'].required = False
             form.fields['numero'].required = False
             if form.is_valid():
