@@ -89,19 +89,12 @@ class CapituloForm(forms.ModelForm):
 class CapituloEditForm(forms.ModelForm):
     class Meta:
         model = Capitulo
-        fields = ['nombre','numero','fechaLanzamiento','fechaVencimiento']
-        labels = {'nombre':'nombre','numero':'numero','fechaLanzamiento':'fechaLanzamiento','fechaVencimiento':'fechaVencimiento'}
+        fields = ['fechaLanzamiento','fechaVencimiento']
+        labels = {'fechaLanzamiento':'fechaLanzamiento','fechaVencimiento':'fechaVencimiento'}
         widgets = {
-            'nombre' : forms.TextInput(attrs={'class':'form-control'}),
-            'numero' : forms.NumberInput(attrs={'class':'form-control'}),
             'fechaLanzamiento' : forms.SelectDateWidget(attrs={'class':'form-control'}),
             'fechaVencimiento' : forms.SelectDateWidget(attrs={'class':'form-control'})
         }
-    def clean_fechaLanzamiento(self):
-        fecha = self.cleaned_data.get('fechaLanzamiento')
-        if fecha < date.today():
-            raise forms.ValidationError("la fecha de lanzamiento debe ser mayor a la actual")
-        return fecha
 
 class LibroForm(forms.ModelForm):
     foto = forms.FileField(required=False)
