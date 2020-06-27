@@ -74,7 +74,7 @@ def libros_activos(libros):
         cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
         if cumple:
             librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id))
-            Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=cumple.first().fechaVencimiento)
+            Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=cumple.first().fechaVencimiento) #esta linea debe ser ejecutada para todos los libros
     return librosActivos
 
 def listBooks(request):
@@ -291,6 +291,7 @@ def loadLibroEnCapitulos(request, libro_id):
                     instancia.save()
                     Libro.objects.filter(id=libro_id).update(LibroEnCapitulos=True)
                     return redirect('/listBooks')
+            form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
         return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
 
 def loadLibroCompleto(request, libro_id):
@@ -541,15 +542,6 @@ def leerCapitulo(request, capitulo_id):
     }
     return render (request, "shared/leerCapitulo.html", context)
 
-def editBookFiles(request, libro_id):
-    obj = Libro.objects.get(id = libro_id)
-    capitulos = Capitulo.objects.all().filter(idLibro = libro_id)
-    context = {
-        "obj" : obj,
-        "capitulos" : capitulos
-    }
-    return render(request, "admin/editBookFiles.html", context)
-
 def editCapitulo(request, capitulo_id):
     obj = Capitulo.objects.get(id = capitulo_id)
     form = CapituloEditForm(instance = obj)
@@ -563,9 +555,16 @@ def editCapitulo(request, capitulo_id):
 
 def deleteCapitulo(request, capitulo_id):
     obj = Capitulo.objects.get(id = capitulo_id)
+    libroId = obj.idLibro
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.remove(os.path.join(BASE_DIR,obj.archivo.url.replace('/','\\')))
     obj.delete()
+    if not libroId.LibroEnCapitulos:
+        Libro.objects.filter(id=libroId).update(ultimoCapitulo=False)
+        Libro.objects.filter(id=libroId).update(fechaVencimientoFinal=None)
+    if not Capitulo.objects.filter(idLibro=libroId) and libroId.LibroEnCapitulos:
+        Libro.objects.filter(id=libroId).update(ultimoCapitulo=False)
+        Libro.objects.filter(id=libroId).update(fechaVencimientoFinal=None)
     return redirect('/listBooks')
 
 """ 
