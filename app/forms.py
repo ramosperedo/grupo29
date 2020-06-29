@@ -5,6 +5,10 @@ from django.forms import ModelForm
 from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta, Perfil
 from datetime import date, datetime
 
+class UserFilterForm(forms.Form):
+    desde = forms.DateField(required=True,label='Desde',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
+    hasta = forms.DateField(required=True,label='Hasta',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
+
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil

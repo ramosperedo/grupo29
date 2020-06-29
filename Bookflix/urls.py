@@ -49,6 +49,7 @@ urlpatterns = [
     path('deleteTrailer/<int:trailer_id>', views.deleteTrailer),
     path('viewTrailer/<int:trailer_id>', views.viewTrailer),
     path('listTrailers/', views.listTrailers),
+    path('listUsuarios/', views.listUsuarios),
     path('register/', views.register),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),

@@ -11,9 +11,23 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django import forms
 from django.db.models.query import EmptyQuerySet
-
 import os, datetime
 
+
+def listUsuarios(request):
+    form = UserFilterForm()
+    if request.method == "POST":
+        form = UserFilterForm(request.POST)
+        if form.is_valid():
+            desde = form.cleaned_data['desde']
+            hasta = form.cleaned_data['hasta']
+            if desde > hasta:
+                    messages.info(request, 'La fecha "desde" debe ser mayor a la de "hasta"')
+                    return render(request, "admin/listUsuarios.html", {'form': form})
+            else:
+                usuarios = User.objects.filter(admin=False,dateCreate__lte=hasta,dateCreate__gte=desde).order_by('-id')
+                return render(request, "admin/listUsuarios.html", {'form': form, 'usuarios': usuarios})            
+    return render(request, "admin/listUsuarios.html", {'form': form})
 
 def createBook(request):
     # Creamos un formulario vacío
