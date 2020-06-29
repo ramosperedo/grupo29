@@ -1,0 +1,61 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h3>Listado de usuarios</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <form method="POST">
+                {{ form.as_p }}
+                {% csrf_token %}
+                <button class="btn btn-success" type="submit">Buscar</button>
+                <a class="btn btn-secondary" role="button" href="/inicio">Volver</a>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <h4>Resultado:</h4>
+            {% if usuarios %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Email</th>
+                        <th>Fecha de ingreso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.nombre }}</td>
+                        <td>{{ usuario.apellido }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>{{ usuario.dateCreate }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                No se encontraron resultados con ese rango
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+&nbsp
+&nbsp
+&nbsp
+&nbsp
+&nbsp
+{% endblock %}

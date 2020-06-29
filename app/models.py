@@ -103,6 +103,7 @@ class User(AbstractBaseUser):
     superuser = models.BooleanField(default=False)
     idTarjeta = models.IntegerField(default=0)
     premium = models.BooleanField(default=False)
+    dateCreate = models.DateField(auto_now=True)
 
     USERNAME_FIELD = 'email' #username
     #USERNAME_FIELD and password are required by default
