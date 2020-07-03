@@ -8,30 +8,31 @@
     {% endfor %}
 </ul>
 {% endif %}
-<table>
-  <tr>
-    
+
+<div class="container">
+  <div class="row">
+    <div align='center' class="col-sm-6">
+      <h5>Modificar modo de suscripcion</h5>
+      <p>Seleccione aqui para cambiar el modo de suscripcion{% if request.user.premium %} (Al cambiarse a modo "Normal" tendra disponible solo 2 perfiles){% else %} (Al cambiarse a modo "Premium" tendra el beneficio de 4 perfiles){% endif %}</p>
+      <a class="btn btn-primary" role="button" href="/editModeSuscripcion" onClick="return confirm('¿Seguro que deseas cambiar de modo?');">Modificar a modo {% if request.user.premium %} Normal {% else %} premium {% endif %}</a>
+    </div>
+    <div align='center' class="col-sm-6">
+      <h5>Modificar contraseña</h5>
+      <p>Ingrese a esta seccion para poder modificar su contraseña</p>
+    <a class="btn btn-primary" role="button" {# href="/loadFile/{{ libro.id }}"#}>Modificar Contraseña</a>
+    </div>
+  </div>
+</div>
+ 
+&nbsp &nbsp &nbsp &nbsp
+  
 <h2>Editar Suscriptor</h2>
   <form method="POST">
-    <td>
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Confirmar Cambios</button>
-  </td>
-  <td>&nbsp &nbsp &nbsp &nbsp</td>
-  <td>
     {{ form2.as_p }}
-  </td>
     {% csrf_token %}
-    <td>&nbsp &nbsp &nbsp &nbsp</td>
-
+    <button type="submit" class="btn btn-primary">Confirmar Cambios</button>
   </form>
-    <td>
-      
-    <h5>Seccion de cambio de contraseña</h5>
-      <a class="btn btn-primary" role="button" {# href="/loadFile/{{ libro.id }}"#}>Cambiar Contraseña</a></td>
-  </tr>
-</table>
-  <hr />
   
   
 {% endblock %}

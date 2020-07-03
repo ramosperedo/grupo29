@@ -1,0 +1,59 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<a class="btn btn-secondary" role="button" href="/inicio">Volver</a>
+
+<h3>Reporte de Libros</h3>
+
+<div class="container">
+    {% if libros %}
+    <div class="row">
+        <div class="col-sm-3">
+            <b>Nombre</b>
+        </div>
+        <div align='center' class="col-sm-3">
+            <b>Vistos</b>
+        </div>
+        <div align='center' class="col-sm-3">
+            <b>Lectura en Curso</b>
+        </div>
+        <div align='center' class="col-sm-3">
+            <b>Lectura Terminada</b>
+        </div>
+    </div>
+        {% for libro in libros %}
+        <div class="row">
+            <div class="col-sm-3">
+                {{ libro.nombre }}
+            </div>
+            <div align='center' class="col-sm-3">
+                {{ libro.vistos }}
+            </div>
+            <div align='center' class="col-sm-3">
+                {{ libro.lecturaEnCurso }}
+            </div>
+            <div align='center' class="col-sm-3">
+                {{ libro.lecturaTerminada }}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="row">
+            <div class="col-sm-2">
+            </div>
+            <div align='center' class="col-sm-8">
+                <b>Aun no hay libros disponibles</b>
+            </div>
+            <div class="col-sm-2">
+            </div>
+        </div>
+    {% endif %}
+  </div>
+
+&nbsp
+&nbsp
+&nbsp
+&nbsp
+&nbsp
+{% endblock %}

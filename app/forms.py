@@ -225,10 +225,9 @@ class RegisterForm3(forms.Form):
     premium = forms.BooleanField(required=False) 
 
 class SuscriptorForm(forms.ModelForm):
-    premium = forms.BooleanField(required=False) 
     class Meta:
         model = User
-        fields = ('nombre', 'apellido', 'email', 'premium')
+        fields = ('nombre', 'apellido', 'email')
         labels = {
             'nombre': 'Nombre',
             'apellido': 'Apellido',

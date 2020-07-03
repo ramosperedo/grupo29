@@ -14,6 +14,13 @@ from django.db.models.query import EmptyQuerySet
 import os, datetime
 
 
+def listReportBooks(request):
+    libros = Libro.objects.filter().order_by('-vistos')
+    #paginator = Paginator(libros, 5)
+    #page_number = request.GET.get('page')
+    #page_obj = paginator.get_page(page_number)
+    return render(request, "admin/listReportBooks.html", {'libros': libros})
+
 def listUsuarios(request):
     form = UserFilterForm()
     if request.method == "POST":
@@ -264,9 +271,6 @@ def listTrailers(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'shared/listOfTrailers.html', {'trailers': page_obj})
 
-def loadFile(request, libro_id):
-    return render(request, "admin/loadFile.html", {'libro_id': libro_id})
-
 def loadLibroEnCapitulos(request, libro_id):
     if Libro.objects.get(id=libro_id).ultimoCapitulo:
         messages.info(request, 'El libro seleccionado ya se encuentra completo')
@@ -390,12 +394,11 @@ def register(request):
 
     return render(request, "users/register.html", context)
 
-def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
+def editarSuscriptor(request):#modificado para recibir solo su propio id
     instancia = User.objects.get(id=request.user.id)#aca tendria que ir sus_id si queremos modificar otro
     instancia2 = Tarjeta.objects.get(id=instancia.idTarjeta)
     form = SuscriptorForm(instance=instancia)
     form2 = TarjetaForm(instance=instancia2)
-    #form3 = RegisterForm3(request.POST or None)
     if request.method == "POST":
         form = SuscriptorForm(request.POST, instance=instancia)
         form2 = TarjetaForm(request.POST, instance=instancia2)
@@ -404,8 +407,24 @@ def editarSuscriptor(request, sus_id):#modificado para recibir solo su propio id
             instancia2 = form2.save(commit=False)
             instancia.save()
             instancia2.save()
-            messages.success(request, 'se modificó sus datos!!')
+            messages.success(request, 'Se modificaron los datos exitosamente!!')
     return render(request, "users/editar.html", {'form': form,'form2': form2})
+
+def editModeSuscripcion(request):
+    mode = User.objects.get(id=request.user.id).premium
+    if mode:
+        if Perfil.objects.filter(idSuscriptor=request.user.id).count() < 3:
+            User.objects.filter(id=request.user.id).update(premium=False)
+        else:
+            messages.success(request, 'Para realizar el cambio de modo debes tener como maximo 2 perfiles')
+            return redirect('/editarSuscriptor')
+    else:
+        User.objects.filter(id=request.user.id).update(premium=True)
+    datosSuscriptor = User.objects.get(pk=request.user.id)
+    datosTarjeta = Tarjeta.objects.get(id=datosSuscriptor.idTarjeta)
+    nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
+    messages.success(request, 'Se realizo el cambio de modo exitosamente')
+    return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
 
 def infoSuscriptor(request):
     try:
