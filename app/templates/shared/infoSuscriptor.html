@@ -2,6 +2,14 @@
 
 {% block suscriptor %}
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% if mensaje == "" %}
 <table>
     <tr>
@@ -47,7 +55,7 @@
         </td>
     </tr>
 </table>
-<a class="btn btn-info" role="button" href="/editarSuscriptor/{{ user.id }}">Editar Informacion</a>
+<a class="btn btn-info" role="button" href="/editarSuscriptor">Editar Informacion</a>
 
 {% else %}
 <p>{{mensaje}}</p>

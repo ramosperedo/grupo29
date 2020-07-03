@@ -180,6 +180,8 @@ class Libro(models.Model):
     ultimoCapitulo = models.BooleanField(default=False)
     LibroEnCapitulos = models.BooleanField(default=False)
     fechaVencimientoFinal = models.DateField(null=True)
+    lecturaEnCurso = models.IntegerField(default=0)
+    lecturaTerminada = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nombre
