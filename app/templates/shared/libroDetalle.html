@@ -108,7 +108,16 @@
                 <button class="btn btn-danger" type="submit">Marcar como spoiler</button>
             </form></td>
         </tr>
+        
         {% endif %}
+        <tr>
+            
+            <td>
+                <form method="get" action="/deleteReview/{{reseña.id}}">
+                    <button class="btn btn-danger" type="submit" onClick="return confirm('¿Seguro que quieres borrar la reseña?');">Borrar reseña</button>
+                </form>
+            </td>
+        </tr>
 <script>
     function myFunction() {
         var x = document.getElementById("myDIV1");
@@ -244,7 +253,6 @@
     {% for reseña in reseñas %}
         <tr>
             <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
-            
         </tr>
         {% if reseña.spoiler == 1 %}
         <tr>

@@ -576,6 +576,8 @@ def detalleLibro(request, libro_id):
                     leidos = leidos.exclude(idCapitulo = n.idCapitulo.id)
             if len(leidos) < len(Capitulo.objects.filter(idLibro = libro_id)):
                 context["puedeReseñar"] = False
+            elif len(Review.objects.filter(idLibro = libro_id).filter(idPerfil = perfilActual.idPerfil)) != 0:
+                context["puedeReseñar"] = False
     return render (request, "shared/libroDetalle.html", context)
 
 def marcarCapitulo(request, capitulo_id):
