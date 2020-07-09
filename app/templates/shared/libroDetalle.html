@@ -82,11 +82,47 @@
     {% endif %}
 </tr>
 <tr><th>Reseñas</th></tr>
-<tr><td>No hay reseñas todavia</td></tr>
-
+    {% if puntaje == 0 %}
+    <tr><td>Puntaje: N/A</td></tr>
+    {% else %}
+    <tr><td>Puntaje: {{puntaje}}</td></tr>
+    {% endif %}
+    {% for reseña in reseñas %}
+        <tr>
+            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
+            
+        </tr>
+        {% if reseña.spoiler == 1 %}
+        <tr>
+            <td><div id="myDIV1" style="display: none;">{{reseña.texto}}</div></td>
+        </tr>
+        <tr><td><div id="myDIV2" style="display: block;">
+            <button onclick="myFunction()">Revelar</button></div>
+        </td></tr>
+        {% else %}
+        <tr>
+            <td>{{reseña.texto}}</td>
+        </tr>
+        <tr>
+            <td><form method="get" action="/marcarSpoiler/{{reseña.id}}">
+                <button class="btn btn-danger" type="submit">Marcar como spoiler</button>
+            </form></td>
+        </tr>
+        {% endif %}
+<script>
+    function myFunction() {
+        var x = document.getElementById("myDIV1");
+        var y = document.getElementById("myDIV2");
+        x.style.display = "block";
+        y.style.display = "none";
+    }
+</script>
+    {% empty %}
+    <tr><td>No hay reseñas todavia</td></tr>
+    {% endfor %}
 </table>
 
-
+<br>
 {% endblock %}
 
 
@@ -132,25 +168,52 @@
             </td>
             {% endif %}
             {% endfor %}
+            {% for terminado in terminados %}
+            {% if capitulo.id == terminado.idCapitulo.id %}
+            <td>Leido</td>
+            {% endif %}
+            {% endfor%}
         </tr>
         {% endfor %}
         {% else %}
-        <p>Libro completo</p>
+        <th>Libro completo</th>
         <tr>
+            {% for capitulo in capitulos %}
             <td>
                 <form method="get" action="/leerCapitulo/{{capitulos.0.id}}">
                     <button class="btn btn-primary" type="submit">Leer Libro</button>
                 </form>
+                {% for terminado in terminados %}
+            {% if capitulo.id == terminado.idCapitulo.id %}
+                <td></td>Leido</td>
+            {% endif %}
+            {% endfor%} 
             </td>
-            {% if capitulo in abiertos %}
+            
+            
+            {% for abierto in abiertos %}
+            {% if capitulo.id == abierto.idCapitulo.id %}
             <td>
                 <form method="get" action="/marcarCapitulo/{{capitulos.0.id}}">
                     <button class="btn btn-danger" type="submit">Marcar Leido</button>
                 </form>
             </td>
             {% endif %}
+            {% endfor %}
         </tr>
+        {% endfor %}
         {% endif %}
+        <th>
+            {% if favorito %}
+            <form method="get" action="/favorito/{{obj.id}}">
+                <button type="submit">Remover de Favoritos</button>
+            </form>
+            {% else %}
+            <form method="get" action="/favorito/{{obj.id}}">
+                <button type="submit">Añadir a Favoritos</button>
+            </form>
+            {% endif %}
+        </th>
         </table>
     {% else %}
         <p>Libro no disponible</p>
@@ -173,8 +236,56 @@
         {% endif %}
     </tr>
     <tr><th>Reseñas</th></tr>
+    {% if puntaje == 0 %}
+    <tr><td>Puntaje: N/A</td></tr>
+    {% else %}
+    <tr><td>Puntaje: {{puntaje}}</td></tr>
+    {% endif %}
+    {% for reseña in reseñas %}
+        <tr>
+            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
+            
+        </tr>
+        {% if reseña.spoiler == 1 %}
+        <tr>
+            <td><div id="myDIV1" style="display: none;">{{reseña.texto}}</div></td>
+        </tr>
+        <tr><td><div id="myDIV2" style="display: block;">
+            <button onclick="myFunction()">Revelar</button></div>
+        </td></tr>
+        {% else %}
+        <tr>
+            <td>{{reseña.texto}}</td>
+        </tr>
+        {% endif %}
+<script>
+    function myFunction() {
+        var x = document.getElementById("myDIV1");
+        var y = document.getElementById("myDIV2");
+        x.style.display = "block";
+        y.style.display = "none";
+    }
+</script>
+        {% if reseña.idPerfil == id %}
+            <tr>
+            <td><form method="get" action="/editReview/{{obj.id}}">
+                <button class="btn btn-warning" type="submit">Editar Reseña</button>
+            </form>
+           <form method="get" action="/deleteReview/{{reseña.id}}">
+                <button class="btn btn-danger" type="submit" onClick="return confirm('¿Seguro que quieres borrar la reseña?');">Borrar reseña</button>
+            </form>
+            </td>
+            </tr>
+            {% endif %}
+    {% empty %}
     <tr><td>No hay reseñas todavia</td></tr>
-
+    {% endfor %}
+    {% if puedeReseñar %}
+    <td><form method="get" action="/createReview/{{obj.id}}">
+        <button class="btn btn-primary" type="submit">Dejar reseña</button>
+    </form>
+    </td>
+    {% endif %}
     </table>
-
+<br>
 {% endblock %}

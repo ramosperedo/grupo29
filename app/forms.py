@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.forms import ModelForm
-from .models import Libro, Autor, Editorial, Genero, Capitulo, Novedad, Trailer, Tarjeta, TipoTarjeta, Perfil
+from .models import *
 from datetime import date, datetime
 
 class UserFilterForm(forms.Form):
@@ -273,3 +273,42 @@ class BuscadorForm(forms.Form):
     genero = forms.CharField(required=False,label="Genero", widget=forms.TextInput(attrs={'class':'form-control'}))
     editorial = forms.CharField(required=False,label="Editorial", widget=forms.TextInput(attrs={'class':'form-control'}))
     
+class ReviewForm(forms.Form):
+    CHOICES = (
+        (0,'--'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5')
+    )
+    puntaje = forms.ChoiceField(choices = CHOICES)
+    texto = forms.CharField(required = False, label ="Reseña", widget = forms.Textarea(attrs={'class':'form-control'}))
+    spoiler = forms.BooleanField(required = False, label="Esta reseña contiene spoilers")
+    
+    def clean_puntaje(self):
+        puntaje = self.cleaned_data.get('puntaje')
+        if puntaje == '0':
+            raise forms.ValidationError("Debes elegir un puntaje")
+        return puntaje
+
+class ModificarFechasForm(forms.Form):
+    fechaLanzamiento = forms.DateField(label='Fecha de Lanzamiento', widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
+    fechaVencimiento = forms.DateField(label='Fecha de Lanzamiento', widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
+
+    def clean_fechaLanzamiento(self):
+        fechaL = self.cleaned_data.get('fechaLanzamiento')
+        if fechaL < date.today():
+            raise forms.ValidationError("fecha no puede ser menor a la actual")
+        return fechaL
+    
+    def clean_fechaVencimiento(self):
+        fechaV = self.cleaned_data.get('fechaVencimiento')
+        print(fechaV)
+        fechaL = self.cleaned_data.get('fechaLanzamiento')
+        print(fechaL)
+        if fechaV < date.today():
+            raise forms.ValidationError("fecha no puede ser menor a la actual")
+        if fechaL is not None and fechaV < fechaL:
+            raise forms.ValidationError("fecha no puede ser menor a la de lanzamiento")
+        return fechaV

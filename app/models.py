@@ -263,3 +263,18 @@ class Trailer(models.Model):
 
     def __str__(self):
         return self.titulo
+
+class Review(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length = 50)
+    idPerfil = models.ForeignKey(Perfil, null = True, on_delete = models.SET_NULL)
+    idLibro = models.ForeignKey(Libro, null = True, on_delete = models.CASCADE)
+    texto = models.CharField(max_length = 256)
+    puntaje = models.IntegerField(null = False, blank = False)
+    spoiler = models.BooleanField(default = False)
+    spoilerAdmin = models.BooleanField(default = False)
+
+class Favorito(models.Model):
+    id = models.AutoField(primary_key=True)
+    idPerfil = models.ForeignKey(Perfil,on_delete=models.CASCADE)
+    idLibro = models.ForeignKey(Libro,on_delete=models.CASCADE)
