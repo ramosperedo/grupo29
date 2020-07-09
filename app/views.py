@@ -360,7 +360,8 @@ def login(request):
                 if request.user.is_superuser == 1:
                     return redirect('/')
                 else:
-                    return render(request, "users/perfiles.html")
+                    mis_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id)
+                    return render(request, "users/perfiles.html",{'perfiles':mis_perfiles})
     return render(request, "users/login.html", {'form': form})
 
 User = get_user_model()
@@ -387,7 +388,7 @@ def register(request):
         print(new_user)#en la anterior linea el orden de los datos del usuario no son en ese orden
         if new_user is not None:#pero por un bug raro lo tube que cambiar para que registre bien
             ## PerfilManager.create_perfil(nombre+apellido,new_user.id) --- Nose como lo usaban pero a mi no me funciona esto
-            defaultPerfil = Perfil(idSuscriptor = new_user, nombre = nombre)
+            defaultPerfil = Perfil(idSuscriptor = new_user, nombre = nombre+apellido)
             defaultPerfil.save()
             actual = PerfilActual(idSuscriptor = new_user, idPerfil = defaultPerfil)
             actual.save()
@@ -506,18 +507,36 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
 
 def administrarPerfiles(request):
     config = Configuracion.objects.all()
-    return render(request, "users/perfiles.html",{'config': config})
+    mis_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id)
+    return render(request, "users/perfiles.html",{'config': config,
+                                                  'perfiles':mis_perfiles,
+                                                  'cantidad_perfiles':mis_perfiles.count()})
 
 def createPerfil(request):
     form = PerfilForm()
-    if request.method == "POST":
-        form = PerfilForm(request.POST)
-        if form.is_valid():
-            instancia = form.save(commit = False)
-            obj = Perfil(nombre = instancia.nombre , idSuscriptor = User.objects.get(id=request.user.id))
-            obj.save()
-            return redirect('/perfiles')
-    return render(request, "users/createPerfil.html", {'form': form})
+    config = Configuracion.objects.all().first()
+    cantidad_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id).count()
+    bandera=0
+    if request.user.premium and cantidad_perfiles > config.maximoPremium-1:
+        bandera+=1
+    if not request.user.premium and cantidad_perfiles > config.maximoStandar-1:
+        bandera+=1
+    if bandera == 0 :
+        if request.method == "POST":
+            form = PerfilForm(request.POST)
+            if form.is_valid():
+                instancia = form.save(commit = False)
+                obj = Perfil(nombre = instancia.nombre , idSuscriptor = User.objects.get(id=request.user.id))
+                obj.save()
+                return redirect('/perfiles')
+        return render(request, "users/createPerfil.html", {'form': form,'mensaje':''})
+    else:
+        return render(request, "users/createPerfil.html", {'form': form,'mensaje':'no se puede registrar mas de '+str(config.maximoPremium)+' perfiles en modalidad premium o '+str(config.maximoStandar)+' en la modalidad standar'})
+
+def obtener_perfil(request):
+    mi_perfil_actual=PerfilActual.objects.get(idSuscriptor=request.user.id)
+    mi_perfil=Perfil.objects.get(id=mi_perfil_actual.idPerfil_id)
+    return mi_perfil
 
 def inicio(request):
     form = BuscadorForm(request.POST or None)
@@ -537,7 +556,8 @@ def inicio(request):
         if request.user.is_superuser == 1:
             return render(request, "users/welcome.html",{'form': form,'res':resultado,'page_obj': page_obj})
         else:
-            return render(request, "users/home.html",{'form': form,'res':resultado,'page_obj': page_obj})
+            mi_perfil=obtener_perfil(request)
+            return render(request, "users/home.html",{'form': form,'res':resultado,'nombre':mi_perfil.nombre,'page_obj': page_obj})
     return redirect('/login')
 
 def detalleLibro(request, libro_id):
@@ -704,9 +724,19 @@ def historial(request):
     page_obj = paginator.get_page(page_number)
     return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje,'page_obj': page_obj})
     
-def selectperfil(request):
-    print('aca tendria que actualizar el id del perfil actual')
-    return redirect('/')#lo dejo asi para el proximo sprint
+def selectperfil(request,perfil_id):
+    PerfilActual.objects.filter(idSuscriptor=request.user.id).update(idPerfil=perfil_id)
+    return redirect('/')
+
+def eliminarperfil(request,perfil_id):
+    mis_perfiles = Perfil.objects.filter(idSuscriptor=request.user.id)
+    if mis_perfiles.count() > 1:
+        if PerfilActual.objects.filter(idSuscriptor=request.user.id).first().idPerfil_id == perfil_id:
+            for dato in mis_perfiles:
+                if dato.id != perfil_id:
+                    PerfilActual.objects.filter(idSuscriptor=request.user.id).update(idPerfil=dato.id)
+        Perfil.objects.filter(id=perfil_id).delete()
+    return redirect('/perfiles')
 
 def createReview(request,libro_id):
     form = ReviewForm()
@@ -766,3 +796,4 @@ def favorito(request, libro_id):
         obj = Favorito.objects.filter(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil).get(idLibro = libro_id)
         obj.delete()
     return redirect('/viewBook/' + str(libro_id))
+

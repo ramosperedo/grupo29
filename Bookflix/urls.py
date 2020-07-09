@@ -55,7 +55,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('infoSuscriptor/', views.infoSuscriptor, name='infoSus'),
-    path('perfiles/', views.administrarPerfiles),
+    path('perfiles/', views.administrarPerfiles, name='perfiles'),
     path('createPerfil/', views.createPerfil),
     path('inicio', views.inicio, name='inicio'),
     path('editarSuscriptor/', views.editarSuscriptor, name='editarsus'),
@@ -73,9 +73,9 @@ urlpatterns = [
     path('deleteReview/<int:review_id>', views.deleteReview),
     path('favorito/<int:libro_id>', views.favorito),
     path('editBookFiles/<int:libro_id>', views.editBookFiles),
+    path('selectperfil/<int:perfil_id>',views.selectperfil, name= 'selectperfil'),
+    path('eliminarperfil/<int:perfil_id>',views.eliminarperfil, name= 'eliminarperfil'),
     
-    
-
     path('admin/', admin.site.urls)
 ]
 if settings.DEBUG:
