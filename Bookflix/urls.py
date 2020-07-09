@@ -55,7 +55,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('infoSuscriptor/', views.infoSuscriptor, name='infoSus'),
-    path('perfiles/', views.administrarPerfiles),
+    path('perfiles/', views.administrarPerfiles, name='perfiles'),
     path('createPerfil/', views.createPerfil),
     path('inicio', views.inicio, name='inicio'),
     path('editarSuscriptor/', views.editarSuscriptor, name='editarsus'),
@@ -66,7 +66,7 @@ urlpatterns = [
     path('leerCapitulo/<int:capitulo_id>', views.leerCapitulo),
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
-    path('selectperfil/',views.selectperfil, name= 'selectperfil'),
+    path('selectperfil/<int:perfil_id>',views.selectperfil, name= 'selectperfil'),
 
     path('admin/', admin.site.urls)
 ]

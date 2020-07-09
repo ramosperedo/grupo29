@@ -358,7 +358,8 @@ def login(request):
                 if request.user.is_superuser == 1:
                     return redirect('/')
                 else:
-                    return render(request, "users/perfiles.html")
+                    mis_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id)
+                    return render(request, "users/perfiles.html",{'perfiles':mis_perfiles})
     return render(request, "users/login.html", {'form': form})
 
 User = get_user_model()
@@ -385,7 +386,7 @@ def register(request):
         print(new_user)#en la anterior linea el orden de los datos del usuario no son en ese orden
         if new_user is not None:#pero por un bug raro lo tube que cambiar para que registre bien
             ## PerfilManager.create_perfil(nombre+apellido,new_user.id) --- Nose como lo usaban pero a mi no me funciona esto
-            defaultPerfil = Perfil(idSuscriptor = new_user, nombre = nombre)
+            defaultPerfil = Perfil(idSuscriptor = new_user, nombre = nombre+apellido)
             defaultPerfil.save()
             actual = PerfilActual(idSuscriptor = new_user, idPerfil = defaultPerfil)
             actual.save()
@@ -504,7 +505,8 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
 
 def administrarPerfiles(request):
     config = Configuracion.objects.all()
-    return render(request, "users/perfiles.html",{'config': config})
+    mis_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id)
+    return render(request, "users/perfiles.html",{'config': config,'perfiles':mis_perfiles})
 
 def createPerfil(request):
     form = PerfilForm()
@@ -516,6 +518,11 @@ def createPerfil(request):
             obj.save()
             return redirect('/perfiles')
     return render(request, "users/createPerfil.html", {'form': form})
+
+def obtener_perfil(request):
+    mi_perfil_actual=PerfilActual.objects.get(idSuscriptor=request.user.id)
+    mi_perfil=Perfil.objects.get(id=mi_perfil_actual.idPerfil_id)
+    return mi_perfil
 
 def inicio(request):
     form = BuscadorForm(request.POST or None)
@@ -535,7 +542,8 @@ def inicio(request):
         if request.user.is_superuser == 1:
             return render(request, "users/welcome.html",{'form': form,'res':resultado,'page_obj': page_obj})
         else:
-            return render(request, "users/home.html",{'form': form,'res':resultado,'page_obj': page_obj})
+            mi_perfil=obtener_perfil(request)
+            return render(request, "users/home.html",{'form': form,'res':resultado,'nombre':mi_perfil.nombre,'page_obj': page_obj})
     return redirect('/login')
 
 def detalleLibro(request, libro_id):
@@ -650,6 +658,14 @@ def historial(request):
     page_obj = paginator.get_page(page_number)
     return render(request, "users/historial.html",{'libros':lista,'mensaje':mensaje,'page_obj': page_obj})
     
-def selectperfil(request):
+def selectperfil(request,perfil_id):
     print('aca tendria que actualizar el id del perfil actual')
+    PerfilActual.objects.filter(idSuscriptor=request.user.id).update(idPerfil=perfil_id)
     return redirect('/')#lo dejo asi para el proximo sprint
+    #cuando se registra tengo que asicnarle un perfil por defecto tambien en perfil_actual
+
+    #cuando loguea tengo que buscar el primer perfil para el user.id correspondiente
+    #y este lo añado en perfil_actual
+
+    #todo eso antes de elegir perfil
+    #al elegir el perfil actualizo el perfil_actual
