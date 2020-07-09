@@ -67,6 +67,13 @@ urlpatterns = [
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
     path('selectperfil/',views.selectperfil, name= 'selectperfil'),
+    path('createReview/<int:libro_id>', views.createReview),
+    path('editReview/<int:libro_id>', views.editReview),
+    path('marcarSpoiler/<int:review_id>', views.marcarSpoilerAdmin),
+    path('deleteReview/<int:review_id>', views.deleteReview),
+    path('favorito/<int:libro_id>', views.favorito),
+    
+    
 
     path('admin/', admin.site.urls)
 ]
