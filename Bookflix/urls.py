@@ -72,6 +72,7 @@ urlpatterns = [
     path('marcarSpoiler/<int:review_id>', views.marcarSpoilerAdmin),
     path('deleteReview/<int:review_id>', views.deleteReview),
     path('favorito/<int:libro_id>', views.favorito),
+    path('editBookFiles/<int:libro_id>', views.editBookFiles),
     
     
 
