@@ -12,9 +12,16 @@
     <div class="col-md-2">
       <a class="btn btn-info" role="button" href="{% url 'selectperfil' dato.id %}">{{dato.nombre}}</a>
       <hr>
-      <a class="btn btn-danger" role="button" href="{% url 'selectperfil' dato.id %}">eliminar</a>
+      {% if cantidad_perfiles > 1 %}
+      <a class="btn btn-danger" role="button"
+       href="{% url 'eliminarperfil' dato.id %}"
+        onClick="return confirm('¿Seguro que quieres borrar a {{dato.nombre}}?');" >eliminar</a>
+      {% else %}
+      <a class="btn btn-danger" role="button" 
+        onClick="return alert('no se puede borrar a {{dato.nombre}} necesita minimamente 1 perfil');" >eliminar</a>
+      {% endif %}
     </div>
-    {% endfor %}
+    {% endfor %}  
     <!--**************-->
     <div class="col-md-2">
       <form method="get" action="/createPerfil">

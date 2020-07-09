@@ -506,18 +506,30 @@ def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
 def administrarPerfiles(request):
     config = Configuracion.objects.all()
     mis_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id)
-    return render(request, "users/perfiles.html",{'config': config,'perfiles':mis_perfiles})
+    return render(request, "users/perfiles.html",{'config': config,
+                                                  'perfiles':mis_perfiles,
+                                                  'cantidad_perfiles':mis_perfiles.count()})
 
 def createPerfil(request):
     form = PerfilForm()
-    if request.method == "POST":
-        form = PerfilForm(request.POST)
-        if form.is_valid():
-            instancia = form.save(commit = False)
-            obj = Perfil(nombre = instancia.nombre , idSuscriptor = User.objects.get(id=request.user.id))
-            obj.save()
-            return redirect('/perfiles')
-    return render(request, "users/createPerfil.html", {'form': form})
+    config = Configuracion.objects.all().first()
+    cantidad_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id).count()
+    bandera=0
+    if request.user.premium and cantidad_perfiles > config.maximoPremium-1:
+        bandera+=1
+    if not request.user.premium and cantidad_perfiles > config.maximoStandar-1:
+        bandera+=1
+    if bandera == 0 :
+        if request.method == "POST":
+            form = PerfilForm(request.POST)
+            if form.is_valid():
+                instancia = form.save(commit = False)
+                obj = Perfil(nombre = instancia.nombre , idSuscriptor = User.objects.get(id=request.user.id))
+                obj.save()
+                return redirect('/perfiles')
+        return render(request, "users/createPerfil.html", {'form': form,'mensaje':''})
+    else:
+        return render(request, "users/createPerfil.html", {'form': form,'mensaje':'no se puede registrar mas de '+str(config.maximoPremium)+' perfiles en modalidad premium o '+str(config.maximoStandar)+' en la modalidad standar'})
 
 def obtener_perfil(request):
     mi_perfil_actual=PerfilActual.objects.get(idSuscriptor=request.user.id)
@@ -661,11 +673,14 @@ def historial(request):
 def selectperfil(request,perfil_id):
     print('aca tendria que actualizar el id del perfil actual')
     PerfilActual.objects.filter(idSuscriptor=request.user.id).update(idPerfil=perfil_id)
-    return redirect('/')#lo dejo asi para el proximo sprint
-    #cuando se registra tengo que asicnarle un perfil por defecto tambien en perfil_actual
+    return redirect('/')
 
-    #cuando loguea tengo que buscar el primer perfil para el user.id correspondiente
-    #y este lo añado en perfil_actual
-
-    #todo eso antes de elegir perfil
-    #al elegir el perfil actualizo el perfil_actual
+def eliminarperfil(request,perfil_id):
+    mis_perfiles = Perfil.objects.filter(idSuscriptor=request.user.id)
+    if mis_perfiles.count() > 1:
+        if PerfilActual.objects.filter(idSuscriptor=request.user.id).first().idPerfil_id == perfil_id:
+            for dato in mis_perfiles:
+                if dato.id != perfil_id:
+                    PerfilActual.objects.filter(idSuscriptor=request.user.id).update(idPerfil=dato.id)
+        Perfil.objects.filter(id=perfil_id).delete()
+    return redirect('/perfiles')

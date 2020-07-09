@@ -67,7 +67,7 @@ urlpatterns = [
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
     path('selectperfil/<int:perfil_id>',views.selectperfil, name= 'selectperfil'),
-
+    path('eliminarperfil/<int:perfil_id>',views.eliminarperfil, name= 'eliminarperfil'),
     path('admin/', admin.site.urls)
 ]
 if settings.DEBUG:
