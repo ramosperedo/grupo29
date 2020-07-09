@@ -1,0 +1,7 @@
+------------Cargar capitulo >>>>> 
+	cuanodo elegis numero de capitulo te lo compara contra id de capitulo no con numero de capitulo en el libro
+
+
+-no puede cargarse ultimo capitulo a uno del medio
+
+-PREGUNTAR SI DEJAR O SACAR EL ELIMINAR RESEÑA ADMIN

@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django import forms
 from django.db.models.query import EmptyQuerySet
+from django.db.models import Avg
 
 import os, datetime
 
@@ -507,15 +508,38 @@ def detalleLibro(request, libro_id):
     instancia = get_object_or_404(Libro, id = libro_id)
     capitulos = Capitulo.objects.all().filter(idLibro = libro_id)
     trailers = Trailer.objects.all().filter(idLibro = libro_id)
+    reseñas = Review.objects.all().filter(idLibro = libro_id)
+    puntaje = Review.objects.filter(idLibro = libro_id).aggregate(Avg('puntaje'))['puntaje__avg']
+    if puntaje is None:
+        puntaje = 0
+    puedeReseñar = True
+    if  request.user.is_superuser == 1:
+        puedeReseñar = False
     context = {
         "obj" : instancia,
         "capitulos" : capitulos,
-        "trailers" : trailers
+        "trailers" : trailers,
+        "reseñas" : reseñas,
+        "puedeReseñar" : puedeReseñar,
+        "puntaje" : puntaje
         }
     if request.user.is_superuser != 1:
         perfilActual = PerfilActual.objects.get(idSuscriptor = request.user.id)
+        idP = perfilActual.idPerfil
+        context["favorito"] = Favorito.objects.filter(idPerfil = perfilActual.idPerfil).filter(idLibro = libro_id)
+        context["id"] = idP
         context["capitulos"] = capitulos.filter(fechaLanzamiento__lte = datetime.date.today()).filter(fechaVencimiento__gte = datetime.date.today())
         context["abiertos"] = Historial.objects.all().filter(idPerfil = perfilActual.idPerfil).filter(terminado = False)
+        context["terminados"] = Historial.objects.all().filter(idPerfil = perfilActual.idPerfil).filter(terminado = True)
+        if instancia.ultimoCapitulo == False:
+            context["puedeReseñar"] = False
+        else:
+            leidos = context["terminados"]
+            for n in context["terminados"]:
+                if n.idCapitulo.idLibro.id != libro_id:
+                    leidos = leidos.exclude(idCapitulo = n.idCapitulo.id)
+            if len(leidos) < len(Capitulo.objects.filter(idLibro = libro_id)):
+                context["puedeReseñar"] = False
     return render (request, "shared/libroDetalle.html", context)
 
 def marcarCapitulo(request, capitulo_id):
@@ -543,9 +567,27 @@ def leerCapitulo(request, capitulo_id):
 def editBookFiles(request, libro_id):
     obj = Libro.objects.get(id = libro_id)
     capitulos = Capitulo.objects.all().filter(idLibro = libro_id)
+    d1 = datetime.datetime(datetime.MINYEAR,1,1)
+    d2 = datetime.datetime(2029,12,31)
+    instancia = {
+        "fechaLanzamiento" : d1,
+        "fechaVencimiento" : d2
+    }
+    form = ModificarFechasForm(initial = instancia)
+    if request.method == "POST":
+        form = ModificarFechasForm(request.POST)
+        if form.is_valid():
+            print('aca entro')
+            for obj in Capitulo.objects.filter(idLibro = Libro.objects.get(id = libro_id)):
+                if form.cleaned_data.get("fechaLanzamiento") != d1:
+                    obj.fechaLanzamiento = form.cleaned_data.get("fechaLanzamiento")
+                if form.cleaned_data.get("fechaVencimiento") != d2:
+                    obj.fechaLanzamiento = form.cleaned_data.get("fechaVencimiento")
+                obj.save()
     context = {
         "obj" : obj,
-        "capitulos" : capitulos
+        "capitulos" : capitulos,
+        "form" : form
     }
     return render(request, "admin/editBookFiles.html", context)
 
@@ -619,3 +661,62 @@ def historial(request):
 def selectperfil(request):
     print('aca tendria que actualizar el id del perfil actual')
     return redirect('/')#lo dejo asi para el proximo sprint
+
+def createReview(request,libro_id):
+    form = ReviewForm()
+    actual = PerfilActual.objects.get(idSuscriptor = request.user.id)
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            puntaje = form.cleaned_data.get("puntaje")
+            texto = form.cleaned_data.get("texto")
+            spoiler = form.cleaned_data.get("spoiler")
+            obj = Review(texto = texto , puntaje = puntaje, spoiler = spoiler, idPerfil = Perfil.objects.get(id = actual.idPerfil.id), idLibro = Libro.objects.get(id = libro_id), nombre = Perfil.objects.get(id = actual.idPerfil.id).nombre)
+            obj.save()
+            return redirect('/viewBook/' + str(libro_id))
+    return render(request, "users/createReview.html", {'form': form,'id':libro_id})
+
+def editReview(request,libro_id):
+    actual = PerfilActual.objects.get(idSuscriptor = request.user.id)
+    reseña = Review.objects.filter(idLibro = libro_id).get(idPerfil = Perfil.objects.get(id = actual.idPerfil.id))
+    instancia = {
+        'puntaje' : reseña.puntaje,
+        'texto' : reseña.texto,
+        'spoiler' : reseña.spoiler
+    }
+    form = ReviewForm(initial = instancia)
+    bloqueada = reseña.spoilerAdmin
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            puntaje = form.cleaned_data.get("puntaje")
+            texto = form.cleaned_data.get("texto")
+            spoiler = form.cleaned_data.get("spoiler")
+            reseña.puntaje = puntaje
+            reseña.texto = texto
+            reseña.spoiler = spoiler
+            reseña.save()
+            return redirect('/viewBook/' + str(libro_id))
+    return render(request, "users/editReview.html", {'form': form,'id':libro_id,'bloqueada':bloqueada})
+
+def marcarSpoilerAdmin(request, review_id):
+    obj = Review.objects.get(id = review_id)
+    obj.spoiler = True
+    obj.spoilerAdmin = True
+    obj.save()
+    return redirect('/viewBook/' + str(obj.idLibro.id))
+
+def deleteReview(request, review_id):
+    obj = Review.objects.get(id = review_id)
+    libro_id = str(obj.idLibro.id)
+    obj.delete()
+    return redirect('/viewBook/' + libro_id)
+
+def favorito(request, libro_id):
+    if len(Favorito.objects.filter(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil).filter(idLibro = libro_id)) == 0:
+        obj = Favorito(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil, idLibro = Libro.objects.get(id = libro_id))
+        obj.save()
+    else:
+        obj = Favorito.objects.filter(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil).get(idLibro = libro_id)
+        obj.delete()
+    return redirect('/viewBook/' + str(libro_id))

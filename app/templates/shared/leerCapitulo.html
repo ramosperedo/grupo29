@@ -2,7 +2,7 @@
 
 
 {% block suscriptor %}
-<form method="get" action="/listBooks">
+<form method="get" action="/viewBook/{{obj.idLibro.id}}">
     <button class="btn btn-primary" type="submit">Volver</button>
 </form>
 {% if disponible %}

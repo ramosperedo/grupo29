@@ -1,0 +1,13 @@
+{% extends 'default/layout.html' %}
+
+{% block suscriptor %}
+
+<h2>Crear Reseña</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+                <button class="btn btn-primary" type="submit">Crear</button>
+                <a class="btn btn-secondary" role="button" href="/viewBook/{{id}}">Volver</a>
+</form>
+{% endblock %}

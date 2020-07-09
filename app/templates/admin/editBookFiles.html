@@ -28,6 +28,24 @@
         {% endfor %}
     {% endif %}
     </table>
+    <div id="myDIV1" style="display: none;">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit" >Guardar</button>
+    </form>
+    </div>
+    <div id="myDIV2" style="display: block;">
+        <button class="btn btn-primary" onclick="myFunction()">Modificar Fechas</button>
+    </div>
+<script>
+    function myFunction() {
+        var x = document.getElementById("myDIV1");
+        var y = document.getElementById("myDIV2");
+        x.style.display = "block";
+        y.style.display = "none";
+    }
+</script>
 {% else %}
     <p>Libro esta vacio</p>
     <a class="btn btn-warning" role="button" href="/loadLibroCompleto/{{ obj.id }}">Subir Libro Completo</a>
