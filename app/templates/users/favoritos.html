@@ -1,0 +1,20 @@
+{% extends 'default/layout.html' %}
+
+{% block suscriptor %}
+
+<h2>Mis Favoritos</h2>
+
+<br />  <br />  <br />
+
+<div class="container">
+  <div class="row">
+    {% for dato in datos %}
+    <div class="row">
+      <a class="btn btn-info" role="button" href="viewBook/{{dato.id}}">{{dato.nombre}}</a>
+      
+    </div>
+    {% endfor %}  
+  </div>
+</div>
+  
+{% endblock %}

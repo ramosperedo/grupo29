@@ -797,3 +797,6 @@ def favorito(request, libro_id):
         obj.delete()
     return redirect('/viewBook/' + str(libro_id))
 
+def listado_favoritos(request):
+    return render(request, "users/favoritos.html", {'datos': Favorito.objects.all() })
+    #me falta unir el libro con el favorito para mostrar el nombre del libro

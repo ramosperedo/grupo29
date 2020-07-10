@@ -66,7 +66,6 @@ urlpatterns = [
     path('leerCapitulo/<int:capitulo_id>', views.leerCapitulo),
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
-    path('selectperfil/',views.selectperfil, name= 'selectperfil'),
     path('createReview/<int:libro_id>', views.createReview),
     path('editReview/<int:libro_id>', views.editReview),
     path('marcarSpoiler/<int:review_id>', views.marcarSpoilerAdmin),
@@ -75,6 +74,7 @@ urlpatterns = [
     path('editBookFiles/<int:libro_id>', views.editBookFiles),
     path('selectperfil/<int:perfil_id>',views.selectperfil, name= 'selectperfil'),
     path('eliminarperfil/<int:perfil_id>',views.eliminarperfil, name= 'eliminarperfil'),
+    path('favoritos/',views.listado_favoritos, name= 'favoritos'),
     
     path('admin/', admin.site.urls)
 ]
