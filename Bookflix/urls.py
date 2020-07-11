@@ -65,6 +65,7 @@ urlpatterns = [
     path('marcarCapitulo/<int:capitulo_id>', views.marcarCapitulo),
     path('leerCapitulo/<int:capitulo_id>', views.leerCapitulo),
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
+    path('editFechaLibro/<int:obj_id>', views.editFechaLibro),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
     path('selectperfil/',views.selectperfil, name= 'selectperfil'),
     path('createReview/<int:libro_id>', views.createReview),

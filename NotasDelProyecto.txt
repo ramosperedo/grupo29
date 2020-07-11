@@ -15,5 +15,11 @@ git branch -d <youbranch> (eliminar una rama)
 git add . & git commit -m <youbranch> (commit local)
 
 
-fallas:
-El registrar usuario; el Tipo de Tarjeta esta como opcional
+
+...
+
+
+modificar capitulo si el libro esta completo = modificar historial de perfiles y si se marco 
+como lecturaCompleta se cambia a enCurso. (se aplica solo si se modifica el archivo del capitulo)
+
+en el "ultimo capitulo" debe aparecer el checkbox de ultimo capitulo.
