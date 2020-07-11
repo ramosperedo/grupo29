@@ -21,38 +21,40 @@
 
 <form method="get" action="/editBook/{{obj.id}}">
     <button class="btn btn-primary" type="submit">Editar Metadatos</button>
+    {% if obj.ultimoCapitulo %}<a class="btn btn-info" role="button" href="/editFechaLibro/{{ obj.id }}"> Editar Fechas</a>{% endif %}
 </form>
 </td>
 
 <td style="width:50%">
 {% if capitulos %}
     <table>
-    {% if obj.LibroEnCapitulos %}
-    <th><h4>Capitulos</h4></th>
+        <th><h4>Capitulos</h4></th>
     {% for capitulo in capitulos %}
+    {% if obj.LibroEnCapitulos %}
     <tr>
         <td><b>{{capitulo.numero}}_</b> {{capitulo.nombre}}</td>
         <td>
             <form method="get" action="/leerCapitulo/{{capitulo.id}}">
                 <button class="btn btn-success" type="submit">Leer</button>
                 <a class="btn btn-danger" role="button" href="/deleteCapitulo/{{ capitulo.id }}" onClick="return confirm('¿Seguro que quieres borrar a el capitulo?');"> Eliminar</a>
+                <a class="btn btn-primary" role="button" href="/editCapitulo/{{ capitulo.id }}"> Editar Capitulo</a>
             </form>
         </td>
     </tr>
-    {% endfor %}
     {% else %}
     <tr>
         <p><h5>Libro completo</h5></p>
         <td>
             <form method="get" action="/leerCapitulo/{{capitulos.0.id}}">
                 <button class="btn btn-success" type="submit">Leer Libro</button>
-                
                 <a class="btn btn-danger" role="button" href="/deleteCapitulo/{{ capitulo.id }}" onClick="return confirm('¿Seguro que quieres borrar a el archivo?');"> Eliminar archivo</a>
+                {% if obj.ultimoCapitulo %}<a class="btn btn-primary" role="button" href="/editFechaLibro/{{ obj.id }}"> Editar Fechas</a>{% endif %}
             </form>
         </td>
 
     </tr>
     {% endif %}
+    {% endfor %}
     </table> 
 {% else %}
     <p><b>El libro aun no tiene capitulos</b></p>

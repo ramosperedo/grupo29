@@ -194,6 +194,7 @@ class Capitulo(models.Model):
     archivo = models.FileField(upload_to='static/file/')
     fechaLanzamiento = models.DateField()
     fechaVencimiento = models.DateField()
+    ultimoCapitulo = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre
