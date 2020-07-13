@@ -99,7 +99,7 @@ class FechasLibroForm(forms.Form):
     def clean_fechaLanzamiento(self):
         fecha = self.cleaned_data.get('fechaLanzamiento')
         if fecha < date.today():
-            raise forms.ValidationError("la fecha de lanzamiento debe ser mayor a la actual")
+            raise forms.ValidationError("la fecha de lanzamiento no debe ser menor a la actual")
         return fecha
 
 class LibroForm(forms.ModelForm):

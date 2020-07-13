@@ -96,10 +96,10 @@
         </tr>
         {% if reseña.spoiler == 1 %}
         <tr>
-            <td><div id="myDIV1" style="display: none;">{{reseña.texto}}</div></td>
+            <td><div id="myDIV1{{forloop.counter}}" style="display: none;">{{reseña.texto}}</div></td>
         </tr>
-        <tr><td><div id="myDIV2" style="display: block;">
-            <button onclick="myFunction()">Revelar</button></div>
+        <tr><td><div id="myDIV2{{forloop.counter}}" style="display: block;">
+            <button onclick="myFunction{{forloop.counter}}()">Revelar</button></div>
         </td></tr>
         {% else %}
         <tr>
@@ -121,9 +121,9 @@
             </td>
         </tr>
 <script>
-    function myFunction() {
-        var x = document.getElementById("myDIV1");
-        var y = document.getElementById("myDIV2");
+    function myFunction{{forloop.counter}}() {
+        var x = document.getElementById("myDIV1{{forloop.counter}}");
+        var y = document.getElementById("myDIV2{{forloop.counter}}");
         x.style.display = "block";
         y.style.display = "none";
     }
@@ -258,10 +258,10 @@
         </tr>
         {% if reseña.spoiler == 1 %}
         <tr>
-            <td><div id="myDIV1" style="display: none;">{{reseña.texto}}</div></td>
+            <td><div id="myDIV1{{forloop.counter}}" style="display: none;">{{reseña.texto}}</div></td>
         </tr>
-        <tr><td><div id="myDIV2" style="display: block;">
-            <button onclick="myFunction()">Revelar</button></div>
+        <tr><td><div id="myDIV2{{forloop.counter}}" style="display: block;">
+            <button onclick="myFunction{{forloop.counter}}()">Revelar</button></div>
         </td></tr>
         {% else %}
         <tr>
@@ -269,9 +269,9 @@
         </tr>
         {% endif %}
 <script>
-    function myFunction() {
-        var x = document.getElementById("myDIV1");
-        var y = document.getElementById("myDIV2");
+    function myFunction{{forloop.counter}}() {
+        var x = document.getElementById("myDIV1{{forloop.counter}}");
+        var y = document.getElementById("myDIV2{{forloop.counter}}");
         x.style.display = "block";
         y.style.display = "none";
     }

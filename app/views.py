@@ -521,12 +521,11 @@ def administrarPerfiles(request):
 
 def createPerfil(request):
     form = PerfilForm()
-    config = Configuracion.objects.all().first()
     cantidad_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id).count()
     bandera=0
-    if request.user.premium and cantidad_perfiles > config.maximoPremium-1:
+    if request.user.premium and cantidad_perfiles > 4:
         bandera+=1
-    if not request.user.premium and cantidad_perfiles > config.maximoStandar-1:
+    if not request.user.premium and cantidad_perfiles > 2:
         bandera+=1
     if bandera == 0 :
         if request.method == "POST":
@@ -667,6 +666,7 @@ def editBookFiles(request, libro_id):
 def editCapitulo(request, capitulo_id):
     instancia = Capitulo.objects.get(id=capitulo_id)
     libro = instancia.idLibro
+    idLibro = libro.id
     original = instancia.archivo
     form = CapituloForm(instance=instancia)
     form.fields['nombre'].required = True
@@ -689,11 +689,11 @@ def editCapitulo(request, capitulo_id):
             archivo = form.cleaned_data['archivo']
             if Capitulo.objects.filter(idLibro=libro.id,numero=num) and (not Capitulo.objects.filter(id=capitulo_id,numero=num)):
                         messages.info(request, 'Ya existe ese numero de capitulo')
-                        return render(request, "admin/loadCapitulo.html", {'form': form})
+                        return render(request, "admin/editCapitulo.html", {'form': form})
             if not libro.ultimoCapitulo:
                 if fechaL > fechaV:
                     messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
-                    return render(request, "admin/loadCapitulo.html", {'form': form})
+                    return render(request, "admin/editCapitulo.html", {'form': form})
                 if original != archivo:
                     Historial.objects.filter(idCapitulo_id = capitulo_id).update(terminado = False)
                     instancia.archivo.save(archivo.name,archivo,save = True)
@@ -708,13 +708,13 @@ def editCapitulo(request, capitulo_id):
                 else:
                     if ultiCap.numero < num:
                         messages.info(request, 'El numero de capitulo debe ser menor al numero de capitulo final')
-                        return render(request, "admin/loadCapitulo.html", {'form': form})
+                        return render(request, "admin/editCapitulo.html", {'form': form})
                     if original != archivo:
                         Historial.objects.filter(idCapitulo_id = capitulo_id).update(terminado = False)
                         instancia.archivo.save(archivo.name,archivo,save = True)
                     Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num)
             return redirect('/listBooks')
-    return render(request, "admin/loadCapitulo.html", {'form': form, 'obj':instancia})
+    return render(request, "admin/editCapitulo.html", {'form': form, 'obj':instancia, 'idLibro':idLibro})
 
 def deleteCapitulo(request, capitulo_id):
     obj = Capitulo.objects.get(id = capitulo_id)
@@ -742,7 +742,7 @@ def editFechaLibro(request, obj_id):
             fechaV = form.cleaned_data['fechaVencimiento']
             fechaL = form.cleaned_data['fechaLanzamiento']
             if fechaL > fechaV:
-                messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
+                messages.info(request, 'La fecha de lanzamiento no debe ser mayor a la de vencimiento')
                 return render(request, "admin/editFechaLibro.html", {'form': form})
             else:
                 Capitulo.objects.filter(idLibro=obj_id).update(fechaVencimiento=fechaV,fechaLanzamiento=fechaL)
@@ -845,7 +845,8 @@ def editReview(request,libro_id):
             spoiler = form.cleaned_data.get("spoiler")
             reseña.puntaje = puntaje
             reseña.texto = texto
-            reseña.spoiler = spoiler
+            if not reseña.spoilerAdmin:
+                reseña.spoiler = spoiler
             reseña.save()
             return redirect('/viewBook/' + str(libro_id))
     return render(request, "users/editReview.html", {'form': form,'id':libro_id,'bloqueada':bloqueada})
