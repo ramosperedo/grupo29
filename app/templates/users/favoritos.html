@@ -7,14 +7,20 @@
 <br />  <br />  <br />
 
 <div class="container">
-  <div class="row">
+  {% if cantidad > 0 %}
+    <div class="row">
+      <div class="col"><strong>Nombre del Libro</strong></div>
+      <div class="col"><strong>Enlace</strong></div>
+    </div>
     {% for dato in datos %}
     <div class="row">
-      <a class="btn btn-info" role="button" href="viewBook/{{dato.id}}">{{dato.nombre}}</a>
-      
+      <div class="col">{{dato.nombre}}&nbsp;&nbsp;&nbsp;</div>
+      <div class="col"><a class="btn btn-info" role="button" href="{% url 'verlibro' dato.idLibro_id %}"> ver</a></div>
     </div>
     {% endfor %}  
-  </div>
+  {% else %}
+  <strong>sin Favoritos para mostrar</strong>
+  {% endif %}
 </div>
   
 {% endblock %}
