@@ -702,10 +702,11 @@ def editCapitulo(request, capitulo_id):
                     messages.info(request, 'El numero de capitulo debe ser menor al numero de capitulo final')
                     return render(request, "admin/loadCapitulo.html", {'form': form})
                 Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num,archivo=archivo)
-            if not (archivo == archivoOld):
-                pass #Se modifico el el archivo, se debe actualizar el historial de perfiles y ...
-            if not (ultimoCapOld == ultiCap):
-                pass #Se modifico el el checkbox, el libro deja de ser libro completo 
+                if not (archivo == archivoOld):
+                    #Productorder.objects.all().distinct('category')
+                    pass #Se modifico el archivo, se debe actualizar el historial de perfiles y 
+                if not (ultimoCapOld == ultiCap):
+                    pass #Se modifico el el checkbox, el libro deja de ser libro completo 
             return redirect('/listBooks')
     return render(request, "admin/loadCapitulo.html", {'form': form, 'obj':instancia})
 
