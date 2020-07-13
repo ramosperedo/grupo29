@@ -209,7 +209,7 @@ class PerfilManager(models.Manager):
 
 class Perfil(models.Model):
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50,unique=True)
     foto = models.CharField(max_length=50,null=True,blank=True)
     idSuscriptor = models.ForeignKey(User,on_delete=models.CASCADE)
 

@@ -1,0 +1,26 @@
+{% extends 'default/layout.html' %}
+
+{% block suscriptor %}
+
+<h2>Mis Favoritos</h2>
+
+<br />  <br />  <br />
+
+<div class="container">
+  {% if cantidad > 0 %}
+    <div class="row">
+      <div class="col"><strong>Nombre del Libro</strong></div>
+      <div class="col"><strong>Enlace</strong></div>
+    </div>
+    {% for dato in datos %}
+    <div class="row">
+      <div class="col">{{dato.nombre}}&nbsp;&nbsp;&nbsp;</div>
+      <div class="col"><a class="btn btn-info" role="button" href="{% url 'verlibro' dato.idLibro_id %}"> ver</a></div>
+    </div>
+    {% endfor %}  
+  {% else %}
+  <strong>sin Favoritos para mostrar</strong>
+  {% endif %}
+</div>
+  
+{% endblock %}

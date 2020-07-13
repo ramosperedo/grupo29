@@ -774,7 +774,7 @@ def historial(request):
     now = datetime.date.today()
     nombre_temporal=""
     mensaje="no se encontro resultados"
-    perfil_actual = Perfil.objects.get(idSuscriptor=request.user.id).id
+    perfil_actual = PerfilActual.objects.get(idSuscriptor=request.user.id).idPerfil_id
     resultado = Libro.objects.raw("SELECT app_historial.id,app_capitulo.id,app_libro.id,app_historial.id AS historial_id,app_capitulo.id AS capitulo_id,app_libro.id AS libro_id, app_capitulo.nombre AS capitulo_nombre,app_libro.nombre AS libro_nombre,app_capitulo.fechaLanzamiento,app_capitulo.fechaVencimiento,app_historial.terminado FROM app_historial,app_capitulo,app_libro WHERE app_historial.idCapitulo_id = app_capitulo.id AND app_capitulo.idLibro_id = app_libro.id AND app_historial.idPerfil_id = "+str(perfil_actual))
     for obj in resultado:
         if obj.fechaLanzamiento <= now and obj.fechaVencimiento > now :
@@ -872,3 +872,12 @@ def favorito(request, libro_id):
         obj.delete()
     return redirect('/viewBook/' + str(libro_id))
 
+def listado_favoritos(request):
+    perfil_actual = PerfilActual.objects.get(idSuscriptor=request.user.id).idPerfil_id
+    favorito_con_nombre = Libro.objects.raw("SELECT * FROM app_favorito,app_libro WHERE app_favorito.idLibro_id = app_libro.id AND app_favorito.idPerfil_id = "+str(perfil_actual))
+    cantidad = len(list(favorito_con_nombre))
+    return render(request, "users/favoritos.html", {'datos': favorito_con_nombre,'cantidad':cantidad })
+    
+def eliminar_suscriptor(request):
+    User.objects.filter(id=request.user.id).delete()
+    return redirect('/')
