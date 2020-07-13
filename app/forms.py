@@ -66,6 +66,7 @@ class EditorialForm(forms.ModelForm):
 
 class CapituloForm(forms.ModelForm):
     archivo = forms.FileField(required=True, label=('Ingrese el Capitulo'))
+    ultimoCapitulo = forms.BooleanField(required=False,label='Seleccione aca si este es el ultimo capitulo')
     class Meta:
         model = Capitulo
         fields = ['idLibro','nombre','numero','archivo','fechaLanzamiento','fechaVencimiento']
@@ -222,7 +223,7 @@ class RegisterForm2(forms.Form):
         return fecha
 
 class RegisterForm3(forms.Form):
-    premium = forms.BooleanField(required=False) 
+    premium = forms.BooleanField(required=False)  
 
 class SuscriptorForm(forms.ModelForm):
     class Meta:

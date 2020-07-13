@@ -19,7 +19,14 @@ git add . & git commit -m <youbranch> (commit local)
 ...
 
 
-modificar capitulo si el libro esta completo = modificar historial de perfiles y si se marco 
+modificar capitulo si el libro esta completo --> modificar historial de perfiles y si se marco 
 como lecturaCompleta se cambia a enCurso. (se aplica solo si se modifica el archivo del capitulo)
 
-en el "ultimo capitulo" debe aparecer el checkbox de ultimo capitulo.
+cuando un perfil selecciona "libro terminado", se debe aumentar en 1 el campo "lecturaCompleta" y restar en
+1 el campo "lecturaEnCurso" del libro
+
+cuando un perfil selecciona "leer libro" o "leer capitulo", se debe aumentar en 1 el campo "lecturaEnCurso" del libro
+[por unica vez]
+
+cuando se carga un capitulo y se selecciona "ultimo capitulo", el numero del mismo debe ser mayor a los anteriores
+
