@@ -1,0 +1,8 @@
+
+#Cambiar el archivo de un capitulo a uno que tenga un "_" en nu nombre lo rompe y cambia a "%"
+
+#Historial deberia mostrar si termino de leer un libro completamente(estando en capitulos), sabiendo si los
+capitulos leidos son todos los capitulos y si esta terminado el libro -- preguntar que onda eso
+
+
+-En las historias eliminar genero, autor y editorial falta el caso en que se falla el eliminar por que existen libros que lo usan

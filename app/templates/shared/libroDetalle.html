@@ -91,7 +91,7 @@
     {% endif %}
     {% for reseña in reseñas %}
         <tr>
-            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
+            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %} Puntaje: {{reseña.puntaje}}/5</th>
             
         </tr>
         {% if reseña.spoiler == 1 %}
@@ -254,7 +254,7 @@
     {% endif %}
     {% for reseña in reseñas %}
         <tr>
-            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
+            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %} Puntaje: {{reseña.puntaje}}/5</th>
         </tr>
         {% if reseña.spoiler == 1 %}
         <tr>

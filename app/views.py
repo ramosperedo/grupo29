@@ -283,7 +283,6 @@ def loadLibroEnCapitulos(request, libro_id):
         return redirect('/listBooks')
     else:
         form = CapituloForm()
-        form2 = RegisterForm3()
         form.fields['nombre'].required = True
         form.fields['numero'].required = True
         capitulos = Capitulo.objects.filter(idLibro=libro_id)
@@ -293,44 +292,43 @@ def loadLibroEnCapitulos(request, libro_id):
         else:
             form.fields['numero'].initial = 1
         form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
-        form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
         if request.method == "POST":
             form = CapituloForm(request.POST,request.FILES)
-            form2 = RegisterForm3(request.POST)
-            if form.is_valid() and form2.is_valid():
+            if form.is_valid():
                 fechaV = form.cleaned_data['fechaVencimiento']
                 fechaL = form.cleaned_data['fechaLanzamiento']
                 num = form.cleaned_data['numero']
                 if fechaL > fechaV:
                     messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
-                    form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
-                    return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
+                    return render(request, "admin/loadCapitulo.html", {'form': form})
                 else:
                     if Capitulo.objects.filter(idLibro=libro_id,numero=num):
                         messages.info(request, 'Ya existe ese numero de capitulo')
-                        form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
-                        return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
+                        return render(request, "admin/loadCapitulo.html", {'form': form})
                     instancia = form.save(commit=False)
-                    completo = form2.cleaned_data.get("premium")
+                    ultimo = form.cleaned_data['ultimoCapitulo']
                     #Actualizamos el estado del libro (Si esta completo o no y las fechas de vencimiento)
-                    if completo:
+                    if ultimo:
+                        if Capitulo.objects.filter(idLibro = libro_id, numero__gte = num):
+                            messages.info(request, 'El numero del ultimo capitulo debe ser el mayor')
+                            return render(request, "admin/loadCapitulo.html", {'form': form})
                         Libro.objects.filter(id=libro_id).update(ultimoCapitulo=True)
                         Capitulo.objects.filter(idLibro=libro_id).update(fechaVencimiento=fechaV)
                     #Finalmente, almacenamos el nuevo-ultimo capitulo del libro
                     instancia.save()
                     Libro.objects.filter(id=libro_id).update(LibroEnCapitulos=True)
                     return redirect('/listBooks')
-            form2.fields['premium'].label = 'Seleccione aca si es el ultimo capitulo'
-        return render(request, "admin/loadCapitulo.html", {'form': form, 'form2':form2})
+        return render(request, "admin/loadCapitulo.html", {'form': form})
 
 def loadLibroCompleto(request, libro_id):
-    if Libro.objects.get(id=libro_id).ultimoCapitulo:
+    if Libro.objects.get(id=libro_id).ultimoCapitulo and not Libro.objects.get(id=libro_id).LibroEnCapitulos:
         messages.info(request, 'El libro seleccionado ya se encuentra completo')
         return redirect('/listBooks')
     else:
         form = CapituloForm()
         form.fields['nombre'].widget = forms.HiddenInput()
         form.fields['numero'].widget = forms.HiddenInput()
+        form.fields['ultimoCapitulo'].widget = forms.HiddenInput()
         form.fields['idLibro'].initial = Libro.objects.get(id=libro_id)
         if request.method == "POST":
             form = CapituloForm(request.POST,request.FILES)
@@ -641,46 +639,54 @@ def editBookFiles(request, libro_id):
         "fechaVencimiento" : d2
     }
     form = ModificarFechasForm(initial = instancia)
-    if request.method == "POST":
-        form = ModificarFechasForm(request.POST)
-        if form.is_valid():
-            print('aca entro')
-            for obj in Capitulo.objects.filter(idLibro = Libro.objects.get(id = libro_id)):
-                if form.cleaned_data.get("fechaLanzamiento") != d1:
-                    obj.fechaLanzamiento = form.cleaned_data.get("fechaLanzamiento")
-                if form.cleaned_data.get("fechaVencimiento") != d2:
-                    obj.fechaLanzamiento = form.cleaned_data.get("fechaVencimiento")
-                obj.save()
     context = {
         "obj" : obj,
         "capitulos" : capitulos,
         "form" : form
     }
+    if request.method == "POST":
+        form = ModificarFechasForm(request.POST)
+        if form.is_valid():
+            fl = form.cleaned_data.get("fechaLanzamiento")
+            fv = form.cleaned_data.get("fechaVencimiento")
+            print(fl)
+            print(date.today())
+            if fl < date.today():
+                messages.info(request, 'La fecha de lanzamiento debe ser mayor a la actual')
+                return render(request, "admin/editBookFiles.html", context)
+            if fv < date.today():
+                messages.info(request, 'La fecha de vencimiento debe ser mayor a la actual')
+                return render(request, "admin/editBookFiles.html", context)
+            if (fl > fv):
+                messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
+                return render(request, "admin/editBookFiles.html", context)
+            Capitulo.objects.filter(idLibro = Libro.objects.get(id = libro_id)).update(fechaLanzamiento = fl,fechaVencimiento = fv)
+            return redirect('/editBookFiles/'+str(libro_id))
     return render(request, "admin/editBookFiles.html", context)
 
 def editCapitulo(request, capitulo_id):
     instancia = Capitulo.objects.get(id=capitulo_id)
     libro = instancia.idLibro
+    original = instancia.archivo
     form = CapituloForm(instance=instancia)
     form.fields['nombre'].required = True
     form.fields['numero'].required = True
-    form.fields['fechaLanzamiento'].required = False
-    form.fields['fechaLanzamiento'].widget.attrs['disabled'] = 'disabled'
-    form.fields['fechaVencimiento'].required = False
-    form.fields['fechaVencimiento'].widget.attrs['disabled'] = 'disabled'
+    if libro.ultimoCapitulo:
+        form.fields['fechaLanzamiento'].widget = forms.HiddenInput()
+        form.fields['fechaVencimiento'].widget = forms.HiddenInput()
+    form.fields['ultimoCapitulo'].widget = forms.HiddenInput()
     if request.method == "POST":
         form = CapituloForm(request.POST,request.FILES, instance=instancia)
-        form.fields['fechaLanzamiento'].required = False
-        form.fields['fechaLanzamiento'].widget.attrs['disabled'] = 'disabled'
-        form.fields['fechaVencimiento'].required = False
-        form.fields['fechaVencimiento'].widget.attrs['disabled'] = 'disabled'
+        if libro.ultimoCapitulo:
+            form.fields['fechaLanzamiento'].widget = forms.HiddenInput()
+            form.fields['fechaVencimiento'].widget = forms.HiddenInput()
+        form.fields['ultimoCapitulo'].widget = forms.HiddenInput()
         if form.is_valid():
             fechaV = form.cleaned_data['fechaVencimiento']
             fechaL = form.cleaned_data['fechaLanzamiento']
             num = form.cleaned_data['numero']
             nombre = form.cleaned_data['nombre']
             archivo = form.cleaned_data['archivo']
-            #FALTA COMPROBAR SI EL ARCHIVO FUE MODIFICADO
             if Capitulo.objects.filter(idLibro=libro.id,numero=num) and (not Capitulo.objects.filter(id=capitulo_id,numero=num)):
                         messages.info(request, 'Ya existe ese numero de capitulo')
                         return render(request, "admin/loadCapitulo.html", {'form': form})
@@ -688,13 +694,25 @@ def editCapitulo(request, capitulo_id):
                 if fechaL > fechaV:
                     messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
                     return render(request, "admin/loadCapitulo.html", {'form': form})
-                Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num,archivo=archivo,fechaVencimiento=fechaV,fechaLanzamiento=fechaL)
+                if original != archivo:
+                    Historial.objects.filter(idCapitulo_id = capitulo_id).update(terminado = False)
+                    instancia.archivo.save(archivo.name,archivo,save = True)
+                Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num,fechaVencimiento=fechaV,fechaLanzamiento=fechaL)
             else:
                 ultiCap = Capitulo.objects.get(idLibro=libro.id,ultimoCapitulo=True)
-                if ultiCap.numero < num:
-                    messages.info(request, 'El numero de capitulo debe ser menor al numero de capitulo final')
-                    return render(request, "admin/loadCapitulo.html", {'form': form})
-                Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num,archivo=archivo)
+                if ultiCap.id == capitulo_id:
+                    if original != archivo:
+                        Historial.objects.filter(idCapitulo_id = capitulo_id).update(terminado = False)
+                        instancia.archivo.save(archivo.name,archivo,save = True)
+                    Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num)
+                else:
+                    if ultiCap.numero < num:
+                        messages.info(request, 'El numero de capitulo debe ser menor al numero de capitulo final')
+                        return render(request, "admin/loadCapitulo.html", {'form': form})
+                    if original != archivo:
+                        Historial.objects.filter(idCapitulo_id = capitulo_id).update(terminado = False)
+                        instancia.archivo.save(archivo.name,archivo,save = True)
+                    Capitulo.objects.filter(id=capitulo_id).update(nombre=nombre,numero=num)
             return redirect('/listBooks')
     return render(request, "admin/loadCapitulo.html", {'form': form, 'obj':instancia})
 
@@ -702,10 +720,14 @@ def deleteCapitulo(request, capitulo_id):
     obj = Capitulo.objects.get(id = capitulo_id)
     libro = obj.idLibro
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    os.remove(os.path.join(BASE_DIR,obj.archivo.url.replace('/','\\')))
+    try:
+        os.remove(os.path.join(BASE_DIR,obj.archivo.url.replace('/','\\')))
+    except:
+        print('ya estaba borrado?')
     obj.delete()
-    if (not Capitulo.objects.filter(idLibro=libro.id) and libro.LibroEnCapitulos) or (not libro.LibroEnCapitulos):
+    if libro.ultimoCapitulo:
         Libro.objects.filter(id=libro.id).update(ultimoCapitulo=False)
+    if len(Capitulo.objects.filter(idLibro = libro)) == 0:
         Libro.objects.filter(id=libro.id).update(fechaVencimientoFinal=None)
     return redirect('/listBooks')
 
@@ -755,7 +777,7 @@ def historial(request):
     perfil_actual = Perfil.objects.get(idSuscriptor=request.user.id).id
     resultado = Libro.objects.raw("SELECT app_historial.id,app_capitulo.id,app_libro.id,app_historial.id AS historial_id,app_capitulo.id AS capitulo_id,app_libro.id AS libro_id, app_capitulo.nombre AS capitulo_nombre,app_libro.nombre AS libro_nombre,app_capitulo.fechaLanzamiento,app_capitulo.fechaVencimiento,app_historial.terminado FROM app_historial,app_capitulo,app_libro WHERE app_historial.idCapitulo_id = app_capitulo.id AND app_capitulo.idLibro_id = app_libro.id AND app_historial.idPerfil_id = "+str(perfil_actual))
     for obj in resultado:
-        if obj.fechaLanzamiento < now and obj.fechaVencimiento > now :
+        if obj.fechaLanzamiento <= now and obj.fechaVencimiento > now :
             datos = {
                         "historial_id": obj.historial_id,
                         "capitulo_id": obj.capitulo_id,
