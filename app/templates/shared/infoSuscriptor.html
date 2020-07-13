@@ -49,9 +49,9 @@
         </td>
         <td>&nbsp &nbsp &nbsp &nbsp</td>
         <td>
-            <u><h4>Perfiles</h4></u>
-            <a class="btn" style="background-color:hotpink" role="button" >{{user.nombre}}{{user.apellido}}</a>
-            <a class="btn" style="background-color:tomato" role="button" href="/perfiles">Administrar perfiles</a>
+            <u><h4>Eliminar Mi Suscripcion</h4></u>
+            <a class="btn btn-danger" role="button" href="{% url 'elimsus' %}" 
+            onClick="return confirm('¿Seguro que quieres borrar Tu Suscripcion?');"> Eliminar</a>
         </td>
     </tr>
 </table>

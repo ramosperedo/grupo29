@@ -61,13 +61,12 @@ urlpatterns = [
     path('editarSuscriptor/', views.editarSuscriptor, name='editarsus'),
     path('editModeSuscripcion/', views.editModeSuscripcion),
     path('historial/', views.historial, name='historial'),
-    path('viewBook/<int:libro_id>', views.detalleLibro),
+    path('viewBook/<int:libro_id>', views.detalleLibro, name='verlibro'),
     path('marcarCapitulo/<int:capitulo_id>', views.marcarCapitulo),
     path('leerCapitulo/<int:capitulo_id>', views.leerCapitulo),
     path('editCapitulo/<int:capitulo_id>', views.editCapitulo),
     path('editFechaLibro/<int:obj_id>', views.editFechaLibro),
     path('deleteCapitulo/<int:capitulo_id>', views.deleteCapitulo),
-    path('selectperfil/',views.selectperfil, name= 'selectperfil'),
     path('createReview/<int:libro_id>', views.createReview),
     path('editReview/<int:libro_id>', views.editReview),
     path('marcarSpoiler/<int:review_id>', views.marcarSpoilerAdmin),
@@ -76,6 +75,8 @@ urlpatterns = [
     path('editBookFiles/<int:libro_id>', views.editBookFiles),
     path('selectperfil/<int:perfil_id>',views.selectperfil, name= 'selectperfil'),
     path('eliminarperfil/<int:perfil_id>',views.eliminarperfil, name= 'eliminarperfil'),
+    path('favoritos/',views.listado_favoritos, name= 'favoritos'),
+    path('eliminarSuscriptor/',views.eliminar_suscriptor, name= 'elimsus'),
     
     path('admin/', admin.site.urls)
 ]
