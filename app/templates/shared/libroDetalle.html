@@ -28,7 +28,8 @@
 <td style="width:50%">
 {% if capitulos %}
     <table>
-        <th><h4>Capitulos</h4></th>
+        {% if obj.LibroEnCapitulos %}
+    <th><h4>Capitulos</h4></th>{% endif %}
     {% for capitulo in capitulos %}
     {% if obj.LibroEnCapitulos %}
     <tr>
@@ -48,7 +49,6 @@
             <form method="get" action="/leerCapitulo/{{capitulos.0.id}}">
                 <button class="btn btn-success" type="submit">Leer Libro</button>
                 <a class="btn btn-danger" role="button" href="/deleteCapitulo/{{ capitulo.id }}" onClick="return confirm('¿Seguro que quieres borrar a el archivo?');"> Eliminar archivo</a>
-                {% if obj.ultimoCapitulo %}<a class="btn btn-primary" role="button" href="/editFechaLibro/{{ obj.id }}"> Editar Fechas</a>{% endif %}
             </form>
         </td>
 
@@ -72,8 +72,6 @@
             <form method="get" action="/viewTrailer/{{trailer.id}}">
                 <button class="btn btn-info" type="submit">Ver</button>
             </form>
-        </td>
-        <td>
             <form method="get" action="/editTrailer/{{trailer.id}}">
                 <button class="btn btn-primary" type="submit">Editar</button>
             </form>

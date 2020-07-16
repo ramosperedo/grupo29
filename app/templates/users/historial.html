@@ -23,11 +23,17 @@
                 <strong>{{resultado.libro_nombre}}</strong>
             </td>
             <td width="150px" align="center">
+                {% if resultado.libroCapitulos %}
                 {{resultado.capitulo_nombre}}
+                {% endif %}
             </td>
+            {% if resultado.libro_nombre %}
             <td valign="top">
                 <a class="btn btn-info" role="button" href="/viewBook/{{resultado.libro_id}}">Ver</a>
             </td>
+            {% else %}
+            <td></td>
+            {% endif %}
             <td>
                 {% if resultado.terminado == 1 %}
                 <button class="btn btn-success">Leído</button>

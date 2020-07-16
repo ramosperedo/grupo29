@@ -77,6 +77,7 @@ urlpatterns = [
     path('eliminarperfil/<int:perfil_id>',views.eliminarperfil, name= 'eliminarperfil'),
     path('favoritos/',views.listado_favoritos, name= 'favoritos'),
     path('eliminarSuscriptor/',views.eliminar_suscriptor, name= 'elimsus'),
+    path('reportes/',views.reportes),
     
     path('admin/', admin.site.urls)
 ]

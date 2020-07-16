@@ -17,11 +17,40 @@ import os, datetime
 
 
 def listReportBooks(request):
-    libros = Libro.objects.filter().order_by('-vistos')
+    libros = Libro.objects.all()
+    perfiles = Perfil.objects.all()
+    for libro in libros:
+        capitulos = Capitulo.objects.filter(idLibro = libro)
+        abiertos = 0
+        terminados = 0
+        print('hastaaca')
+        for perfil in perfiles:
+            print('hastaacaperfiles')
+            capitulosAbiertos = Capitulo.objects.none()
+            capitulosTerminados = Capitulo.objects.none()
+            historial = Historial.objects.filter(idPerfil = perfil)
+            for elem in historial:
+                print('hastaacahistoriales')
+                print(Capitulo.objects.get(id = elem.idCapitulo.id).idLibro)
+                print(libro)
+                if Capitulo.objects.get(id = elem.idCapitulo.id).idLibro == libro:
+                    print('encuentra abierto')
+                    capitulosAbiertos = capitulosAbiertos.union(Capitulo.objects.filter(id = elem.idCapitulo.id))
+                    if elem.terminado:
+                        capitulosTerminados = capitulosTerminados.union(Capitulo.objects.filter(id = elem.idCapitulo.id))
+            if len(capitulosAbiertos) != 0:
+                abiertos = abiertos + 1
+                if len(capitulosTerminados) == len(capitulos):
+                    terminados = terminados + 1
+        libro.vistos = abiertos
+        libro.lecturaEnCurso = abiertos - terminados
+        libro.lecturaTerminada = terminados
+        libro.save()
+    
     #paginator = Paginator(libros, 5)
     #page_number = request.GET.get('page')
     #page_obj = paginator.get_page(page_number)
-    return render(request, "admin/listReportBooks.html", {'libros': libros})
+    return render(request, "admin/listReportBooks.html", {'libros': libros.order_by('-vistos')})
 
 def listUsuarios(request):
     form = UserFilterForm()
@@ -299,7 +328,7 @@ def loadLibroEnCapitulos(request, libro_id):
                 fechaL = form.cleaned_data['fechaLanzamiento']
                 num = form.cleaned_data['numero']
                 if fechaL > fechaV:
-                    messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
+                    messages.info(request, 'La fecha de lanzamiento debe ser menor a la de vencimiento')
                     return render(request, "admin/loadCapitulo.html", {'form': form})
                 else:
                     if Capitulo.objects.filter(idLibro=libro_id,numero=num):
@@ -438,12 +467,12 @@ def editModeSuscripcion(request):
 
 def infoSuscriptor(request):
     try:
-        datosSuscriptor = User.objects.get(pk=request.user.id)
+        print('1')
+        datosSuscriptor = User.objects.get(id=request.user.id)
         datosTarjeta = Tarjeta.objects.get(id=datosSuscriptor.idTarjeta)
         nombreTipoTarjeta = TipoTarjeta.objects.get(id=datosTarjeta.tipo)
     except Exception as e:
         return render(request, "shared/infoSuscriptor.html",{'mensaje':"ACCESO NO PERMITIDO"})
-
     if datosSuscriptor is not None:
         return render(request, "shared/infoSuscriptor.html",{'datos':datosSuscriptor,'tarjeta':datosTarjeta,'tipo':nombreTipoTarjeta, 'mensaje':""})
     else:
@@ -455,58 +484,47 @@ def logout(request):
 
 def busqueda(nombre="",autor="",genero="",editorial="",admin=0):
     BuscandoLibro = Libro.objects.filter(nombre__contains=nombre)
-    now = datetime.date.today()
-    librosActivos = Libro.objects.none()
     if admin == 0:
-        for libro in BuscandoLibro:
-            cumple = Capitulo.objects.filter(idLibro=libro.id,fechaLanzamiento__lte=now,fechaVencimiento__gte=now)
-            if cumple:
-                librosActivos = librosActivos.union(Libro.objects.filter(id=libro.id,))
-        BuscandoLibro = librosActivos
-    print (BuscandoLibro)
-    querysetvacio = Libro.objects.none()
-    print (querysetvacio)
+        BuscandoLibro = libros_activos(Libro.objects.all().filter(nombre__contains=nombre))
+    querysetAutor = Libro.objects.all()
+    querysetGenero = Libro.objects.all()
+    querysetEditorial = Libro.objects.all()
     if autor != "":
+        querysetAutor = Libro.objects.none()
         BuscandoAutor = Autor.objects.filter(nombre__contains=autor)
         if BuscandoAutor is not None:
             for autores in BuscandoAutor:
-                print (autores.id)
-                temp = BuscandoLibro.filter(idAutor=autores.id)
-                print (temp)
-                querysetvacio = querysetvacio.union(temp)
-            print ('aca esta el queryset recolector de autor')
-            print (querysetvacio)
+                for libro in BuscandoLibro:
+                    if libro.idAutor == autores:
+                        temp = Libro.objects.filter(idAutor = autores)
+                        querysetAutor = querysetAutor.union(temp)
     if genero != "":
+        querysetGenero = Libro.objects.none()
         BuscandoGenero = Genero.objects.filter(nombre__contains=genero)
-        print (BuscandoLibro)
-        print (BuscandoGenero)
         if BuscandoGenero is not None:
             for generos in BuscandoGenero:
-                print (generos.id)
-                temp = BuscandoLibro.filter(idGenero=generos.id)
-                print (temp)
-                querysetvacio = querysetvacio.union(temp)
-            print ('aca esta el queryset recolector de genero')
-            print (querysetvacio)
+                for libro in BuscandoLibro:
+                    if libro.idGenero == generos:
+                        temp = Libro.objects.filter(idGenero = generos)
+                        querysetGenero = querysetGenero.union(temp)
     if editorial != "":
         BuscandoEditorial = Editorial.objects.filter(nombre__contains=editorial)
-        print (BuscandoLibro)
-        print (BuscandoEditorial)
+        querysetEditorial = Libro.objects.none()
         if BuscandoEditorial is not None:
             for editoriales in BuscandoEditorial:
-                print (editoriales.id)
-                temp = BuscandoLibro.filter(idEditorial=editoriales.id)
-                print (temp)
-                querysetvacio = querysetvacio.union(temp)
-            print ('aca esta el queryset recolector de editorial')
-            print (querysetvacio)
-    print (BuscandoLibro)
-    if autor+genero+editorial != "":
-        print("queryset vacio antes de la interseccion")
-        print(querysetvacio)
-        BuscandoLibro = BuscandoLibro.intersection(querysetvacio)
-        print("queryset vacio despues de la interseccion")
-        print(querysetvacio)
+                for libro in BuscandoLibro:
+                    if libro.idEditorial == editoriales:
+                        temp = Libro.objects.filter(idEditorial = editoriales)
+                        querysetEditorial = querysetEditorial.union(temp)
+    print('por autor')
+    print(querysetAutor)
+    print('por genero')
+    print(querysetGenero)
+    print('por editorial')
+    print(querysetEditorial)
+    BuscandoLibro = BuscandoLibro.intersection(querysetAutor)
+    BuscandoLibro = BuscandoLibro.intersection(querysetGenero)
+    BuscandoLibro = BuscandoLibro.intersection(querysetEditorial)
     if BuscandoLibro.count() == 0:
         return ""
     else:
@@ -523,21 +541,25 @@ def createPerfil(request):
     form = PerfilForm()
     cantidad_perfiles=Perfil.objects.filter(idSuscriptor=request.user.id).count()
     bandera=0
-    if request.user.premium and cantidad_perfiles > 4:
+    if request.user.premium and cantidad_perfiles >= 4:
         bandera+=1
-    if not request.user.premium and cantidad_perfiles > 2:
+    if not request.user.premium and cantidad_perfiles >= 2:
         bandera+=1
     if bandera == 0 :
         if request.method == "POST":
             form = PerfilForm(request.POST)
             if form.is_valid():
                 instancia = form.save(commit = False)
+                if Perfil.objects.filter(idSuscriptor = request.user, nombre = instancia.nombre):
+                    messages.info(request, 'Ya existe ese nombre de usuario')                
+                    return render(request, "users/createPerfil.html", {'form' : form})
                 obj = Perfil(nombre = instancia.nombre , idSuscriptor = User.objects.get(id=request.user.id))
                 obj.save()
                 return redirect('/perfiles')
         return render(request, "users/createPerfil.html", {'form': form,'mensaje':''})
     else:
-        return render(request, "users/createPerfil.html", {'form': form,'mensaje':'no se puede registrar mas de '+str(config.maximoPremium)+' perfiles en modalidad premium o '+str(config.maximoStandar)+' en la modalidad standar'})
+        messages.info(request, 'no puedes registrar mas de '+str(cantidad_perfiles)+' perfiles')
+        return render(request, "users/createPerfil.html", {'form': form})
 
 def obtener_perfil(request):
     mi_perfil_actual=PerfilActual.objects.get(idSuscriptor=request.user.id)
@@ -657,7 +679,7 @@ def editBookFiles(request, libro_id):
                 messages.info(request, 'La fecha de vencimiento debe ser mayor a la actual')
                 return render(request, "admin/editBookFiles.html", context)
             if (fl > fv):
-                messages.info(request, 'La fecha de lanzamiento debe ser mayor a la de vencimiento')
+                messages.info(request, 'La fecha de lanzamiento debe ser menor a la de vencimiento')
                 return render(request, "admin/editBookFiles.html", context)
             Capitulo.objects.filter(idLibro = Libro.objects.get(id = libro_id)).update(fechaLanzamiento = fl,fechaVencimiento = fv)
             return redirect('/editBookFiles/'+str(libro_id))
@@ -786,14 +808,12 @@ def historial(request):
                         "libro_nombre": obj.libro_nombre if (obj.libro_nombre != nombre_temporal) else "",
                         "fechaLanzamiento": obj.fechaLanzamiento,
                         "fechaVencimiento": obj.fechaVencimiento,
-                        "terminado": obj.terminado
+                        "terminado": obj.terminado,
+                        "libroCapitulos": Libro.objects.get(id=obj.libro_id).LibroEnCapitulos
                         }
             lista.append(datos)
             nombre_temporal = obj.libro_nombre
             mensaje=""
-        print (obj.libro_id,"-",obj.capitulo_nombre,"-",obj.fechaLanzamiento,"-",obj.fechaVencimiento)
-    for dato in lista:
-        print (dato)
     paginator = Paginator(lista, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -874,11 +894,21 @@ def favorito(request, libro_id):
     return redirect('/viewBook/' + str(libro_id))
 
 def listado_favoritos(request):
-    perfil_actual = PerfilActual.objects.get(idSuscriptor=request.user.id).idPerfil_id
-    favorito_con_nombre = Libro.objects.raw("SELECT * FROM app_favorito,app_libro WHERE app_favorito.idLibro_id = app_libro.id AND app_favorito.idPerfil_id = "+str(perfil_actual))
-    cantidad = len(list(favorito_con_nombre))
-    return render(request, "users/favoritos.html", {'datos': favorito_con_nombre,'cantidad':cantidad })
+    favoritos = Favorito.objects.filter(idPerfil = PerfilActual.objects.get(idSuscriptor = request.user.id).idPerfil)
+    libros = Libro.objects.none()
+    for favorito in favoritos:
+        libros = libros.union(Libro.objects.filter(id = favorito.idLibro.id))
+    print(len(libros))
+    libros = libros_activos(libros)
+    print(len(libros))
+    context = {
+        "libros" : libros
+    }
+    return render(request, "users/favoritos.html", context)
     
 def eliminar_suscriptor(request):
     User.objects.filter(id=request.user.id).delete()
     return redirect('/')
+
+def reportes(request):
+    return render(request, "admin/reportes.html")
