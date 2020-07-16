@@ -1,7 +1,13 @@
 {% extends 'default/layout.html' %}
 
 {% block admin %}
-
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% if capitulos %}
 <p><a class="btn btn-secondary" role="button" href="/listBooks">Volver</a></p>
     <table>
@@ -28,6 +34,8 @@
         {% endfor %}
     {% endif %}
     </table>
+    <br>
+    {% if obj.ultimoCapitulo %}
     <div id="myDIV1" style="display: none;">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -46,7 +54,9 @@
         y.style.display = "none";
     }
 </script>
+{% endif %}
 {% else %}
+<p><a class="btn btn-secondary" role="button" href="/listBooks">Volver</a></p>
     <p>Libro esta vacio</p>
     <a class="btn btn-warning" role="button" href="/loadLibroCompleto/{{ obj.id }}">Subir Libro Completo</a>
     <a class="btn btn-warning" role="button" href="/loadLibroEnCapitulos/{{ obj.id }}">Subir Libro por Capitulos</a>

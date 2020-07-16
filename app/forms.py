@@ -66,11 +66,11 @@ class EditorialForm(forms.ModelForm):
 
 class CapituloForm(forms.ModelForm):
     archivo = forms.FileField(required=True, label=('Ingrese el Capitulo'))
-    ultimoCapitulo = forms.BooleanField(required=False,label='Seleccione aca si este es el ultimo capitulo')
+    
     class Meta:
         model = Capitulo
-        fields = ['idLibro','nombre','numero','archivo','fechaLanzamiento','fechaVencimiento']
-        labels = {'nombre':'Nombre','numero':'Numero de capitulo','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento'}
+        fields = ['idLibro','nombre','numero','archivo','fechaLanzamiento','fechaVencimiento', 'ultimoCapitulo']
+        labels = {'nombre':'Nombre','numero':'Numero de capitulo','fechaLanzamiento':'Fecha de Lanzamiento','fechaVencimiento':'Fecha de Vencimiento', 'ultimoCapitulo': 'ultimo capitulo'}
         widgets = {
             'idLibro' : forms.HiddenInput(),
             'nombre' : forms.TextInput(attrs={'class':'form-control'}),
@@ -91,6 +91,7 @@ class CapituloForm(forms.ModelForm):
             raise forms.ValidationError("la fecha de lanzamiento debe ser mayor a la actual")
         return fecha
 
+
 class FechasLibroForm(forms.Form):
     fechaVencimiento = forms.DateField(required=True,label='Fecha de Vencimiento',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
     fechaLanzamiento = forms.DateField(required=True,label='Fecha de Lanzamiento',widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
@@ -98,7 +99,7 @@ class FechasLibroForm(forms.Form):
     def clean_fechaLanzamiento(self):
         fecha = self.cleaned_data.get('fechaLanzamiento')
         if fecha < date.today():
-            raise forms.ValidationError("la fecha de lanzamiento debe ser mayor a la actual")
+            raise forms.ValidationError("la fecha de lanzamiento no debe ser menor a la actual")
         return fecha
 
 class LibroForm(forms.ModelForm):
@@ -223,7 +224,7 @@ class RegisterForm2(forms.Form):
         return fecha
 
 class RegisterForm3(forms.Form):
-    premium = forms.BooleanField(required=False)  
+    premium = forms.BooleanField(required=False) 
 
 class SuscriptorForm(forms.ModelForm):
     class Meta:
@@ -295,21 +296,4 @@ class ReviewForm(forms.Form):
 
 class ModificarFechasForm(forms.Form):
     fechaLanzamiento = forms.DateField(label='Fecha de Lanzamiento', widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
-    fechaVencimiento = forms.DateField(label='Fecha de Lanzamiento', widget=forms.SelectDateWidget(attrs={'class':'form-control'}))
-
-    def clean_fechaLanzamiento(self):
-        fechaL = self.cleaned_data.get('fechaLanzamiento')
-        if fechaL < date.today():
-            raise forms.ValidationError("fecha no puede ser menor a la actual")
-        return fechaL
-    
-    def clean_fechaVencimiento(self):
-        fechaV = self.cleaned_data.get('fechaVencimiento')
-        print(fechaV)
-        fechaL = self.cleaned_data.get('fechaLanzamiento')
-        print(fechaL)
-        if fechaV < date.today():
-            raise forms.ValidationError("fecha no puede ser menor a la actual")
-        if fechaL is not None and fechaV < fechaL:
-            raise forms.ValidationError("fecha no puede ser menor a la de lanzamiento")
-        return fechaV
+    fechaVencimiento = forms.DateField(label='Fecha de Vencimiento', widget=forms.SelectDateWidget(attrs={'class':'form-control'}))

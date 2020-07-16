@@ -1,0 +1,23 @@
+{% extends 'default/layout.html' %}
+
+{% block admin %}
+
+<h2>Seccion de reportes</h2>
+<table>
+    <tr>
+      <td valign="top">
+  <ul>
+    <li>
+        <form method="get" action="/listUsuarios">
+            <button class="btn" style="background-color:rgb(48, 204, 69)" type="submit">Ver Reporte de usuarios</button>
+          </form>
+        </li>
+        <li>
+          <form method="get" action="/listReportBooks">
+            <button class="btn" style="background-color:slateblue" type="submit">Ver Reporte de libros</button>
+          </form>
+        </li>
+    </ul>
+</td></tr></table>
+
+{% endblock %}

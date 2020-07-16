@@ -28,7 +28,8 @@
 <td style="width:50%">
 {% if capitulos %}
     <table>
-        <th><h4>Capitulos</h4></th>
+        {% if obj.LibroEnCapitulos %}
+    <th><h4>Capitulos</h4></th>{% endif %}
     {% for capitulo in capitulos %}
     {% if obj.LibroEnCapitulos %}
     <tr>
@@ -48,7 +49,6 @@
             <form method="get" action="/leerCapitulo/{{capitulos.0.id}}">
                 <button class="btn btn-success" type="submit">Leer Libro</button>
                 <a class="btn btn-danger" role="button" href="/deleteCapitulo/{{ capitulo.id }}" onClick="return confirm('¿Seguro que quieres borrar a el archivo?');"> Eliminar archivo</a>
-                {% if obj.ultimoCapitulo %}<a class="btn btn-primary" role="button" href="/editFechaLibro/{{ obj.id }}"> Editar Fechas</a>{% endif %}
             </form>
         </td>
 
@@ -72,8 +72,6 @@
             <form method="get" action="/viewTrailer/{{trailer.id}}">
                 <button class="btn btn-info" type="submit">Ver</button>
             </form>
-        </td>
-        <td>
             <form method="get" action="/editTrailer/{{trailer.id}}">
                 <button class="btn btn-primary" type="submit">Editar</button>
             </form>
@@ -91,15 +89,15 @@
     {% endif %}
     {% for reseña in reseñas %}
         <tr>
-            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
+            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %} Puntaje: {{reseña.puntaje}}/5</th>
             
         </tr>
         {% if reseña.spoiler == 1 %}
         <tr>
-            <td><div id="myDIV1" style="display: none;">{{reseña.texto}}</div></td>
+            <td><div id="myDIV1{{forloop.counter}}" style="display: none;">{{reseña.texto}}</div></td>
         </tr>
-        <tr><td><div id="myDIV2" style="display: block;">
-            <button onclick="myFunction()">Revelar</button></div>
+        <tr><td><div id="myDIV2{{forloop.counter}}" style="display: block;">
+            <button onclick="myFunction{{forloop.counter}}()">Revelar</button></div>
         </td></tr>
         {% else %}
         <tr>
@@ -121,9 +119,9 @@
             </td>
         </tr>
 <script>
-    function myFunction() {
-        var x = document.getElementById("myDIV1");
-        var y = document.getElementById("myDIV2");
+    function myFunction{{forloop.counter}}() {
+        var x = document.getElementById("myDIV1{{forloop.counter}}");
+        var y = document.getElementById("myDIV2{{forloop.counter}}");
         x.style.display = "block";
         y.style.display = "none";
     }
@@ -254,14 +252,14 @@
     {% endif %}
     {% for reseña in reseñas %}
         <tr>
-            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %}</th>
+            <th>{{reseña.nombre}}{% if reseña.idPerfil == null %} (Perfil eliminido) {% endif %} Puntaje: {{reseña.puntaje}}/5</th>
         </tr>
         {% if reseña.spoiler == 1 %}
         <tr>
-            <td><div id="myDIV1" style="display: none;">{{reseña.texto}}</div></td>
+            <td><div id="myDIV1{{forloop.counter}}" style="display: none;">{{reseña.texto}}</div></td>
         </tr>
-        <tr><td><div id="myDIV2" style="display: block;">
-            <button onclick="myFunction()">Revelar</button></div>
+        <tr><td><div id="myDIV2{{forloop.counter}}" style="display: block;">
+            <button onclick="myFunction{{forloop.counter}}()">Revelar</button></div>
         </td></tr>
         {% else %}
         <tr>
@@ -269,9 +267,9 @@
         </tr>
         {% endif %}
 <script>
-    function myFunction() {
-        var x = document.getElementById("myDIV1");
-        var y = document.getElementById("myDIV2");
+    function myFunction{{forloop.counter}}() {
+        var x = document.getElementById("myDIV1{{forloop.counter}}");
+        var y = document.getElementById("myDIV2{{forloop.counter}}");
         x.style.display = "block";
         y.style.display = "none";
     }

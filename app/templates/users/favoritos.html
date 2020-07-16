@@ -7,15 +7,15 @@
 <br />  <br />  <br />
 
 <div class="container">
-  {% if cantidad > 0 %}
+  {% if libros %}
     <div class="row">
       <div class="col"><strong>Nombre del Libro</strong></div>
       <div class="col"><strong>Enlace</strong></div>
     </div>
-    {% for dato in datos %}
+    {% for libro in libros %}
     <div class="row">
-      <div class="col">{{dato.nombre}}&nbsp;&nbsp;&nbsp;</div>
-      <div class="col"><a class="btn btn-info" role="button" href="{% url 'verlibro' dato.idLibro_id %}"> ver</a></div>
+      <div class="col">{{libro.nombre}}&nbsp;&nbsp;&nbsp;</div>
+      <div class="col"><a class="btn btn-info" role="button" href="viewBook/{{libro.id}}"> ver</a></div>
     </div>
     {% endfor %}  
   {% else %}
